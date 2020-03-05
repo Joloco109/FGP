@@ -1,0 +1,39 @@
+-- Scan group --
+Image size	2,5nm
+Scan direction	Up
+Time/Line	80,1ms
+Points	256
+Lines	256
+X-Slope	0 °
+Y-Slope	0 °
+Rotation	0 °
+X-Pos	192nm
+Y-Pos	-64,8nm
+Z-Plane	0 m
+Line mode	Standard
+Date	26-02-2020
+Time	16:07:30
+-- Approach --
+Setpoint	800pA
+P-Gain	1000
+I-Gain	250
+D-Gain	0
+P-Gain2	0
+I-Gain2	0
+D-Gain2	0
+Tip Voltage	150mV
+Feedback Mode	Free Running
+Feedback algo.	Adaptive PID
+Error range	200nA
+Ampl. Ctrl. mode	Const. Drive
+-- Global --
+Operating mode	STM
+Head type	EZ2-STM
+Scan head	3-08-874.hed
+Software ver.	3.8.8.12
+Firmware ver.	3.8.1.0
+Controller S/N	023-07-520
+-- Module --
+Controller Board	2
+USB Module	3
+Nanosurf Report	10
