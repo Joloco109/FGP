@@ -1,7 +1,7 @@
 from ROOT import TH1I, TF1
 from reader import Hist
 
-class peaks:
+class Peaks:
     def __init__( self, hist, accuracy=10, peak_height=None ):
         self.acc = accuracy
         self.height = peak_height
@@ -19,9 +19,15 @@ class peaks:
         i = maximum + self.acc
         while avg >= avg_new and i < self.N:
             if self.data[i][1] <= float("-inf"):
+                for j in range( i-self.acc, i, 1 ):
+                    if self.data[j][1] > float("-inf"):
+                        i = j + 1 + self.acc
+                        break
                 break
             avg = avg_new
+            data = [ self.data[j][1] for j in range(i-self.acc, i)]
             avg_new = sum( self.data[i-self.acc : i][1] )
+            avg_new = sum( data )
             i += self.acc
         upper = i-self.acc
 
@@ -30,9 +36,15 @@ class peaks:
         i = maximum - self.acc
         while avg >= avg_new and i > 0:
             if self.data[i][1] <= float("-inf"):
+                for j in range( i+self.acc, i, -1 ):
+                    if self.data[j][1] > float("-inf"):
+                        i = j - self.acc
+                        break
                 break
             avg = avg_new
+            data = [ self.data[j][1] for j in range(i, i+self.acc)]
             avg_new = sum( self.data[i : i+self.acc][1] )
+            avg_new = sum( data )
             i -= self.acc
         lower = i+self.acc
 
