@@ -41,7 +41,7 @@ def atoms( tab_name, config_name, title, offset=False):
         x_fit = lineare_regression( dx_theo, dx, R_err * np.ones(len(dx_theo)) )
         x_model = lambda x : x_fit[0] * x + x_fit[2]
     plot_fit( dx_theo, dx, R_err * np.ones(len(dx_theo)), x_model,
-            "dxtheo", "dx", title+" X", directory="Graphs/HOPG_Atoms/", sort=True)
+            "dxtheo", "dx", title+" X", directory="Graphs/HOPG_Atoms/", sort=True, show=True)
 
     if not offset:
         y_fit = prop_regression( dy_theo, dy, R_err * np.ones(len(dy_theo)) )
@@ -50,7 +50,7 @@ def atoms( tab_name, config_name, title, offset=False):
         y_fit = lineare_regression( dy_theo, dy, R_err * np.ones(len(dy_theo)) )
         y_model = lambda y : y_fit[0] * y + y_fit[2]
     plot_fit( dy_theo, dy, R_err * np.ones(len(dy_theo)), y_model,
-            "dytheo", "dy", title+" Y", directory="Graphs/HOPG_Atoms/", sort=True)
+            "dytheo", "dy", title+" Y", directory="Graphs/HOPG_Atoms/", sort=True, show=True)
 
     return ( x_fit, y_fit )
 
@@ -65,6 +65,6 @@ print(    "a_y=")
 for row in y_fit:
     print("    {:.4f} +- {:.4f}".format(row[0], row[1]))
 
-y_fit = [[ row[i] for row in y_fit] for i in range(len(y_fit[0])) ]
-
-print(y_fit)
+print(    "a_x=")
+for row in x_fit:
+    print("    {:.4f} +- {:.4f}".format(row[0], row[1]))
