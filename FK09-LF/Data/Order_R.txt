@@ -1,1 +1,1 @@
-Platin  Kohle Kupfer  Tantal  Silizium
+Platin  Kohle Kupfer  Tantal  Silizium  T_Platin T_Kohle
