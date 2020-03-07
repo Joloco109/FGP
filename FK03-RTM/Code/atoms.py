@@ -59,14 +59,14 @@ def atoms( tab_name, config_name, title, offset=False):
 x_fit = []
 y_fit = []
 for (tab, conf) in zip( tab_names, conf_names ):
-    x, y = atoms( (data_dir+"{}").format(tab), (data_dir+"{}").format(conf), conf[:-5].replace('_',' '))
+    x, y = atoms( (data_dir+"{}").format(tab), (data_dir+"{}").format(conf), conf[:-5].replace('_',' '), offset=False)
     x_fit.append(x)
     y_fit.append(y)
 
 print(    "a_y=")
 for row in y_fit:
-    print("    {:.4f} +- {:.4f}".format(row[0], row[1]))
+    print("    {:.3f} +- {:.3f}".format(row[0], np.sqrt(row[1])))
 
 print(    "a_x=")
 for row in x_fit:
-    print("    {:.4f} +- {:.4f}".format(row[0], row[1]))
+    print("    {:.3f} +- {:.3f}".format(row[0], np.sqrt(row[1])))
