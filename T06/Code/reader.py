@@ -6,6 +6,13 @@ hist_file = "Data/Röhre/Kupfer.mca"
 hist_file2 = "Data/Röhre/Leer.mca"
 
 class Hist:
+    def __init__( self, hist=None, name=None, title=None ):
+        self.hist = hist
+        if not name == None:
+            self.hist.name = name
+        if not title == None:
+            self.hist.title = title
+
     def read( file_name, name, title, boundries=None ):
         hist = Hist()
 
