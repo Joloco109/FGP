@@ -32,6 +32,6 @@ def plot_multifit(x, y, yerr, x_par, y_model_par, xname, yname, label, directory
 
     plt.close()
 
-def plot_fit(x, y, yerr, y_model, xname, yname, label, directory="", show=False):
-    plot_multifit(x, y, yerr, [x], [y_model], xname, yname, label, directory=directory, show=show)
+def plot_fit(x, y, yerr, y_model, xname, yname, label, directory="", sort=False, show=False):
+    plot_multifit(x, y, yerr, [x], [y_model], xname, yname, label, directory=directory, sort=sort, show=show)
 
