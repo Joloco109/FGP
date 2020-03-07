@@ -3,13 +3,14 @@ import matplotlib.pyplot as plt
 
 fontsize = 32
 
-def plot_multifit(x, y, yerr, x_par, y_model_par, xname, yname, label, directory="", show=False):
+def plot_multifit(x, y, yerr, x_par, y_model_par, xname, yname, label, directory="", sort=False, show=False):
     plt.rcParams.update({'font.size': fontsize})
     plt.rc('text', usetex=True)
     plt.rc('font', family='serif')
-    
+
     data = np.array([x.tolist(), y.tolist(), yerr.tolist()]).T
-    data.sort(0)
+    if sort :
+        data.sort(0)
     data = data.T
     x,y,yerr = data
 
