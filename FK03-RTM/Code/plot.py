@@ -16,7 +16,7 @@ def plot_multifit(x, y, yerr, x_par, y_model_par, xname, yname, label, directory
 
     for part, model_part in zip(x_par, y_model_par):
         part.sort()
-        plt.plot(part, model_part(part), label=r'Fit', color='g', marker='', linewidth=4)
+        plt.plot(part, model_part(part), label=r'Fit', color='g', marker='', linewidth=1)
     plt.errorbar(x, y, yerr=yerr, marker='.',
             ecolor='r', capsize =  2, elinewidth=2, linewidth=0, label=r"Data")
 
