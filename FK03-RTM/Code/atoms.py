@@ -28,8 +28,10 @@ def atoms( tab_name, config_name, title, offset=False):
     dx_theo = d( tab[0].data, C )
     dy_theo = d( tab[1].data, C )
 
-    dx = np.abs(np.array([ x[3] for x in tab[0].data ]))
-    dy = np.abs(np.array([ x[4] for x in tab[1].data ]))
+    dx = np.abs(np.array([ x[4] for x in tab[0].data ]))
+    dy = np.abs(np.array([ x[5] for x in tab[1].data ]))
+    xerr = np.array([ x[3] for x in tab[0].data ]) / (2*np.sqrt( 2*np.log(2)) )
+    yerr = np.array([ x[3] for x in tab[1].data ]) / (2*np.sqrt( 2*np.log(2)) )
 
     if not os.path.exists("Graphs/HOPG_Atoms/"):
         os.makedirs("Graphs/HOPG_Atoms/")
@@ -40,7 +42,7 @@ def atoms( tab_name, config_name, title, offset=False):
     else:
         x_fit = lineare_regression( dx_theo, dx, R_err * np.ones(len(dx_theo)) )
         x_model = lambda x : x_fit[0] * x + x_fit[2]
-    plot_fit( dx_theo, dx, R_err * np.ones(len(dx_theo)), x_model,
+    plot_fit( dx_theo, dx, xerr, x_model,
             "dxtheo", "dx", title+" X", directory="Graphs/HOPG_Atoms/", sort=True, show=True)
 
     if not offset:
@@ -49,7 +51,7 @@ def atoms( tab_name, config_name, title, offset=False):
     else:
         y_fit = lineare_regression( dy_theo, dy, R_err * np.ones(len(dy_theo)) )
         y_model = lambda y : y_fit[0] * y + y_fit[2]
-    plot_fit( dy_theo, dy, R_err * np.ones(len(dy_theo)), y_model,
+    plot_fit( dy_theo, dy, yerr, y_model,
             "dytheo", "dy", title+" Y", directory="Graphs/HOPG_Atoms/", sort=True, show=True)
 
     return ( x_fit, y_fit )
