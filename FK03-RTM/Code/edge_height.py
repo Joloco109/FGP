@@ -5,7 +5,7 @@ from fitting import lin_regression
 from plot import plot_multifit
 import os
 
-data_dir = "Data/"
+data_dir = "Data/HOPG_Edge/"
 
 edge_names = [
         [ "HOPG_Edge2_100_Graph.txt",
@@ -93,7 +93,8 @@ def edge_height( graph_name, config_name, file_name, draw_edge=False ):
     print()
     return heights
 
-heights = edge_height( data_dir+edge_names[0][0], data_dir+config_names[0][0], config_names[0][0][:-5])
-print(    "z=")
-for row in heights:
-    print("    ({:.4f} +- {:.4f})nm".format(row[0]*1e9, row[1]*1e9))
+def heights( edge, scale ):
+    heights = edge_height( data_dir+edge_names[edge][scale-1], data_dir+config_names[edge][scale-1], config_names[edge][scale-1][:-5])
+    print(    "z=")
+    for row in heights:
+        print("    ({:.4f} +- {:.4f})nm".format(row[0]*1e9, row[1]*1e9))
