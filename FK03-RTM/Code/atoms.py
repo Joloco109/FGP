@@ -9,7 +9,7 @@ import os
 C = 246# pm
 R_err = 40 #pm
 
-data_dir = "Data/"
+data_dir = "Data/HOPG_Atoms/"
 tab_names = [ "HOPG_Atoms_2_tab.txt",
         "HOPG_Atoms_2.5_tab.txt",
         "HOPG_Atoms_3_tab.txt",
