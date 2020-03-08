@@ -55,8 +55,8 @@ def edge_height( graph_name, config_name, file_name, draw_edge=False, print_para
         if print_paras:
             print(graph.name)
             print("Paras:")
-            print("L:\t({:.4e} +- {:.4e})\t({:.4e} +- {:.4e})".format(pars_l[0], cov_l[0][0], pars_l[1], cov_l[1][1] ))
-            print("R:\t({:.4e} +- {:.4e})\t({:.4e} +- {:.4e})".format(pars_r[0], cov_r[0][0], pars_r[1], cov_r[1][1] ))
+            print("L:\t({:.4f} +- {:.4e})\t({:.4f} +- {:.4e})".format(pars_l[0], cov_l[0][0], pars_l[1]*1e9, cov_l[1][1]*1e9 ))
+            print("R:\t({:.4f} +- {:.4e})\t({:.4f} +- {:.4e})".format(pars_r[0], cov_r[0][0], pars_r[1]*1e9, cov_r[1][1]*1e9 ))
             print()
 
         a = (pars_l[0] + pars_r[0])/2
