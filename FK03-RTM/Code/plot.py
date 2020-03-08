@@ -1,22 +1,25 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-fontsize = 32
+fontsize = 24
 
 def plot_multifit(x, y, yerr, x_par, y_model_par, xname, yname, label, directory="", sort=False, show=False):
     plt.rcParams.update({'font.size': fontsize})
     plt.rc('text', usetex=True)
     plt.rc('font', family='serif')
-
+    
     data = np.array([x.tolist(), y.tolist(), yerr.tolist()]).T
     if sort :
         data.sort(0)
     data = data.T
     x,y,yerr = data
-
+    
+    figure = plt.figure(figsize=(16, 9))
+    
     for part, model_part in zip(x_par, y_model_par):
         part.sort()
         plt.plot(part, model_part(part), label=r'Fit', color='g', marker='', linewidth=1)
+    
     plt.errorbar(x, y, yerr=yerr, marker='.',
             ecolor='r', capsize =  2, elinewidth=2, linewidth=0, label=r"Data")
 
@@ -27,8 +30,7 @@ def plot_multifit(x, y, yerr, x_par, y_model_par, xname, yname, label, directory
     if show:
         plt.show()
 
-    plt.savefig(directory+label+'.eps')
-    #plt.savefig(directory+label+'.eps', bbox_inches = "tight")
+    plt.savefig(directory+label+'.eps', bbox_inches = "tight")
 
     plt.close()
 
