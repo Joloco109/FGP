@@ -7,31 +7,33 @@ import os
 
 data_dir = "Data/HOPG_Edge/"
 
+graph_dir = "Graphs/HOPG_Edge/"
+
 edge_names = [
-        [ "HOPG_Edge2_100_Graph.txt",
-            "HOPG_Edge2_200_Graph.txt",
-            "HOPG_Edge2_300_Graph.txt"
-            ],
         [ "HOPG_Edge_100_Graph.txt",
             "HOPG_Edge_200_Graph.txt",
             "HOPG_Edge_300_Graph.txt"
             ],
+        [ "HOPG_Edge2_100_Graph.txt",
+            "HOPG_Edge2_200_Graph.txt",
+            "HOPG_Edge2_300_Graph.txt"
+            ]
     ]
 
 config_names = [
-        [ "HOPG_Edge2_100.conf",
-            "HOPG_Edge2_200.conf",
-            "HOPG_Edge2_300.conf"
-            ],
         [ "HOPG_Edge_100.conf",
             "HOPG_Edge_200.conf",
             "HOPG_Edge_300.conf"
             ],
+        [ "HOPG_Edge2_100.conf",
+            "HOPG_Edge2_200.conf",
+            "HOPG_Edge2_300.conf"
+            ]
     ]
 
 err = 7e-11
-z_theo = [ 0,
-        2.01e-9 ]
+z_theo = [ 2.01e-9,
+        0.33e-9 ]
 
 def edge_height( graph_name, config_name, file_name, draw_edge=False, print_paras=False ):
     graphs = read_configure_graph( graph_name, config_name )
@@ -72,10 +74,10 @@ def edge_height( graph_name, config_name, file_name, draw_edge=False, print_para
             x_z = []
             z_x = lambda x: x
 
-        if not os.path.exists("Graphs/"+file_name+"/"):
-            os.makedirs("Graphs/"+file_name)
+        if not os.path.exists(graph_dir+file_name+"/"):
+            os.makedirs(graph_dir+file_name)
         plot_multifit( x, y, err*np.ones(len(x)), [x_l,x_r, x_z], [y_l_mod,y_r_mod, z_x],
-                "X"+graph.units[1], "Y"+graph.units[1], graph.name.replace("_"," "), directory="Graphs/"+file_name+"/", show=False)
+                "X"+graph.units[1], "Y"+graph.units[1], graph.name.replace("_"," "), directory=graph_dir+file_name+"/", show=False)
 
         x_l = graph_l.data[0][:-1]
         x_r = graph_r.data[0][0]
@@ -114,8 +116,8 @@ def edge( edge ):
     z_m = np.mean(z)
     z_m_err = np.std(z)
     plot_multifit( n, z, z_err, [n,n], [lambda x: np.ones(len(x))*z_m, lambda x: np.ones(len(x))*z_theo[edge]],
-            "", "", "Z", show=True)
+            "x", "z", "Z (edge {})".format(edge+1), directory=graph_dir, show=True)
 
-    print("z_theo = {:.3e}nm".format(z_theo[edge]*1e9))
-    print("z = ({:.3e} +- {:.3e})nm".format(z_m*1e9, z_m_err*1e9))
+    print("z_theo = {:.3f}nm".format(z_theo[edge]*1e9))
+    print("z = ({:.3f} +- {:.3f})nm".format(z_m*1e9, z_m_err*1e9))
     print("z-z_theo = {:.2f} sigma".format((z_m-z_theo[edge])/z_m_err))
