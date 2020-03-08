@@ -98,25 +98,27 @@ def edge_height( graph_name, config_name, file_name, draw_edge=False, print_para
     print()
     return heights
 
-def heights( edge, scale ):
+def heights( edge, scale, z_output=False ):
     heights = edge_height( data_dir+edge_names[edge][scale-1], data_dir+config_names[edge][scale-1], config_names[edge][scale-1][:-5])
-    print(    "z=")
-    for row in heights:
-        print("    ({:.2f} +- {:.2f})nm".format(row[0]*1e9, row[1]*1e9))
+    if z_output:
+        print(    "z=")
+        for row in heights:
+            print("    ({:.2f} +- {:.2f})nm".format(row[0]*1e9, row[1]*1e9))
 
     return heights
 
 def edge( edge ):
+    edge -= 1
     height = []
     for i in range(1, len(edge_names[edge])+1):
-        height += heights( edge, i )
+        height += heights( edge, i, z_output=True )
     z = np.array([ x[0] for x in height ])
     z_err = np.array([ x[1] for x in height ])
-    n = np.linspace(0,len(z),len(z))
+    n = np.linspace(1,len(z)+1,len(z))
     z_m = np.mean(z)
     z_m_err = np.std(z)
     plot_multifit( n, z, z_err, [n,n], [lambda x: np.ones(len(x))*z_m, lambda x: np.ones(len(x))*z_theo[edge]],
-            "x", "z", "Z (edge {})".format(edge+1), directory=graph_dir, show=True)
+            "Profile No.", "z[m]", "Z (edge {})".format(edge+1), directory=graph_dir, show=True)
 
     print("z_theo = {:.3f}nm".format(z_theo[edge]*1e9))
     print("z = ({:.3f} +- {:.3f})nm".format(z_m*1e9, z_m_err*1e9))
