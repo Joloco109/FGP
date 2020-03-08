@@ -77,7 +77,8 @@ def edge_height( graph_name, config_name, file_name, draw_edge=False, print_para
         if not os.path.exists(graph_dir+file_name+"/"):
             os.makedirs(graph_dir+file_name)
         plot_multifit( x, y, err*np.ones(len(x)), [x_l,x_r, x_z], [y_l_mod,y_r_mod, z_x],
-                "X"+graph.units[1], "Y"+graph.units[1], graph.name.replace("_"," "), directory=graph_dir+file_name+"/", show=False)
+                "X {}".format(graph.units[0]), "Y {}".format(graph.units[1]),
+                graph.name.replace("_"," "), directory=graph_dir+file_name+"/", show=True)
 
         x_l = graph_l.data[0][:-1]
         x_r = graph_r.data[0][0]
@@ -99,7 +100,8 @@ def edge_height( graph_name, config_name, file_name, draw_edge=False, print_para
     return heights
 
 def heights( edge, scale, z_output=False ):
-    heights = edge_height( data_dir+edge_names[edge][scale-1], data_dir+config_names[edge][scale-1], config_names[edge][scale-1][:-5])
+    heights = edge_height( data_dir+edge_names[edge][scale-1], data_dir+config_names[edge][scale-1],
+            config_names[edge][scale-1][:-5])
     if z_output:
         print(    "z=")
         for row in heights:
@@ -118,7 +120,7 @@ def edge( edge ):
     z_m = np.mean(z)
     z_m_err = np.std(z)
     plot_multifit( n, z, z_err, [n,n], [lambda x: np.ones(len(x))*z_m, lambda x: np.ones(len(x))*z_theo[edge]],
-            "Profile No.", "z[m]", "Z (edge {})".format(edge+1), directory=graph_dir, show=True)
+            "Profile No.", r"$\Delta z[m]$", "Z (edge {})".format(edge+1), directory=graph_dir, show=True)
 
     print("z_theo = {:.3f}nm".format(z_theo[edge]*1e9))
     print("z = ({:.3f} +- {:.3f})nm".format(z_m*1e9, z_m_err*1e9))

@@ -43,7 +43,7 @@ def atoms( tab_name, config_name, title, offset=False):
         x_fit = lineare_regression( dx_theo, dx, R_err * np.ones(len(dx_theo)) )
         x_model = lambda x : x_fit[0] * x + x_fit[2]
     plot_fit( dx_theo, dx, xerr, x_model,
-            r"$dx_{theo}$", "$dx$", title+" X", directory="Graphs/HOPG_Atoms/", sort=True, show=True)
+            r"$\Delta x_{theo}$", r"$\Delta x$", title+"nm X", directory="Graphs/HOPG_Atoms/", sort=True, show=True)
 
     if not offset:
         y_fit = prop_regression( dy_theo, dy, R_err * np.ones(len(dy_theo)) )
@@ -52,7 +52,7 @@ def atoms( tab_name, config_name, title, offset=False):
         y_fit = lineare_regression( dy_theo, dy, R_err * np.ones(len(dy_theo)) )
         y_model = lambda y : y_fit[0] * y + y_fit[2]
     plot_fit( dy_theo, dy, yerr, y_model,
-            r"$dy_{theo}$", "$dy$", title+" Y", directory="Graphs/HOPG_Atoms/", sort=True, show=True)
+            r"$\Delta y_{theo}$", r"$\Delta dy$", title+"nm Y", directory="Graphs/HOPG_Atoms/", sort=True, show=True)
 
     return ( x_fit, y_fit )
 
