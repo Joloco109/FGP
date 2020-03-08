@@ -55,8 +55,8 @@ def edge_height( graph_name, config_name, file_name, draw_edge=False, print_para
         if print_paras:
             print(graph.name)
             print("Paras:")
-            print("L:\t({:.4e} +- {:.4e})".format(pars_l[0], cov_l[0][0] ))
-            print("R:\t({:.4e} +- {:.4e})".format(pars_r[0], cov_r[0][0] ))
+            print("L:\t({:.4e} +- {:.4e})\t({:.4e} +- {:.4e})".format(pars_l[0], cov_l[0][0], pars_l[1], cov_l[1][1] ))
+            print("R:\t({:.4e} +- {:.4e})\t({:.4e} +- {:.4e})".format(pars_r[0], cov_r[0][0], pars_r[1], cov_r[1][1] ))
             print()
 
         a = (pars_l[0] + pars_r[0])/2
@@ -101,7 +101,7 @@ def edge_height( graph_name, config_name, file_name, draw_edge=False, print_para
 
 def heights( edge, scale, z_output=False ):
     heights = edge_height( data_dir+edge_names[edge][scale-1], data_dir+config_names[edge][scale-1],
-            config_names[edge][scale-1][:-5])
+            config_names[edge][scale-1][:-5], print_paras=True)
     if z_output:
         print(    "z=")
         for row in heights:
