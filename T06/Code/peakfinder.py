@@ -14,39 +14,39 @@ class Peaks:
     def __next__(self):
         maximum, max_val = max(self.data, key=lambda x : x[1] )
 
-        avg = float("inf")
-        avg_new = self.acc * max_val
-        i = maximum + self.acc
-        while avg >= avg_new and i < self.N:
-            if self.data[i][1] <= float("-inf"):
-                for j in range( i-self.acc, i, 1 ):
-                    if self.data[j][1] > float("-inf"):
-                        i = j + 1 + self.acc
-                        break
+        n = maximum
+        sum_old = float("inf")
+        while n < self.N-self.acc:
+            sum_new = sum( [ x[1] for x in self.data[ n: n+self.acc ] ] )
+            if sum_new <= float("-inf"):
+                while self.data[n][1] > float("-inf"):
+                    n += 1
                 break
-            avg = avg_new
-            data = [ self.data[j][1] for j in range(i-self.acc, i)]
-            avg_new = sum( self.data[i-self.acc : i][1] )
-            avg_new = sum( data )
-            i += self.acc
-        upper = i-self.acc
+            elif sum_new > sum_old:
+                while self.data[n-1][1] >= self.data[n][1]:
+                    n += 1
+                break
+            else:
+                sum_old = sum_new
+                n += self.acc
+        upper = n
 
-        avg = float("inf")
-        avg_new = self.acc * self.data[maximum][1]
-        i = maximum - self.acc
-        while avg >= avg_new and i > 0:
-            if self.data[i][1] <= float("-inf"):
-                for j in range( i+self.acc, i, -1 ):
-                    if self.data[j][1] > float("-inf"):
-                        i = j - self.acc
-                        break
+        n = maximum
+        sum_old = float("inf")
+        while n >= self.acc:
+            sum_new = sum( [ x[1] for x in self.data[ n-self.acc: n ] ] )
+            if sum_new <= float("-inf"):
+                while self.data[n-1][1] > float("-inf"):
+                    n -= 1
                 break
-            avg = avg_new
-            data = [ self.data[j][1] for j in range(i, i+self.acc)]
-            avg_new = sum( self.data[i : i+self.acc][1] )
-            avg_new = sum( data )
-            i -= self.acc
-        lower = i+self.acc
+            elif sum_new > sum_old:
+                while self.data[n][1] >= self.data[n-1][1]:
+                    n -= 1
+                break
+            else:
+                sum_old = sum_new
+                n -= self.acc
+        lower = n
 
         edge = [ x[1] for x in self.data[lower:lower+self.acc] ]
         edge.extend( [ x[1] for x in self.data[upper-self.acc:upper] ] )
@@ -55,7 +55,7 @@ class Peaks:
 
         self.data[lower:upper] = [ (0,float("-inf")) for i,n in self.data[lower:upper] ]
 
-        return (lower,upper, max_val)
+        return (lower,upper, maximum, max_val)
 
 def peak_fit( func, hist, accuracy=10, peak_height=None ):
     peaks = [ peak for peak in Peaks( hist, accuracy=accuracy, peak_height=peak_height ) ]
@@ -63,14 +63,53 @@ def peak_fit( func, hist, accuracy=10, peak_height=None ):
     peaks = [ (
         hist.hist.GetBinLowEdge(peak[0]),
         hist.hist.GetBinLowEdge(peak[1]),
-        peak[2] ) for peak in peaks ]
+        hist.hist.GetBinLowEdge(peak[2]),
+        peak[3] ) for peak in peaks ]
 
     fits = []
-    for i in range(len(peaks)):
-        fit = TF1("peak_{}".format(i), "gaus(0) + [3]", peaks[i][0], peaks[i][1] )
-        fit.SetParameters( peaks[i][2], (peaks[i][0]+peaks[i][1])/2, (peaks[i][1]-peaks[i][0])/2, 0 )
-        fit.SetParLimits( 2, 0, 10*(peaks[i][1]-peaks[i][0]) )
+    i = 0
+    while i < len(peaks):
+        j = 0
+        start, end = peaks[i][:2]
+        cur_func = "[0] + gaus(1)"
+        max_vals = [ peaks[i][3] ]
+        max_pos = [ peaks[i][2] ]
+        widths = [ min( peaks[i][1] - peaks[i][2], peaks[i][2]-peaks[i][0]) ]
+
+        print(i, j)
+        print(start, end)
+        print(cur_func)
+        print()
+
+        
+        while i+1 < len(peaks) and end >= peaks[i+1][0]:
+            i += 1
+            j += 1
+            end = peaks[i][1]
+            cur_func += " + gaus({})".format(3*j+1)
+            max_vals.append( peaks[i][3] )
+            max_pos.append( peaks[i][2] )
+            widths.append( min( peaks[i][1] - peaks[i][2], peaks[i][2]-peaks[i][0]) )
+
+            print(i, j)
+            print(start, end)
+            print(cur_func)
+            print()
+            input()
+        
+
+        fit = TF1("peak_{}".format(i), cur_func, start, end)
+        fit.SetParameter( 0, 0 )
+        for k in range(j+1):
+            fit.SetParameter( 3*k+1, max_vals[k] )
+            #fit.SetParLimits( 3*k+1, 0, 10*max_vals[k] )
+            fit.SetParameter( 3*k+2, max_pos[k] )
+            fit.SetParLimits( 3*k+2, max_pos[k] - widths[k], max_pos[k] + widths[k] )
+            fit.SetParameter( 3*k+3, widths[k] )
+            fit.SetParLimits( 3*k+3, 0, 100*widths[k] )
+        print( fit.GetParameters() )
         fits.append( fit )
+        i += 1
 
     for f in fits:
         hist.hist.Fit( f, "R+" )
