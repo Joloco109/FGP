@@ -76,12 +76,6 @@ def peak_fit( func, hist, accuracy=10, peak_height=None ):
         max_pos = [ peaks[i][2] ]
         widths = [ min( peaks[i][1] - peaks[i][2], peaks[i][2]-peaks[i][0]) ]
 
-        print(i, j)
-        print(start, end)
-        print(cur_func)
-        print()
-
-        
         while i+1 < len(peaks) and end >= peaks[i+1][0]:
             i += 1
             j += 1
@@ -91,23 +85,15 @@ def peak_fit( func, hist, accuracy=10, peak_height=None ):
             max_pos.append( peaks[i][2] )
             widths.append( min( peaks[i][1] - peaks[i][2], peaks[i][2]-peaks[i][0]) )
 
-            print(i, j)
-            print(start, end)
-            print(cur_func)
-            print()
-            input()
-        
-
         fit = TF1("peak_{}".format(i), cur_func, start, end)
         fit.SetParameter( 0, 0 )
         for k in range(j+1):
             fit.SetParameter( 3*k+1, max_vals[k] )
-            #fit.SetParLimits( 3*k+1, 0, 10*max_vals[k] )
+            fit.SetParLimits( 3*k+1, 0, 10*max_vals[k] )
             fit.SetParameter( 3*k+2, max_pos[k] )
             fit.SetParLimits( 3*k+2, max_pos[k] - widths[k], max_pos[k] + widths[k] )
             fit.SetParameter( 3*k+3, widths[k] )
             fit.SetParLimits( 3*k+3, 0, 100*widths[k] )
-        print( fit.GetParameters() )
         fits.append( fit )
         i += 1
 
