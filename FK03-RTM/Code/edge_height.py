@@ -76,7 +76,15 @@ def edge_height( graph_name, config_name, file_name, draw_edge=False, print_para
 
         if not os.path.exists(graph_dir+file_name+"/"):
             os.makedirs(graph_dir+file_name)
-        plot_multifit( x, y, err*np.ones(len(x)), [x_l,x_r, x_z], [y_l_mod,y_r_mod, z_x],
+
+        if not "Edge2" in file_name:
+            x_middle = np.linspace(x_l[-1],x_r[0])
+            z_middle = lambda x : a *x + min(pars_l[1],pars_r[1]) + 4/6*z_theo[0]
+        else :
+            x_middle = []
+            z_middle = lambda x: x
+
+        plot_multifit( x, y, err*np.ones(len(x)), [x_l,x_r, x_z, x_middle], [y_l_mod,y_r_mod, z_x, z_middle],
                 "X {}".format(graph.units[0]), "Y {}".format(graph.units[1]),
                 graph.name.replace("_"," "), directory=graph_dir+file_name+"/", show=True)
 
