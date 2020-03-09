@@ -56,3 +56,22 @@ class Peaks:
         self.data[lower:upper] = [ (0,float("-inf")) for i,n in self.data[lower:upper] ]
 
         return (lower,upper, max_val)
+
+def peak_fit( func, hist, accuracy=10, peak_height=None ):
+    peaks = [ peak for peak in Peaks( hist, accuracy=accuracy, peak_height=peak_height ) ]
+    peaks.sort( key=lambda x : x[0] )
+    peaks = [ (
+        hist.hist.GetBinLowEdge(peak[0]),
+        hist.hist.GetBinLowEdge(peak[1]),
+        peak[2] ) for peak in peaks ]
+
+    fits = []
+    for i in range(len(peaks)):
+        fit = TF1("peak_{}".format(i), "gaus(0) + [3]", peaks[i][0], peaks[i][1] )
+        fit.SetParameters( peaks[i][2], (peaks[i][0]+peaks[i][1])/2, (peaks[i][1]-peaks[i][0])/2, 0 )
+        fit.SetParLimits( 2, 0, 10*(peaks[i][1]-peaks[i][0]) )
+        fits.append( fit )
+
+    for f in fits:
+        hist.hist.Fit( f, "R+" )
+    return fits
