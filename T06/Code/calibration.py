@@ -42,25 +42,60 @@ calibration_elements = [ [
         ]
     ]
 
+calibration_peaks = [ [
+            [ "KL3", "KM3" ],
+            [ "L3M5", "L2M5", "KL2", "KM2", "KN1", None, None, None ],
+            [ None,None,None,None,None,None,None,None,None,None ]
+        ],[
+            [ "KL3", "KM3" ],
+            [ "KL3", "KM3", "KN3" ],
+            [ None ],
+            [ None,"KL2", "KL3", "KM3", "KN3" ],
+            [ "KL3", "KM2" ],
+            [ "KL2", "KM2" ],
+            [ "L3M4", "L2M4", "L3N4", "KL2", "KL3", None ] #"KM3" ]
+        ]
+    ]
+
 paras = [ ( 5, 1.5e2, 5 ),
         ( 5, 5e1, 5 )]
 
-def calibrate( file_number, am, ohne_leer=True ):
+def calibrate_file( file_number, am, ohne_leer=True, show_spectral_lines=False ):
+    file_name = calibration_names[ 1 if am else 0 ][file_number]
+    print(file_name[:-4])
     directory = data_dir + (am_dir if am else roe_dir)
     empty = Hist.read( directory + leer_names[ 1 if am else 0 ], "Leer", "Leer" )
-    spectrum = Hist.read( directory + calibration_names[ 1 if am else 0 ][file_number], "Spectrum", "Spectrum" )
+    spectrum = Hist.read( directory + file_name,
+            "Spectrum {}".format(file_name[:-4]),
+            "Spectrum {}".format(file_name[:-4]))
     elems = calibration_elements[1 if am else 0][file_number]
+
 
     lit_tab = read_tabular(lit_file)
     spectral_lines = [ [ column[i] for _, column in lit_tab ] for i in range(len(lit_tab[0][1]))  if lit_tab[0][1][i] in elems ]
-    for line in spectral_lines:
-        print(line)
+    if show_spectral_lines:
+        for line in spectral_lines:
+            print(line)
+
+    energies_theo = []
+    if len(elems) == 1:
+        print(calibration_peaks[ 1 if am else 0 ][file_number])
+        for transition in calibration_peaks[ 1 if am else 0 ][file_number]:
+            if transition == None:
+                continue
+            line = [ x for x in spectral_lines if x[0] == elems[0] and x[2] == transition ][0]
+            if line[5] != None:
+                energies_theo.append( (line[5], line[6]) )
+            elif line[3] != None:
+                energies_theo.append( (line[3], line[4]) )
+
 
     if ohne_leer:
         spectrum = Hist( spectrum.hist - empty.hist, "Spectrum", "Spectrum" )
 
     acc, height, fac = paras[ 1 if am else 0 ]
     peaks = peak_fit( spectrum, accuracy=acc, peak_height=height, peak_fac=fac)
+    print()
 
     energies = []
     energy_res = []
@@ -79,3 +114,29 @@ def calibrate( file_number, am, ohne_leer=True ):
         print()
 
     plot_hist( spectrum, logy=False)
+
+    return energies, energies_theo, energy_res
+
+def calibrate( am ):
+    energies = []
+    energies_theo = []
+    energy_res = []
+    for i in range(len(calibration_names[ 1 if am else 0 ])):
+        e, e_theo, e_res = calibrate_file( i, am )
+        energies += e
+        energies_theo += e_theo
+        energy_res += e_res
+
+def main():
+    print("Am:")
+    calibrate( True )
+    print()
+    print()
+
+    print("Rö:")
+    calibrate( False )
+    print()
+    print()
+
+if __name__ == "__main__":
+    main()
