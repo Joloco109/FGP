@@ -59,7 +59,7 @@ class Peaks:
 
 max_peak_number = 3
 
-def peak_fit( func, hist, accuracy=10, peak_height=1e2, peak_fac = 10 ):
+def peak_fit( hist, accuracy=10, peak_height=1e2, peak_fac = 10 ):
     peaks = [ peak for peak in Peaks( hist, accuracy=accuracy, peak_height=peak_height ) ]
     peaks.sort( key=lambda x : x[0] )
     peaks = [ (

@@ -37,8 +37,6 @@ def calibrate( file_number, am ):
 
     spectrum = Hist( spectrum.hist - empty.hist, "Spectrum", "Spectrum" )
 
-    #plot_hist( spectrum )
-
-    peaks = peak_fit( "gaus(0) + [3]", spectrum, accuracy=5, peak_height=1e2 )
+    peaks = peak_fit( spectrum, accuracy=5, peak_height=1e2 )
 
     plot_hist( spectrum, logy=False )
