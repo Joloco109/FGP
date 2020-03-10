@@ -1,3 +1,4 @@
+import numpy as np
 from ROOT import TH1I, TF1
 from reader import Hist
 
@@ -48,9 +49,13 @@ class Peaks:
                 n -= self.acc
         lower = n
 
-        edge = [ x[1] for x in self.data[lower:lower+self.acc] ]
-        edge.extend( [ x[1] for x in self.data[upper-self.acc:upper] ] )
-        if self.height != None and max_val - sum(edge)/(2*self.acc) < self.height:
+        edge_l = [ x[1] for x in self.data[lower:lower+self.acc] ]
+        edge_r = [ x[1] for x in self.data[upper-self.acc:upper] ]
+        if upper - lower < 4*self.acc or (
+                    self.height != None
+                and max_val - np.mean(edge_l) < self.height
+                and max_val - np.mean(edge_r) < self.height
+                ):
             raise StopIteration
 
         self.data[lower:upper] = [ (0,float("-inf")) for i,n in self.data[lower:upper] ]
@@ -95,6 +100,7 @@ def peak_fit( hist, accuracy=10, peak_height=1e2, peak_fac = 10 ):
 
         fit = TF1("peak_{}".format(i), cur_func, start, end)
         fit.SetParameter( 0, 0 )
+        fit.SetParLimits( 0, -1e2, 1e3 )
         for k in range(j):
             fit.SetParameter( 3*k+1, max_vals[k] )
             fit.SetParLimits( 3*k+1, 0, 10*max_vals[k] )
