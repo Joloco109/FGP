@@ -13,9 +13,9 @@ Theory Unc. (eV)    = 32 - 43
 Experimental Energy:
   Direct (eV)       = 45 - 59
   Direct Unc. (eV)  = 61 - 72
-  Combined (eV)     = 74 - 87       (edge only)
+  Combined (eV)     = 74 - 87       
   Combined Unc. (eV) = 89 - 100
-  Vapor (eV)        = 102 - 116       (edge only)
+  Vapor (eV)        = 102 - 116       
   Vapor Unc. (eV) = 118 - 129
 Blend               = 131 - 136
 Ref.                = 138 - 148
