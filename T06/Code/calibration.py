@@ -1,7 +1,7 @@
 from reader import Hist
 from peakfinder import Peaks, peak_fit
 from plot import plot_hist
-from ctypes import c_double
+from lit_values_reader import read_tabular, lit_file
 
 data_dir = "Data/"
 am_dir = "Am/"
@@ -50,6 +50,11 @@ def calibrate( file_number, am ):
     empty = Hist.read( directory + leer_names[ 1 if am else 0 ], "Leer", "Leer" )
     spectrum = Hist.read( directory + calibration_names[ 1 if am else 0 ][file_number], "Spectrum", "Spectrum" )
     elems = calibration_elements[1 if am else 0][file_number]
+
+    lit_tab = read_tabular(lit_file)
+    spectral_lines = [ [ column[i] for _, column in lit_tab ] for i in range(len(lit_tab[0][1]))  if lit_tab[0][1][i] in elems ]
+    for line in spectral_lines:
+        print(line)
 
     spectrum = Hist( spectrum.hist - empty.hist, "Spectrum", "Spectrum" )
 
