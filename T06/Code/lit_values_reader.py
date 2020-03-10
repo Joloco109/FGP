@@ -1,4 +1,4 @@
-import numpy as np
+lit_file = "Data/Lit_values"
 
 def read_header( name ) :
     with open(name) as f:
@@ -23,12 +23,4 @@ def read_tabular ( name ):
                 temp = None
             vals.append(temp)
         columns.append( (n, vals) )
-    print(columns[6])
-
-            
-    
-    
-    
-name = "Data/Lit_values"
-data = read_tabular(name)
-        
+    return columns
