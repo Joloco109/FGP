@@ -1,7 +1,8 @@
 from reader import Hist
 from peakfinder import Peaks, peak_fit
-from plot import plot_hist
+from plot import plot_hist, plot_graph
 from lit_values_reader import read_tabular, lit_file
+from graph import Graph
 
 data_dir = "Data/"
 am_dir = "Am/"
@@ -82,12 +83,15 @@ def calibrate_file( file_number, am, ohne_leer=True, show_spectral_lines=False )
         print(calibration_peaks[ 1 if am else 0 ][file_number])
         for transition in calibration_peaks[ 1 if am else 0 ][file_number]:
             if transition == None:
+                energies_theo.append( None )
                 continue
             line = [ x for x in spectral_lines if x[0] == elems[0] and x[2] == transition ][0]
             if line[5] != None:
-                energies_theo.append( (line[5], line[6]) )
+                energies_theo.append( (float(line[5]), float(line[6])) )
             elif line[3] != None:
-                energies_theo.append( (line[3], line[4]) )
+                energies_theo.append( (float(line[3]), float(line[4])) )
+            else :
+                energies_theo.append( None )
 
 
     if ohne_leer:
@@ -120,12 +124,18 @@ def calibrate_file( file_number, am, ohne_leer=True, show_spectral_lines=False )
 def calibrate( am ):
     energies = []
     energies_theo = []
-    energy_res = []
     for i in range(len(calibration_names[ 1 if am else 0 ])):
         e, e_theo, e_res = calibrate_file( i, am )
+        e = [ (e1, e2) for e1, e2 in zip( e, e_theo) if not e2 == None ]
+        e.sort(key=lambda x : x[0])
+        e_theo = [ x[1] for x in e ]
+        e = [ x[0] for x in e ]
+
         energies += e
         energies_theo += e_theo
-        energy_res += e_res
+    calibration = Graph( energies, energies_theo )
+    calibration.fit( "pol1" )
+    plot_graph( calibration )
 
 def main():
     print("Am:")
