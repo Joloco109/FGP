@@ -64,7 +64,7 @@ class Peaks:
 
 max_peak_number = 3
 
-def peak_fit( hist, accuracy=10, peak_height=1e2, peak_fac = 10 ):
+def peak_fit( hist, accuracy=10, peak_height=1e2, peak_fac = 10, plot_peaks=False ):
     peaks = [ peak for peak in Peaks( hist, accuracy=accuracy, peak_height=peak_height ) ]
     peaks.sort( key=lambda x : x[0] )
     peaks = [ (
@@ -98,7 +98,7 @@ def peak_fit( hist, accuracy=10, peak_height=1e2, peak_fac = 10 ):
             if j >= max_peak_number:
                 break
 
-        fit = TF1("peak_{}".format(i), cur_func, start, end)
+        fit = TF1("peak_{}".format(i), cur_func+" + [{}]*x".format(3*j+1), start, end)
         fit.SetParameter( 0, 0 )
         fit.SetParLimits( 0, -1e2, 1e3 )
         for k in range(j):
@@ -112,5 +112,8 @@ def peak_fit( hist, accuracy=10, peak_height=1e2, peak_fac = 10 ):
         i += 1
 
     for f in fits:
-        hist.hist.Fit( f, "R+" )
+        if plot_peaks:
+            hist.hist.Fit( f, "R+" )
+        else:
+            hist.hist.Fit( f, "NR+" )
     return fits

@@ -61,7 +61,7 @@ calibration_peaks = [ [
 paras = [ ( 5, 1.5e2, 5 ),
         ( 5, 5e1, 5 )]
 
-def calibrate_file( file_number, am, ohne_leer=True, show_spectral_lines=False ):
+def calibrate_file( file_number, am, ohne_leer=True, show_spectral_lines=False, plot_peaks=False):
     file_name = calibration_names[ 1 if am else 0 ][file_number]
     print(file_name[:-4])
     directory = data_dir + (am_dir if am else roe_dir)
@@ -98,7 +98,7 @@ def calibrate_file( file_number, am, ohne_leer=True, show_spectral_lines=False )
         spectrum = Hist( spectrum.hist - empty.hist, "Spectrum", "Spectrum" )
 
     acc, height, fac = paras[ 1 if am else 0 ]
-    peaks = peak_fit( spectrum, accuracy=acc, peak_height=height, peak_fac=fac)
+    peaks = peak_fit( spectrum, accuracy=acc, peak_height=height, peak_fac=fac, plot_peaks=plot_peaks)
     print()
 
     energies = []
@@ -117,15 +117,19 @@ def calibrate_file( file_number, am, ohne_leer=True, show_spectral_lines=False )
         print("Chi^2/NDF = {:=7.2f}".format( peak.GetChisquare()/peak.GetNDF() ))
         print()
 
-    plot_hist( spectrum, logy=False)
+    if plot_peaks:
+        plot_hist( spectrum, logy=False)
 
     return energies, energies_theo, energy_res
 
 def calibrate( am ):
     energies = []
     energies_theo = []
+
+    energies_seperate = []
     for i in range(len(calibration_names[ 1 if am else 0 ])):
-        e, e_theo, e_res = calibrate_file( i, am, ohne_leer=True )
+        e, e_theo, e_res = calibrate_file( i, am, ohne_leer=True, plot_peaks=False )
+        energies_seperate.append( (e, e_res) )
         e = [ (e1, e2) for e1, e2 in zip( e, e_theo) if not e2 == None ]
         e.sort(key=lambda x : x[0])
         e_theo = [ x[1] for x in e ]
@@ -134,7 +138,7 @@ def calibrate( am ):
         energies += e
         energies_theo += e_theo
     calibration = Graph( energies, energies_theo )
-    fit = calibration.fit( "Calibration", "pol1" )
+    fit = calibration.fit( "Calibration Fit", "pol1" )
     print(fit)
     print("C     = {:=8.3f} +- {:=8.3f}".format( fit.GetParameter(0), fit .GetParError(0) ))
     print("A     = {:=8.3f} +- {:=8.3f}".format( fit.GetParameter(1), fit.GetParError(1) ))
@@ -142,6 +146,12 @@ def calibrate( am ):
     print("Chi^2/NDF = {:=7.2f}".format( fit.GetChisquare()/fit.GetNDF() ))
     print()
     plot_graph( calibration )
+
+    cali_func = fit
+    for e_elem, e_res in energies_seperate:
+        for e in e_elem:
+            print("e = {} +- {} +- {}".format( cali_func.Eval(e[0]), cali_func.Derivative( e[0] )*e[1], None ))
+        print()
 
 
 def main():
