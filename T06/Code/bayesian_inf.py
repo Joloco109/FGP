@@ -42,7 +42,6 @@ class ModelDist:
 
     def Result( self ):
         res = list(zip(self.names, self.Probs))
-        print(res)
         res.sort( key=lambda x: -x[1] )
         return res
 
