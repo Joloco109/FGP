@@ -83,8 +83,8 @@ def spectral_line( elems=None, trans=None ):
     return lit_tab
 
 def identify_peak( peak, lines ):
-    energies = [ [( l[3], l[4] )] for l in lines ]
+    energies = [ ((l[0],l[2]), [( l[3], l[4] )]) for l in lines ]
 
     model = ModelDist( energies )
     model.Update( (peak[0], np.sqrt(peak[1]**2+peak[2]**2)) )
-    return model.Probs
+    return model.Result()

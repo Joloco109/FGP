@@ -4,13 +4,14 @@ def gaussian( e, sig_e, eH, sig_eH ):
     return np.exp( -0.5*(e-eH)**2/(sig_e**2+sig_eH**2) )/np.sqrt(sig_e**2+sig_eH**2)
 
 class ModelDist:
-    def __init__( self, energies, probs=None, pEForH=gaussian ):
+    def __init__( self, hypothesis, probs=None, pEForH=gaussian ):
         if probs == None:
-            probs = np.ones(len(energies))/len(energies)
-        elif not ( len(energies)==len(probs) ):
+            probs = np.ones(len(hypothesis))/len(hypothesis)
+        elif not ( len(hypothesis)==len(probs) ):
             raise ValueError
-        self.Energies = [np.array([ E[0] for E in hypothesis ]) for hypothesis in energies]
-        self.sigma_E = [np.array([ E[1] for E in hypothesis ]) for hypothesis in energies]
+        self.names = [ name for name, energies in hypothesis]
+        self.Energies = [np.array([ E[0] for E in energies ]) for name, energies in hypothesis]
+        self.sigma_E = [np.array([ E[1] for E in energies ]) for name, energies in hypothesis]
         self.Probs = np.array( probs )
         self.pEForH = pEForH
         self.measurement_probs = []
@@ -28,4 +29,28 @@ class ModelDist:
             raise ValueError( "No Hypothesis fits, maybe to low Errors?" )
         self.Probs /= c
         self.measurement_probs.append([ p_e/c for p_e in p ])
+        i = 0
+        while i in range(len(self.Probs)):
+            if self.Probs[i] <= 0:
+                del self.names[i]
+                del self.Energies[i]
+                del self.sigma_E[i]
+                self.Probs = np.delete( self.Probs, i )
+            else:
+                i += 1
         return self
+
+    def Result( self ):
+        res = list(zip(self.names, self.Probs))
+        print(res)
+        res.sort( key=lambda x: -x[1] )
+        return res
+
+    def __str__(self):
+        res = list(zip(self.names, self.Probs, self.Energies, self.sigma_E))
+        res.sort( key=lambda x: -x[1] )
+        res = [ (name, p, list(zip(energies, sigma_e))) for name, p, energies, sigma_e in res ]
+        return "Dist:   "+"\t".join( [ str(x)+"\n" for x in res ] )
+
+    def __repr__(self):
+        return str(self)
