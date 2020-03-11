@@ -62,9 +62,10 @@ calibration_peaks = [ [
 paras = [ ( 5, 1.5e2, 5 ),
         ( 5, 5e1, 5 )]
 
-def calibrate_file( file_number, am, ohne_leer=True, show_spectral_lines=False, plot_peaks=False):
+def calibrate_file( file_number, am, ohne_leer=True, show_spectral_lines=False, plot_peaks=False, txt_output=False ):
     file_name = calibration_names[ 1 if am else 0 ][file_number]
-    print(file_name[:-4])
+    if txt_output:
+        print(file_name[:-4])
     directory = data_dir + (am_dir if am else roe_dir)
     empty = Hist.read( directory + leer_names[ 1 if am else 0 ], "Leer", "Leer" )
     spectrum = Hist.read( directory + file_name,
@@ -81,7 +82,6 @@ def calibrate_file( file_number, am, ohne_leer=True, show_spectral_lines=False, 
 
     energies_theo = []
     if len(elems) == 1:
-        print(calibration_peaks[ 1 if am else 0 ][file_number])
         for transition in calibration_peaks[ 1 if am else 0 ][file_number]:
             if transition == None:
                 energies_theo.append( None )
@@ -99,24 +99,28 @@ def calibrate_file( file_number, am, ohne_leer=True, show_spectral_lines=False, 
         spectrum = Hist( spectrum.hist - empty.hist, "Spectrum", "Spectrum" )
 
     acc, height, fac = paras[ 1 if am else 0 ]
-    peaks = peak_fit( spectrum, accuracy=acc, peak_height=height, peak_fac=fac, plot_peaks=plot_peaks)
-    print()
+    peaks = peak_fit( spectrum, accuracy=acc, peak_height=height, peak_fac=fac, plot_peaks=plot_peaks, txt_output=txt_output )
+    if txt_output:
+        print()
 
     energies = []
     energy_res = []
 
     for peak in peaks:
-        print(peak)
-        print("C     = {:=8.3f} +- {:=8.3f}".format( peak.GetParameter(0), peak.GetParError(0) ))
+        if txt_output:
+            print(peak)
+            print("C     = {:=8.3f} +- {:=8.3f}".format( peak.GetParameter(0), peak.GetParError(0) ))
         for j in range(0, int((peak.GetNpar()-1)/3) ):
             energies.append( (peak.GetParameter(3*j+2), peak.GetParError(3*j+2)) )
             energy_res.append( (peak.GetParameter(3*j+3), peak.GetParError(3*j+3)) )
-            print("A_{}   = {:=8.3f} +- {:=8.3f}".format( j, peak.GetParameter(3*j+1), peak.GetParError(3*j+1) ))
-            print("mu_{}  = {:=8.3f} +- {:=8.3f}".format( j, peak.GetParameter(3*j+2), peak.GetParError(3*j+2) ))
-            print("sig_{} = {:=8.3f} +- {:=8.3f}".format( j, peak.GetParameter(3*j+3), peak.GetParError(3*j+3) ))
-        print("Chi^2 = {:=7.2f}".format( peak.GetChisquare() ))
-        print("Chi^2/NDF = {:=7.2f}".format( peak.GetChisquare()/peak.GetNDF() ))
-        print()
+            if txt_output:
+                print("A_{}   = {:=8.3f} +- {:=8.3f}".format( j, peak.GetParameter(3*j+1), peak.GetParError(3*j+1) ))
+                print("mu_{}  = {:=8.3f} +- {:=8.3f}".format( j, peak.GetParameter(3*j+2), peak.GetParError(3*j+2) ))
+                print("sig_{} = {:=8.3f} +- {:=8.3f}".format( j, peak.GetParameter(3*j+3), peak.GetParError(3*j+3) ))
+        if txt_output:
+            print("Chi^2 = {:=7.2f}".format( peak.GetChisquare() ))
+            print("Chi^2/NDF = {:=7.2f}".format( peak.GetChisquare()/peak.GetNDF() ))
+            print()
 
     if plot_peaks:
         plot_hist( spectrum, logy=False)
@@ -147,7 +151,7 @@ def calibrate( am, use_std=False ):
                 , energies_theo )
     else:
         calibration = Graph( energies, energies_theo )
-    fit = calibration.fit( "Calibration Fit", "pol1" )
+    fit = calibration.fit( "Calibration", "pol1" )
     print(fit)
     print("C     = {:=8.3f} +- {:=8.3f}".format( fit.GetParameter(0), fit .GetParError(0) ))
     print("A     = {:=8.3f} +- {:=8.3f}".format( fit.GetParameter(1), fit.GetParError(1) ))
@@ -157,10 +161,7 @@ def calibrate( am, use_std=False ):
     plot_graph( calibration )
 
     cali = Calibration( fit )
-    for e_elem, e_res in energies_seperate:
-        for e in e_elem:
-            print("e = {} +- {} +- {}".format( *cali.get(e) ) )
-        print()
+    return cali
 
 
 def main():

@@ -62,7 +62,7 @@ class Peaks:
 
         return (lower,upper, maximum, max_val)
 
-def peak_fit( hist, accuracy=10, peak_height=1e2, peak_fac = 10, max_peak_number = 3, plot_peaks=False ):
+def peak_fit( hist, accuracy=10, peak_height=1e2, peak_fac = 10, max_peak_number = 3, plot_peaks=False, txt_output=False ):
     peaks = [ peak for peak in Peaks( hist, accuracy=accuracy, peak_height=peak_height ) ]
     peaks.sort( key=lambda x : x[0] )
     peaks = [ (
@@ -110,8 +110,10 @@ def peak_fit( hist, accuracy=10, peak_height=1e2, peak_fac = 10, max_peak_number
         i += 1
 
     for f in fits:
-        if plot_peaks:
-            hist.hist.Fit( f, "R+" )
-        else:
-            hist.hist.Fit( f, "NR+" )
+        options = "R+"
+        if not plot_peaks:
+            options = "N" + options
+        if not txt_output:
+            options = "Q" + options
+        hist.hist.Fit( f, options )
     return fits
