@@ -125,7 +125,7 @@ def calibrate( am ):
     energies = []
     energies_theo = []
     for i in range(len(calibration_names[ 1 if am else 0 ])):
-        e, e_theo, e_res = calibrate_file( i, am )
+        e, e_theo, e_res = calibrate_file( i, am, ohne_leer=True )
         e = [ (e1, e2) for e1, e2 in zip( e, e_theo) if not e2 == None ]
         e.sort(key=lambda x : x[0])
         e_theo = [ x[1] for x in e ]
@@ -134,8 +134,15 @@ def calibrate( am ):
         energies += e
         energies_theo += e_theo
     calibration = Graph( energies, energies_theo )
-    calibration.fit( "pol1" )
+    fit = calibration.fit( "Calibration", "pol1" )
+    print(fit)
+    print("C     = {:=8.3f} +- {:=8.3f}".format( fit.GetParameter(0), fit .GetParError(0) ))
+    print("A     = {:=8.3f} +- {:=8.3f}".format( fit.GetParameter(1), fit.GetParError(1) ))
+    print("Chi^2 = {:=7.2f}".format( fit.GetChisquare() ))
+    print("Chi^2/NDF = {:=7.2f}".format( fit.GetChisquare()/fit.GetNDF() ))
+    print()
     plot_graph( calibration )
+
 
 def main():
     print("Am:")
