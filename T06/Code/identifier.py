@@ -1,3 +1,4 @@
+import numpy as np
 from calibrate import calibrate
 from lit_values_reader import read_tabular, lit_file
 from bayesian_inf import ModelDist
@@ -61,9 +62,6 @@ elements = [ [
 paras = [ ( 5, 1.5e2, 5 ),
         ( 5, 5e1, 5 )]
 
-def identify_peak(  ):
-    return
-
 def spectral_line( elems=None, trans=None ):
     lit_tab = read_tabular(lit_file)
     lit_tab = [ [ column[i] for _, column in lit_tab ] for i in range(len(lit_tab[0][1])) ]
@@ -84,3 +82,9 @@ def spectral_line( elems=None, trans=None ):
         ) for x in lit_tab ]
     return lit_tab
 
+def identify_peak( peak, lines ):
+    energies = [ [( l[3], l[4] )] for l in lines ]
+
+    model = ModelDist( energies )
+    model.Update( (peak[0], np.sqrt(peak[1]**2+peak[2]**2)) )
+    return model.Probs
