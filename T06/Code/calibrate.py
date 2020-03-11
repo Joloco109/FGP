@@ -152,13 +152,15 @@ def calibrate( am, use_std=False, plot_peaks=False, txt_output=False ):
     else:
         calibration = Graph( energies, energies_theo )
     fit = calibration.fit( "Calibration", "pol1" )
-    print(fit)
-    print("C     = {:=8.3f} +- {:=8.3f}".format( fit.GetParameter(0), fit .GetParError(0) ))
-    print("A     = {:=8.3f} +- {:=8.3f}".format( fit.GetParameter(1), fit.GetParError(1) ))
-    print("Chi^2 = {:=7.2f}".format( fit.GetChisquare() ))
-    print("Chi^2/NDF = {:=7.2f}".format( fit.GetChisquare()/fit.GetNDF() ))
-    print()
-    plot_graph( calibration )
+    if txt_output:
+        print(fit)
+        print("C     = {:=8.3f} +- {:=8.3f}".format( fit.GetParameter(0), fit .GetParError(0) ))
+        print("A     = {:=8.3f} +- {:=8.3f}".format( fit.GetParameter(1), fit.GetParError(1) ))
+        print("Chi^2 = {:=7.2f}".format( fit.GetChisquare() ))
+        print("Chi^2/NDF = {:=7.2f}".format( fit.GetChisquare()/fit.GetNDF() ))
+        print()
+    if plot_peaks:
+        plot_graph( calibration )
 
     cali = Calibration( fit )
     return cali
