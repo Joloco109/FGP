@@ -127,14 +127,14 @@ def calibrate_file( file_number, am, ohne_leer=True, show_spectral_lines=False, 
 
     return energies, energies_theo, energy_res
 
-def calibrate( am, use_std=False ):
+def calibrate( am, use_std=False, plot_peaks=False, txt_output=False ):
     energies = []
     energies_theo = []
     energies_res = []
 
     energies_seperate = []
     for i in range(len(calibration_names[ 1 if am else 0 ])):
-        e, e_theo, e_res = calibrate_file( i, am, ohne_leer=True, plot_peaks=False )
+        e, e_theo, e_res = calibrate_file( i, am, ohne_leer=True, plot_peaks=plot_peaks, txt_output=txt_output )
         energies_seperate.append( (e, e_res) )
         e = [ (e1, e2, e3) for e1, e2, e3 in zip( e, e_theo, e_res) if not e2 == None ]
         e.sort(key=lambda x : x[0])
