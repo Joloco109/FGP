@@ -3,6 +3,7 @@ from peakfinder import Peaks, peak_fit
 from plot import plot_hist, plot_graph
 from lit_values_reader import read_tabular, lit_file
 from graph import Graph
+from calibration import Calibration
 
 data_dir = "Data/"
 am_dir = "Am/"
@@ -122,22 +123,30 @@ def calibrate_file( file_number, am, ohne_leer=True, show_spectral_lines=False, 
 
     return energies, energies_theo, energy_res
 
-def calibrate( am ):
+def calibrate( am, use_std=False ):
     energies = []
     energies_theo = []
+    energies_res = []
 
     energies_seperate = []
     for i in range(len(calibration_names[ 1 if am else 0 ])):
         e, e_theo, e_res = calibrate_file( i, am, ohne_leer=True, plot_peaks=False )
         energies_seperate.append( (e, e_res) )
-        e = [ (e1, e2) for e1, e2 in zip( e, e_theo) if not e2 == None ]
+        e = [ (e1, e2, e3) for e1, e2, e3 in zip( e, e_theo, e_res) if not e2 == None ]
         e.sort(key=lambda x : x[0])
+        e_res = [ x[2] for x in e ]
         e_theo = [ x[1] for x in e ]
         e = [ x[0] for x in e ]
 
         energies += e
         energies_theo += e_theo
-    calibration = Graph( energies, energies_theo )
+        energies_res += e_res
+    if use_std:
+        calibration = Graph(
+                [ (e[0], e_std[0]) for e, e_std in zip(energies, energies_res) ]
+                , energies_theo )
+    else:
+        calibration = Graph( energies, energies_theo )
     fit = calibration.fit( "Calibration Fit", "pol1" )
     print(fit)
     print("C     = {:=8.3f} +- {:=8.3f}".format( fit.GetParameter(0), fit .GetParError(0) ))
@@ -147,21 +156,21 @@ def calibrate( am ):
     print()
     plot_graph( calibration )
 
-    cali_func = fit
+    cali = Calibration( fit )
     for e_elem, e_res in energies_seperate:
         for e in e_elem:
-            print("e = {} +- {} +- {}".format( cali_func.Eval(e[0]), cali_func.Derivative( e[0] )*e[1], None ))
+            print("e = {} +- {} +- {}".format( *cali.get(e) ) )
         print()
 
 
 def main():
     print("Am:")
-    calibrate( True )
+    calibrate( True, use_std=False )
     print()
     print()
 
     print("Rö:")
-    calibrate( False )
+    calibrate( False, use_std=False )
     print()
     print()
 
