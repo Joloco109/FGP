@@ -34,6 +34,7 @@ class Hist:
         for i in range(len(data)):
             t_hist.SetBinContent(i+1, data[i])
         hist.hist = t_hist
+        hist.hist.Sumw2()
 
         return hist
 
