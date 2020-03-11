@@ -21,7 +21,7 @@ class ModelDist:
         for eElem, sigma_eElem, i in zip(self.Energies, self.sigma_E, range(len(self.Probs))):
             p_e = self.pEForH( energy[0], energy[1], eElem, sigma_eElem )/ len(eElem)
             f[i] = np.sum( p_e )
-            p.append(p_e)
+            p.append(p_e*self.Probs[i])
         self.Probs *= f
         c = sum(self.Probs)
         self.Probs /= c
