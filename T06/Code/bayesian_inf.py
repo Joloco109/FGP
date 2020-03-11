@@ -24,6 +24,8 @@ class ModelDist:
             p.append(p_e*self.Probs[i])
         self.Probs *= f
         c = sum(self.Probs)
+        if c == 0 :
+            raise ValueError( "No Hypothesis fits, maybe to low Errors?" )
         self.Probs /= c
         self.measurement_probs.append([ p_e/c for p_e in p ])
         return self
