@@ -64,8 +64,26 @@ elements = [ [
         ]
     ]
 
-paras = [ ( 5, 1.5e2, 5, 10 ),
-        ( 5, 5e1, 5, 10 )]
+paras = [ [ ( 5, 1.5e2, 5, 10 ),
+            ( 5, 1.5e2, 5, 10 ),
+            ( 5, 1.5e2, 5, 10 ),
+            ( 5, 1.5e2, 5, 10 ),
+            ( 5, 1.5e2, 5, 10 ),
+            ( 5, 1.5e2, 5, 10 ),
+            ( 5, 1.5e2, 5, 10 ),
+            ( 5, 1.5e2, 5, 10 ),
+            ( 5, 1.5e2, 5, 10 ),
+            ( 5, 1.5e2, 5, 10 ),
+            ( 5, 1.5e2, 5, 10 )
+        ], [
+            ( 5, 5e1, 5, 10 ),
+            ( 5, 5e1, 5, 10 ),
+            ( 5, 5e1, 5, 10 ),
+            ( 5, 5e1, 5, 10 ),
+            ( 5, 5e1, 5, 10 ),
+            ( 5, 5e1, 5, 10 ),
+            ( 5, 5e1, 5, 10 )
+        ] ]
 
 def spectral_line( elems=None, trans=None ):
     lit_tab = read_tabular(lit_file)
@@ -141,7 +159,7 @@ def identify_file( file_number, am, ohne_leer=True, plot_peaks=False, txt_output
     if ohne_leer:
         spectrum = Hist( spectrum.hist - empty.hist, "Spectrum", "Spectrum" )
 
-    acc, height, fac, max_candidates = paras[ 1 if am else 0 ]
+    acc, height, fac, max_candidates = paras[ 1 if am else 0 ][ file_number ]
     peaks = peak_fit( spectrum, accuracy=acc, peak_height=height, peak_fac=fac, plot_peaks=plot_peaks, txt_output=txt_output )
     if txt_output:
         print()
