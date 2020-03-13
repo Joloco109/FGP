@@ -119,3 +119,18 @@ calibration_peaks = [ [
             [ "L3M4", "L2M4", "L3N4", "KL2", "KL3", None ] #"KM3" ]
         ]
     ]
+
+calibration_lines = [ [
+            [ "K", "K" ],
+            [ "L", "L", "K", "K", "K", None, None, None ],
+            [ "K", "K", "K", "K", "K", "K", "K", "K",None,None ]
+        ],[
+            [ "K", "K" ],
+            [ "K", "K", "K" ],
+            [ ],
+            [ None,"K", "K", "K", "K" ],
+            [ "K", "K" ],
+            [ "K", "K" ],
+            [ "L", "L", "L", "K", "K", None ]
+        ]
+    ]
