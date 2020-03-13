@@ -12,7 +12,7 @@ def energy_res( am, plot_peaks=False, txt_output=False):
 
     for i in range(len(file_names[ 1 if am else 0 ])):
         e, _, e_res = identify_file( i, am, cali=cali,
-                trans=calibration_lines[0 if am else 0][i],
+                trans=calibration_lines[1 if am else 0][i],
                 plot_peaks=plot_peaks, txt_output=txt_output )
 
         e = [ (e1, e2) for e1, e2 in zip( e, e_res) if not e2 == None ]
