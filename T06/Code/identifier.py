@@ -60,10 +60,13 @@ def identify_element( peaks, elems=None, trans=None ):
     return model.Result()
 
 
-def identify_file( file_number, am, ohne_leer=True, plot_peaks=False, txt_output=False ):
+def identify_file( file_number, am, trans=None, ohne_leer=True, plot_peaks=False, txt_output=False ):
     elems = elements[1 if am else 0][file_number]
-    lines_K = spectral_line( elems=elems, trans="K" )
-    lines_L = spectral_line( elems=elems, trans="L" )
+    if trans==None:
+        lines_K = spectral_line( elems=elems, trans="K" )
+        lines_L = spectral_line( elems=elems, trans="L" )
+    else:
+        lines = [ spectral_line( elems=elems, trans=t ) if not t==None else [] for t in trans ]
 
     cali = calibrate( am )
 
@@ -110,27 +113,38 @@ def identify_file( file_number, am, ohne_leer=True, plot_peaks=False, txt_output
             print()
 
     means = []
-    for e, sig_e in zip( energies, energy_res ):
-        try :
-            peak = identify_peak( (e[0], sig_e[0], 0), lines_K )
-            candidates = peak[0][:max_candidates]
-            means.append(peak[1])
-        except ValueError:
-            candidates = []
-        try :
-            peak = identify_peak( (e[0], sig_e[0], 0), lines_L )
-            candidates += peak[0][:max_candidates//2]
-            means.append(peak[1])
-        except ValueError:
-            candidates += []
+    for e, sig_e, i in zip( energies, energy_res, range(len(energies)) ):
+        if trans == None:
+            try :
+                peak = identify_peak( (e[0], sig_e[0], 0), lines_K )
+                candidates = peak[0][:max_candidates]
+                means.append((i,peak[1]))
+            except ValueError:
+                candidates = []
+            try :
+                peak = identify_peak( (e[0], sig_e[0], 0), lines_L )
+                candidates += peak[0][:max_candidates//2]
+                means.append((i,peak[1]))
+            except ValueError:
+                candidates += []
+        else:
+            #print(lines[i])
+            try :
+                peak = identify_peak( (e[0], sig_e[0], 0), lines[i] )
+                candidates = peak[0][:max_candidates]
+                means.append((i,peak[1]))
+            except ValueError:
+                candidates = []
+
 
         if txt_output:
-            print("Peak: ({} +- {}) keV candidates:".format( e[0], sig_e[0] ))
+            print("Peak_{}: ({} +- {}) keV candidates:".format( i, e[0], sig_e[0] ))
             for c in candidates:
                 print("\t",c)
             print()
-            for m, sig in means:
-                print("E = ({:.3f} +- {:.3f})keV".format( m/1e3, sig/1e3))
+    if txt_output:
+        for i, (m, sig) in means:
+            print("E_{} = ({:.3f} +- {:.3f})keV".format( i, m/1e3, sig/1e3))
 
     if plot_peaks:
         plot_hist( spectrum, logy=False)
