@@ -8,82 +8,8 @@ from bayesian_inf import ModelDist
 from peakfinder import Peaks, peak_fit
 from plot import plot_hist, plot_graph
 
+from parameter import elements, data_dir, am_dir, roe_dir, leer_names, file_names, paras
 
-data_dir = "Data/"
-am_dir = "Am/"
-roe_dir = "Röhre/"
-
-leer_names = [
-        "Leer.mca",
-        "Leer.mca"
-        ]
-
-file_names = [ [
-            "Kupfer.mca",
-            "Silber.mca",
-            "Stahl.mca",
-            "Alu.mca",
-            "Blei.mca",
-            "Chip.mca",
-            "Iod.mca",
-            "Magnet.mca",
-            "Molybdenium.mca",
-            "Münze.mca",
-            "Tigerauge.mca"
-        ],[
-            "Copper.mca",
-            "Silber.mca",
-            "Stahl.mca",
-            "Barium.mca",
-            "Molybden.mca",
-            "Rubidium.mca",
-            "Terbium.mca"
-        ]
-    ]
-
-elements = [ [
-            [ "Cu" ],
-            [ "Ag" ],
-            [ "Fe", "Mo", "Cr", "Ni" ],
-            None,
-            [ "Pb" ],
-            None,
-            None,
-            None,
-            None,
-            None,
-            None
-        ],[
-            [ "Cu" ],
-            [ "Ag" ],
-            [ "Fe", "Mo", "Cr", "Ni" ],
-            [ "Ba" ],
-            [ "Mo" ],
-            [ "Rb" ],
-            [ "Tb" ]
-        ]
-    ]
-
-paras = [ [ ( 5, 1.5e2, 5, 10 ),
-            ( 5, 1.5e2, 5, 10 ),
-            ( 5, 1.5e2, 5, 10 ),
-            ( 5, 1.5e2, 5, 10 ),
-            ( 5, 1.5e2, 5, 10 ),
-            ( 5, 1.5e2, 5, 10 ),
-            ( 5, 1.5e2, 5, 10 ),
-            ( 5, 1.5e2, 5, 10 ),
-            ( 5, 1.5e2, 5, 10 ),
-            ( 5, 1.5e2, 5, 10 ),
-            ( 5, 1.5e2, 5, 10 )
-        ], [
-            ( 5, 5e1, 5, 10 ),
-            ( 5, 5e1, 5, 10 ),
-            ( 5, 5e1, 5, 10 ),
-            ( 5, 5e1, 5, 10 ),
-            ( 5, 5e1, 5, 10 ),
-            ( 5, 5e1, 5, 10 ),
-            ( 5, 5e1, 5, 10 )
-        ] ]
 
 def spectral_line( elems=None, trans=None ):
     lit_tab = read_tabular(lit_file)
@@ -115,7 +41,7 @@ def identify_peak( peak, lines ):
 
     model = ModelDist( energies )
     model.Update( (peak[0], np.sqrt(peak[1]**2+peak[2]**2)) )
-    return model.Result()
+    return model.Result(), (model.Mean(), np.sqrt(model.Var()))
 
 def identify_element( peaks, elems=None, trans=None ):
     lines = spectral_line( elems=elems, trans=trans )
@@ -183,21 +109,28 @@ def identify_file( file_number, am, ohne_leer=True, plot_peaks=False, txt_output
             print("Chi^2/NDF = {:=7.2f}".format( peak.GetChisquare()/peak.GetNDF() ))
             print()
 
+    means = []
     for e, sig_e in zip( energies, energy_res ):
         try :
-            candidates = identify_peak( (e[0], sig_e[0], 0), lines_K )[:max_candidates]
+            peak = identify_peak( (e[0], sig_e[0], 0), lines_K )
+            candidates = peak[0][:max_candidates]
+            means.append(peak[1])
         except ValueError:
             candidates = []
         try :
-            candidates += identify_peak( (e[0], sig_e[0], 0), lines_L )[:max_candidates//2]
+            peak = identify_peak( (e[0], sig_e[0], 0), lines_L )
+            candidates += peak[0][:max_candidates//2]
+            means.append(peak[1])
         except ValueError:
             candidates += []
 
         if txt_output:
             print("Peak: ({} +- {}) keV candidates:".format( e[0], sig_e[0] ))
             for c in candidates:
-                print(c)
+                print("\t",c)
             print()
+            for m, sig in means:
+                print("E = ({:.3f} +- {:.3f})keV".format( m/1e3, sig/1e3))
 
     if plot_peaks:
         plot_hist( spectrum, logy=False)

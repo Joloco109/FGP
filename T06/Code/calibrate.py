@@ -5,62 +5,7 @@ from lit_values_reader import read_tabular, lit_file
 from graph import Graph
 from calibration import Calibration
 
-data_dir = "Data/"
-am_dir = "Am/"
-roe_dir = "Röhre/"
-
-leer_names = [
-        "Leer.mca",
-        "Leer.mca"
-        ]
-
-calibration_names = [ [
-            "Kupfer.mca",
-            "Silber.mca",
-            "Stahl.mca"
-        ],[
-            "Copper.mca",
-            "Silber.mca",
-            "Stahl.mca",
-            "Barium.mca",
-            "Molybden.mca",
-            "Rubidium.mca",
-            "Terbium.mca"
-        ]
-    ]
-
-calibration_elements = [ [
-            [ "Cu" ],
-            [ "Ag" ],
-            [ "Fe", "Mo", "Cr", "Ni" ]
-        ],[
-            [ "Cu" ],
-            [ "Ag" ],
-            [ "Fe", "Mo", "Cr", "Ni" ],
-            [ "Ba" ],
-            [ "Mo" ],
-            [ "Rb" ],
-            [ "Tb" ]
-        ]
-    ]
-
-calibration_peaks = [ [
-            [ "KL3", "KM3" ],
-            [ "L3M5", "L2M5", "KL2", "KM2", "KN1", None, None, None ],
-            [ None,None,None,None,None,None,None,None,None,None ]
-        ],[
-            [ "KL3", "KM3" ],
-            [ "KL3", "KM3", "KN3" ],
-            [ None ],
-            [ None,"KL2", "KL3", "KM3", "KN3" ],
-            [ "KL3", "KM2" ],
-            [ "KL2", "KM2" ],
-            [ "L3M4", "L2M4", "L3N4", "KL2", "KL3", None ] #"KM3" ]
-        ]
-    ]
-
-paras = [ ( 5, 1.5e2, 5 ),
-        ( 5, 5e1, 5 )]
+from parameter import calibration_elements, calibration_peaks, data_dir, am_dir, roe_dir, leer_names, calibration_names, paras
 
 def calibrate_file( file_number, am, ohne_leer=True, show_spectral_lines=False, plot_peaks=False, txt_output=False ):
     file_name = calibration_names[ 1 if am else 0 ][file_number]
@@ -98,7 +43,7 @@ def calibrate_file( file_number, am, ohne_leer=True, show_spectral_lines=False, 
     if ohne_leer:
         spectrum = Hist( spectrum.hist - empty.hist, "Spectrum", "Spectrum" )
 
-    acc, height, fac = paras[ 1 if am else 0 ]
+    acc, height, fac, _ = paras[ 1 if am else 0 ][file_number]
     peaks = peak_fit( spectrum, accuracy=acc, peak_height=height, peak_fac=fac, plot_peaks=plot_peaks, txt_output=txt_output )
     if txt_output:
         print()
