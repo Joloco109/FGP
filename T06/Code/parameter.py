@@ -122,7 +122,18 @@ calibration_peaks = [ [
 calibration_lines = [ [
             [ "K", "K" ],
             [ "L", "L", "K", "K", "K", None, None, None ],
-            [ "K", "K", "K", "K", "K", "K", "K", "K",None,None ]
+            [ "K", "K", "K", "K", "K", "K", "K", "K", "K", "K" ],
+            [ "K", "K", "K" ],
+            [ "L", "L", "L", "L", "L", "L", "K" ],
+            [ "K", "K", "K" ],
+            [ "L", "L", "K", "K", "K" ],
+            [ "K", "K",None, "K", "K",
+              "K", "K", "K", "K", "K",
+              "K", "K", "K", "K", "K",
+              "K", "K", "K", "K" ],
+            [ "K", "K", "K",None ],
+            [ "K", "K", "K",None ]
+            [ "K", "K" ]
         ],[
             [ "K", "K" ],
             [ "K", "K", "K" ],
