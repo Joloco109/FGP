@@ -52,7 +52,7 @@ class ModelDist:
 
     def Var( self ):
         e_mean = self.Mean()
-        return sum([ p*(e-e_mean)^2 for p,[e] in zip( self.Probs, self.Energies ) ])
+        return sum([ p*(e-e_mean)**2 for p,[e] in zip( self.Probs, self.Energies ) ])
 
     def __str__(self):
         res = list(zip(self.names, self.Probs, self.Energies, self.sigma_E))
