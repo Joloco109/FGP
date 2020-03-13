@@ -128,7 +128,6 @@ def identify_file( file_number, am, trans=None, ohne_leer=True, plot_peaks=False
             except ValueError:
                 candidates += []
         else:
-            #print(lines[i])
             try :
                 peak = identify_peak( (e[0], sig_e[0], 0), lines[i] )
                 candidates = peak[0][:max_candidates]
@@ -148,3 +147,9 @@ def identify_file( file_number, am, trans=None, ohne_leer=True, plot_peaks=False
 
     if plot_peaks:
         plot_hist( spectrum, logy=False)
+
+    energies = [ energies[i] for i, _ in means ]
+    energy_res = [ energy_res[i] for i, _ in means ]
+    energies_theo = [ e for _,e in means ]
+
+    return energies, energies_theo, energy_res
