@@ -26,14 +26,22 @@ class Hist:
                 while not content[0] == "<<END>>":
                     data.append(int(content.pop(0)))
                 content.pop(0)
+        
 
-        if boundries == None:
-            boundries = (0, len(data))
         if not calibration==None:
-            boundries = (
-                    calibration.get( (0,0) )[0],
-                    calibration.get( (len(data),0) )[0]
+            if boundries == None:
+                boundries = (
+                        calibration.get( (0,0) )[0],
+                        calibration.get( (len(data),0) )[0]
+                        )
+            else :
+                content = content[ boundries[0]:boundries[1]]
+                boundries = (
+                    calibration.get( (boundries[0],0) )[0],
+                    calibration.get( (boundries[1],0) )[0]
                     )
+        else :
+            boundries = (0, len(data))
 
         t_hist = TH1I(name, title, len(data), boundries[0], boundries[1])
         for i in range(len(data)):
