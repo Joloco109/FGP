@@ -144,3 +144,9 @@ calibration_lines = [ [
             [None, "L", "L", "L", "K", "K", "K", "K", "K" ]
         ]
     ]
+
+problem_lines = [
+        [ "K", "K", "K", "K", "K",
+          "K", "K", "K", "K", "K" ],
+        [ "K" ]
+        ]
