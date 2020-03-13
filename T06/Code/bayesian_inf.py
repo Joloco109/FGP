@@ -45,6 +45,15 @@ class ModelDist:
         res.sort( key=lambda x: -x[1] )
         return res
 
+    def Mean( self ):
+        if not len(self.Energies[0]) == 1:
+            raise ValueError
+        return sum([ p*e for p,[e] in zip( self.Probs, self.Energies ) ])
+
+    def Var( self ):
+        e_mean = self.Mean()
+        return sum([ p*(e-e_mean)^2 for p,[e] in zip( self.Probs, self.Energies ) ])
+
     def __str__(self):
         res = list(zip(self.names, self.Probs, self.Energies, self.sigma_E))
         res.sort( key=lambda x: -x[1] )
