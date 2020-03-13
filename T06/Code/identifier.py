@@ -187,10 +187,7 @@ def identify_file( file_number, am, ohne_leer=True, plot_peaks=False, txt_output
         try :
             candidates = identify_peak( (e[0], sig_e[0], 0), lines_K )[:max_candidates]
         except ValueError:
-            try :
-                candidates = identify_peak( (e[0], sig_e[0], 0), lines_L )[:max_candidates]
-            except ValueError:
-                candidates = []
+            candidates = []
         try :
             candidates += identify_peak( (e[0], sig_e[0], 0), lines_L )[:max_candidates//2]
         except ValueError:
