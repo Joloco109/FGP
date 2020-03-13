@@ -138,9 +138,9 @@ calibration_lines = [ [
             [ "K", "K" ],
             [ "K", "K", "K" ],
             [ ],
-            [ None,"K", "K", "K", "K" ],
+            [None, "K", "K", "K", "K" ],
             [ "K", "K" ],
             [ "K", "K" ],
-            [ "L", "L", "L", "K", "K", None ]
+            [None, "L", "L", "L", "K", "K", "K", "K", "K" ]
         ]
     ]
