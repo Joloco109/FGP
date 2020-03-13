@@ -21,11 +21,11 @@ paras = [ ( 5, 2e1, 5 ),
 def leer(am):
     cali = calibrate( am )
     directory = data_dir + (am_dir if am else roe_dir)
-    empty = Hist.read( directory + leer_names[ 1 if am else 0 ], "Leer", "Leermessung Americium" if am else "Leermessung Roehre", calibration=cali )
+    empty = Hist.read( directory + leer_names[ 1 if am else 0 ], "Leer_Am" if am else "Leer_Roehre", "Leermessung Americium" if am else "Leermessung Roehre", calibration=cali )
     
     for i in range(len(boundries_am if am else boundries_r)):
         boundries = boundries_am[i] if am else boundries_r
-        empty_peaks = Hist.read( directory + leer_names[1 if am else 0] , "Leer", "Leermessung Peaks Americium" + str(i) if am else "Leermessung Peaks Roehre", boundries=boundries ,calibration=cali )
+        empty_peaks = Hist.read( directory + leer_names[1 if am else 0] , "Leer_Peaks_Am" + str(i) if am else "Leer_Peaks_Roehre", "Leermessung Peaks Americium" + str(i) if am else "Leermessung Peaks Roehre", boundries=boundries ,calibration=cali )
         acc, height, fac = paras[ i+1 if am else 0 ]
         peaks = peak_fit( empty_peaks, accuracy=acc, peak_height=height, peak_fac=fac, max_peak_number = 4, plot_peaks=True)
         energies = []
@@ -43,9 +43,9 @@ def leer(am):
             print("Chi^2 = {:=7.2f}".format( peak.GetChisquare() ))
             print("Chi^2/NDF = {:=7.2f}".format( peak.GetChisquare()/peak.GetNDF() ))
             print()
-        plot_hist( empty_peaks, logy=False)
+        plot_hist( empty_peaks, logy=False, save=True)
     spectrum = Hist(empty.hist, "Spectrum", "Spectrum" )
-    plot_hist( spectrum, logy=False)  
+    plot_hist( spectrum, logy=False, save=True)  
      
 
 def main():

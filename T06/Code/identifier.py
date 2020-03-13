@@ -11,7 +11,7 @@ from plot import plot_hist, plot_graph
 from problem_elemente import element
 
 from parameter import elements, data_dir, am_dir, roe_dir, leer_names, file_names, paras
-from parameter import problem_lines
+from parameter import problem_lines, calibration_lines
 
 
 def spectral_line( elems=None, trans=None, edges=False ):
@@ -164,7 +164,7 @@ def identify_file( file_number, am, cali=None, trans=None, ohne_leer=True, plot_
             print("E_{} = ({:.3f} +- {:.3f})keV".format( i, m/1e3, sig/1e3))
 
     if plot_peaks:
-        plot_hist( spectrum, logy=False)
+        plot_hist( spectrum, logy=False, save=True)
 
     energies = [ energies[i] for i, _ in means ]
     energy_res = [ energy_res[i] for i, _ in means ]
