@@ -60,7 +60,7 @@ def identify_element( peaks, elems=None, trans=None ):
     return model.Result()
 
 
-def identify_file( file_number, am, trans=None, ohne_leer=True, plot_peaks=False, txt_output=False ):
+def identify_file( file_number, am, cali=None, trans=None, ohne_leer=True, plot_peaks=False, txt_output=False ):
     elems = elements[1 if am else 0][file_number]
     if trans==None:
         lines_K = spectral_line( elems=elems, trans="K" )
@@ -68,7 +68,8 @@ def identify_file( file_number, am, trans=None, ohne_leer=True, plot_peaks=False
     else:
         lines = [ spectral_line( elems=elems, trans=t ) if not t==None else [] for t in trans ]
 
-    cali = calibrate( am )
+    if cali == None:
+        cali = calibrate( am )
 
     file_name = file_names[ 1 if am else 0 ][file_number]
     if txt_output:
