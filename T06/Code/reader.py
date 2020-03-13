@@ -13,7 +13,7 @@ class Hist:
         if not title == None:
             self.hist.title = title
 
-    def read( file_name, name, title, boundries=None ):
+    def read( file_name, name, title, boundries=None, calibration=None ):
         hist = Hist()
 
         with codecs.open(file_name, 'r', 'iso-8859-1') as f:
@@ -29,6 +29,11 @@ class Hist:
 
         if boundries == None:
             boundries = (0, len(data))
+        if not calibration==None:
+            boundries = (
+                    calibration.get( (0,0) )[0],
+                    calibration.get( (len(data),0) )[0]
+                    )
 
         t_hist = TH1I(name, title, len(data), boundries[0], boundries[1])
         for i in range(len(data)):
