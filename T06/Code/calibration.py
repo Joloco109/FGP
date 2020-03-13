@@ -14,3 +14,10 @@ class Calibration:
                     #( self.function.GradientPar(i, x[0]) * self.function.GetParError(i) )**2
                     #for i in range( self.function.GetNpar() )]))
                 )
+
+    def getX( self, y ):
+        x = self.function.GetX( y[0], 0, 1e5 )
+        return ( x,
+                y[1] / np.abs(self.function.Derivative( x )),
+                0
+                )
