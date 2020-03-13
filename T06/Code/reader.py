@@ -35,7 +35,7 @@ class Hist:
                         calibration.get( (len(data),0) )[0]
                         )
             else :
-                content = content[ boundries[0]:boundries[1]]
+                data = data[ boundries[0]:boundries[1]]
                 boundries = (
                     calibration.get( (boundries[0],0) )[0],
                     calibration.get( (boundries[1],0) )[0]
