@@ -1,8 +1,9 @@
 from reader import Hist
 from ROOT import TCanvas
 
-def plot_hist( hist, logy=False ):
+def plot_hist( hist, logy=False, xName= "Energie" ):
     canvas = TCanvas('hist_canvas', 'Histogram', 200, 10, 700, 500)
+    hist.hist.GetXaxis().SetTitle(xName)
     if logy :
         canvas.SetLogy()
     hist.hist.Draw("E1")
