@@ -113,12 +113,12 @@ def calibrate( am, use_std=False, plot_peaks=False, txt_output=False ):
 
 def main():
     print("Am:")
-    calibrate( True, plot_peaks=True )
+    calibrate( True, plot_peaks=True, txt_output=True )
     print()
     print()
 
     print("Rö:")
-    calibrate( False, plot_peaks=True  )
+    calibrate( False, plot_peaks=True, txt_output=True  )
     print()
     print()
 
