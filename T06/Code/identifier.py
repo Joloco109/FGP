@@ -8,7 +8,10 @@ from bayesian_inf import ModelDist
 from peakfinder import Peaks, peak_fit
 from plot import plot_hist, plot_graph
 
+from problem_elemente import element
+
 from parameter import elements, data_dir, am_dir, roe_dir, leer_names, file_names, paras
+from parameter import problem_lines
 
 
 def spectral_line( elems=None, trans=None, edges=False ):
@@ -113,6 +116,19 @@ def identify_file( file_number, am, cali=None, trans=None, ohne_leer=True, plot_
             print("Chi^2 = {:=7.2f}".format( peak.GetChisquare() ))
             print("Chi^2/NDF = {:=7.2f}".format( peak.GetChisquare()/peak.GetNDF() ))
             print()
+
+    if am and file_number == 2:
+        e, e_res = element(True, cali=cali, plot_peaks=plot_peaks, txt_output=txt_output)
+        energies += e
+        energy_res += e_res
+        if not trans==None:
+            lines += [ spectral_line( elems=elems, trans=t ) if not t==None else [] for t in problem_lines[1] ]
+    elif file_number == 5 and not am:
+        e, e_res = element(False, cali=cali, plot_peaks=plot_peaks, txt_output=txt_output)
+        energies += e
+        energy_res += e_res
+        if not trans==None:
+            lines += [ spectral_line( elems=elems, trans=t ) if not t==None else [] for t in problem_lines[0] ]
 
     means = []
     for e, sig_e, i in zip( energies, energy_res, range(len(energies)) ):
