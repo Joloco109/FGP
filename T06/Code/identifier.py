@@ -1,8 +1,12 @@
 import numpy as np
+import re
+
+from reader import Hist
 from calibrate import calibrate
 from lit_values_reader import read_tabular, lit_file
 from bayesian_inf import ModelDist
-import re
+from peakfinder import Peaks, peak_fit
+from plot import plot_hist, plot_graph
 
 
 data_dir = "Data/"
@@ -42,7 +46,7 @@ elements = [ [
             [ "Ag" ],
             [ "Fe", "Mo", "Cr", "Ni" ],
             None,
-            None,
+            [ "Pb" ],
             None,
             None,
             None,
@@ -60,8 +64,8 @@ elements = [ [
         ]
     ]
 
-paras = [ ( 5, 1.5e2, 5 ),
-        ( 5, 5e1, 5 )]
+paras = [ ( 5, 1.5e2, 5, 10 ),
+        ( 5, 5e1, 5, 10 )]
 
 def spectral_line( elems=None, trans=None ):
     lit_tab = read_tabular(lit_file)
@@ -110,3 +114,75 @@ def identify_element( peaks, elems=None, trans=None ):
     for peak in peaks:
         model.Update( (peak[0], np.sqrt(peak[1]**2+peak[2]**2)) )
     return model.Result()
+
+
+def identify_file( file_number, am, ohne_leer=True, plot_peaks=False, txt_output=False ):
+    elems = elements[1 if am else 0][file_number]
+    lines_K = spectral_line( elems=elems, trans="K" )
+    lines_L = spectral_line( elems=elems, trans="L" )
+
+    cali = calibrate( am )
+
+    file_name = file_names[ 1 if am else 0 ][file_number]
+    if txt_output:
+        print(file_name[:-4])
+    directory = data_dir + (am_dir if am else roe_dir)
+
+    empty = Hist.read( directory + leer_names[ 1 if am else 0 ],
+            "Leer",
+            "Leer",
+            calibration=cali )
+
+    spectrum = Hist.read( directory + file_name,
+            "Spectrum {}".format(file_name[:-4]),
+            "Spectrum {}".format(file_name[:-4]),
+            calibration=cali)
+
+    if ohne_leer:
+        spectrum = Hist( spectrum.hist - empty.hist, "Spectrum", "Spectrum" )
+
+    acc, height, fac, max_candidates = paras[ 1 if am else 0 ]
+    peaks = peak_fit( spectrum, accuracy=acc, peak_height=height, peak_fac=fac, plot_peaks=plot_peaks, txt_output=txt_output )
+    if txt_output:
+        print()
+
+    energies = []
+    energy_res = []
+
+    for peak in peaks:
+        if txt_output:
+            print(peak)
+            print("C     = {:=8.3f} +- {:=8.3f}".format( peak.GetParameter(0), peak.GetParError(0) ))
+        for j in range(0, int((peak.GetNpar()-1)/3) ):
+            energies.append( (peak.GetParameter(3*j+2), peak.GetParError(3*j+2)) )
+            energy_res.append( (peak.GetParameter(3*j+3), peak.GetParError(3*j+3)) )
+            if txt_output:
+                print("A_{}   = {:=8.3f} +- {:=8.3f}".format( j, peak.GetParameter(3*j+1), peak.GetParError(3*j+1) ))
+                print("mu_{}  = {:=8.3f} +- {:=8.3f}".format( j, peak.GetParameter(3*j+2), peak.GetParError(3*j+2) ))
+                print("sig_{} = {:=8.3f} +- {:=8.3f}".format( j, peak.GetParameter(3*j+3), peak.GetParError(3*j+3) ))
+        if txt_output:
+            print("Chi^2 = {:=7.2f}".format( peak.GetChisquare() ))
+            print("Chi^2/NDF = {:=7.2f}".format( peak.GetChisquare()/peak.GetNDF() ))
+            print()
+
+    for e, sig_e in zip( energies, energy_res ):
+        try :
+            candidates = identify_peak( (e[0], sig_e[0], 0), lines_K )[:max_candidates]
+        except ValueError:
+            try :
+                candidates = identify_peak( (e[0], sig_e[0], 0), lines_L )[:max_candidates]
+            except ValueError:
+                candidates = []
+        try :
+            candidates += identify_peak( (e[0], sig_e[0], 0), lines_L )[:max_candidates//2]
+        except ValueError:
+            candidates += []
+
+        if txt_output:
+            print("Peak: ({} +- {}) keV candidates:".format( e[0], sig_e[0] ))
+            for c in candidates:
+                print(c)
+            print()
+
+    if plot_peaks:
+        plot_hist( spectrum, logy=False)
