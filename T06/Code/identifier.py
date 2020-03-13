@@ -11,9 +11,10 @@ from plot import plot_hist, plot_graph
 from parameter import elements, data_dir, am_dir, roe_dir, leer_names, file_names, paras
 
 
-def spectral_line( elems=None, trans=None ):
+def spectral_line( elems=None, trans=None, edges=False ):
     lit_tab = read_tabular(lit_file)
-    lit_tab = [ [ column[i] for _, column in lit_tab ] for i in range(len(lit_tab[0][1])) if not lit_tab[0][1][i]==None ]
+    lit_tab = [ [ column[i] for _, column in lit_tab ] for i in range(len(lit_tab[0][1]))
+            if not ( lit_tab[0][1][i]==None or (not edges and bool(re.search( "edge", lit_tab[2][1][i] ))) )]
     if not elems == None:
         lit_tab = [ row for row in lit_tab if row[0] in elems  ]
     if not trans == None:
