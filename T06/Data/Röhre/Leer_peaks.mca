@@ -1,0 +1,603 @@
+<<PMCA SPECTRUM>>
+TAG - live_data
+DESCRIPTION - 
+GAIN - 5
+THRESHOLD - 0
+LIVE_MODE - 0
+PRESET_TIME - 0
+LIVE_TIME - 300.000000
+REAL_TIME - 300.000000
+START_TIME - 02/28/2020 10:55:45
+SERIAL_NUMBER - 0
+<<DATA>>
+53
+52
+58
+57
+52
+43
+49
+46
+37
+51
+46
+48
+57
+54
+40
+45
+48
+53
+41
+42
+49
+53
+50
+42
+59
+52
+62
+56
+69
+64
+74
+56
+65
+78
+76
+73
+85
+110
+116
+125
+154
+179
+158
+170
+193
+221
+234
+283
+235
+304
+284
+295
+292
+298
+266
+273
+261
+256
+232
+247
+232
+217
+186
+154
+164
+154
+108
+109
+102
+89
+71
+58
+70
+52
+49
+50
+48
+47
+47
+37
+33
+37
+35
+45
+46
+40
+41
+42
+31
+38
+39
+40
+45
+49
+34
+36
+36
+40
+30
+36
+37
+35
+36
+37
+37
+31
+23
+38
+33
+49
+39
+35
+40
+51
+44
+32
+45
+40
+30
+46
+37
+41
+34
+45
+49
+30
+24
+38
+36
+42
+39
+44
+37
+46
+60
+39
+45
+43
+46
+45
+48
+54
+60
+57
+55
+75
+65
+78
+64
+66
+84
+81
+80
+65
+76
+77
+70
+56
+71
+69
+58
+44
+54
+49
+46
+30
+45
+40
+44
+35
+30
+34
+33
+21
+24
+26
+22
+43
+29
+25
+33
+25
+36
+29
+29
+36
+37
+38
+32
+33
+39
+41
+39
+45
+64
+41
+55
+79
+75
+81
+106
+105
+137
+128
+172
+186
+155
+169
+199
+228
+225
+236
+234
+233
+270
+255
+231
+237
+254
+239
+212
+213
+184
+195
+158
+158
+145
+113
+111
+101
+65
+64
+66
+48
+66
+45
+45
+41
+35
+35
+35
+32
+35
+21
+34
+31
+21
+22
+26
+18
+21
+23
+31
+28
+25
+24
+27
+25
+23
+18
+19
+27
+35
+29
+28
+36
+18
+31
+25
+38
+29
+24
+35
+26
+25
+31
+33
+43
+44
+42
+53
+51
+54
+61
+73
+105
+95
+96
+118
+127
+134
+164
+197
+171
+200
+188
+249
+229
+274
+254
+218
+221
+232
+244
+246
+220
+223
+191
+164
+167
+177
+147
+128
+133
+106
+103
+79
+89
+80
+70
+68
+58
+54
+59
+64
+60
+46
+52
+52
+63
+53
+50
+50
+67
+61
+53
+58
+49
+51
+38
+49
+58
+43
+41
+46
+40
+36
+35
+29
+31
+26
+22
+30
+32
+23
+36
+31
+24
+23
+24
+14
+22
+26
+20
+20
+22
+21
+29
+21
+17
+21
+14
+22
+32
+22
+21
+28
+30
+27
+28
+31
+35
+42
+29
+34
+31
+40
+39
+32
+42
+35
+35
+29
+36
+38
+26
+29
+21
+35
+27
+34
+34
+24
+22
+30
+24
+21
+34
+30
+28
+27
+18
+25
+27
+23
+37
+35
+23
+31
+35
+41
+33
+31
+27
+49
+37
+45
+37
+55
+56
+51
+55
+62
+52
+56
+36
+51
+46
+44
+47
+34
+48
+42
+26
+29
+29
+29
+22
+25
+16
+28
+18
+24
+17
+25
+25
+28
+23
+30
+24
+26
+17
+22
+26
+22
+27
+32
+22
+34
+47
+22
+37
+40
+40
+56
+45
+39
+48
+57
+38
+53
+54
+44
+53
+47
+52
+37
+41
+50
+38
+53
+39
+41
+40
+20
+31
+28
+31
+32
+30
+28
+21
+26
+18
+13
+25
+15
+13
+31
+20
+28
+14
+13
+19
+16
+21
+19
+13
+16
+11
+<<END>>
+<<DP5 CONFIGURATION>>
+RESC=?;    Reset Configuration
+CLCK=80;    20MHz/80MHz
+TPEA=9.600;    Peaking Time
+GAIF=1.0428;    Fine Gain
+GAIN=23.800;    Total Gain (Analog * Fine)
+RESL=204;    Detector Reset Lockout
+TFLA=0.200;    Flat Top
+TPFA=100;    Fast Channel Peaking Time
+PURE=OFF;    PUR Interval On/Off
+RTDE=OFF;    RTD On/Off
+MCAS=NORM;    MCA Source
+MCAC=8192;    MCA/MCS Channels
+SOFF=OFF;    Set Spectrum Offset
+AINP=POS;    Analog Input Pos/Neg
+INOF=DEF;    Input Offset
+GAIA=15;    Analog Gain Index
+CUSP=0;    Non-Trapezoidal Shaping
+PDMD=NORM;    Peak Detect Mode (Min/Max)
+THSL=0.976;    Slow Threshold
+TLLD=OFF;    LLD Threshold
+THFA=41.43;    Fast Threshold
+DACO=SHAPED;    DAC Output
+DACF=50;    DAC Offset
+RTDS=150.0;    RTD Sensitivity
+RTDT=30.07;    RTD Threshold
+BLRM=1;    BLR Mode
+BLRD=3;    BLR Down Correction
+BLRU=0;    BLR Up Correction
+GATE=OFF;    Gate Control
+AUO1=SCA8;    AUX_OUT Selection
+PRET=300.0;    Preset Time
+PRER=OFF;    Preset Real Time
+PREC=OFF;    Preset Counts
+PRCL=1;    Preset Counts Low Threshold
+PRCH=8191;    Preset Counts High Threshold
+HVSE=-110;    HV Set
+TECS=220;    TEC Set
+PAPS=ON;    Preamp 8.5/5 (N/A)
+SCOE=FA;    Scope Trigger Edge
+SCOT=12;    Scope Trigger Position
+SCOG=1;    Digital Scope Gain
+MCSL=1;    MCS Low Threshold
+MCSH=8191;    MCS High Threshold
+MCST=0.01;    MCS Timebase
+AUO2=ICR;    AUX_OUT2 Selection
+TPMO=OFF;    Test Pulser On/Off
+GPED=RI;    G.P. Counter Edge
+GPIN=AUX1;    G.P. Counter Input
+GPME=ON;    G.P. Counter Uses MCA_EN?
+GPGA=ON;    G.P. Counter Uses GATE?
+GPMC=ON;    G.P. Counter Cleared With MCA Counters?
+MCAE=OFF;    MCA/MCS Enable
+BOOT=ON;    Turn Supplies On/Off At Power Up
+<<DP5 CONFIGURATION END>>
+<<DPP STATUS>>
+Device Type: DP5
+Serial Number: 17258
+Firmware: 6.09  Build:  6
+FPGA: 6.15
+Fast Count: 1541384
+Slow Count: 1602482
+GP Count: 0
+Accumulation Time: 300.000000
+Real Time: 302.250000
+Dead Time:       
+HV Volt: -111V
+TEC Temp: 220K
+Board Temp: 35°C
+<<DPP STATUS END>>

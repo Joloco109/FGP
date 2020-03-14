@@ -1,0 +1,201 @@
+<<PMCA SPECTRUM>>
+TAG - live_data
+DESCRIPTION - 
+GAIN - 4
+THRESHOLD - 0
+LIVE_MODE - 0
+PRESET_TIME - 600
+LIVE_TIME - 378.240000
+REAL_TIME - 600.000000
+START_TIME - 02/28/2020 13:15:13
+SERIAL_NUMBER - 2277
+<<ROI>>
+1333 1337
+<<DATA>>
+4
+2
+6
+2
+1
+5
+1
+2
+1
+3
+2
+5
+5
+6
+5
+2
+5
+8
+1
+1
+5
+5
+0
+5
+3
+5
+3
+1
+2
+3
+2
+2
+6
+2
+5
+5
+3
+4
+1
+2
+4
+3
+5
+5
+1
+3
+5
+3
+6
+4
+6
+9
+11
+7
+3
+10
+5
+11
+10
+18
+12
+28
+14
+19
+22
+22
+34
+22
+33
+31
+32
+37
+40
+35
+30
+31
+27
+23
+17
+31
+18
+20
+21
+8
+11
+5
+13
+6
+6
+3
+4
+2
+6
+2
+4
+3
+3
+3
+2
+3
+1
+3
+1
+3
+3
+1
+5
+2
+2
+1
+3
+0
+5
+2
+2
+1
+1
+3
+2
+2
+1
+2
+0
+2
+3
+3
+2
+2
+2
+2
+4
+1
+2
+3
+4
+0
+2
+2
+0
+0
+2
+0
+1
+2
+3
+0
+2
+0
+6
+3
+<<END>>
+<<DPP CONFIGURATION>>
+COM Port: USB
+Rise: 38.4uS
+Top: 1.6uS
+Fast Threshold: 26
+PUR Enable: PUROn
+RTD ON/OFF: RTDOff
+RTD Threshold: 6.05% FS
+RTD Fast HWHM: 16
+AutoBaseline: Off
+BLR: BLR:ON DN:64 UP:1 
+Acquisition Mode: MCA
+MCS Timebase: 10mS/channel
+MCA Channels: 4096
+Slow Threshold: 7.03% FS
+Buffer Select: Buffer A
+Gate Input (TTL): GateOff
+Preset: 10 min
+Coarse Gain: 21x
+Fine Gain: 0.9500
+Det Rst Lockout: 3.28mS
+Analog Out: Off
+Offset: 0mV
+Aux: ICR
+<<DPP CONFIGURATION END>>
+<<DPP STATUS>>
+Device Type: DP4
+Serial Number: 2277
+Firmware: 4.02
+FPGA: 4.02
+Fast Count: 58045
+Slow Count: 36594
+Accumulation Time: 600
+Dead Time: 36.96%
+Board Temp: 26°C
+<<DPP STATUS END>>
