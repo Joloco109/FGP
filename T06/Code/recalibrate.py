@@ -34,7 +34,7 @@ def calibrate_bayesian( am, plot_peaks=False, txt_output=False):
 
     calibration = Graph( energies, energies_theo )
 
-    fit = calibration.fit( "Calibration", "pol1" )
+    fit = calibration.fit( "Bayesian Calibration", "pol1" )
 
     if txt_output:
         print(fit)
@@ -45,7 +45,7 @@ def calibrate_bayesian( am, plot_peaks=False, txt_output=False):
         print()
 
     if plot_peaks:
-        plot_graph( calibration )
+        plot_graph( calibration, xName="Bins", save=True  )
 
     cali = Calibration( fit )
     return cali
@@ -53,7 +53,7 @@ def calibrate_bayesian( am, plot_peaks=False, txt_output=False):
 
 def main():
     print("Am:")
-    calibrate_bayesian( True, plot_peaks=True, txt_output=True )
+    #calibrate_bayesian( True, plot_peaks=True, txt_output=True )
     print()
     print()
 
