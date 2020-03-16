@@ -49,11 +49,11 @@ class MultiGraph :
 class Graph:
     def __init__( self, name, x, y, ex=None, ey=None ):
         self.name = name
-        if not (ex==None and ey==None):
+        if not (type(None)==type(ex) and type(None)==type(ey)):
             self.graph=TGraphErrors( len(x) )
-            if ex == None:
+            if type(None) == type(ex):
                 ex = np.zeros(len(x))
-            if ey == None:
+            if type(None) == type(ey):
                 ey = np.zeros(len(y))
             for i in range(len(x)):
                 self.graph.SetPointError( i, ex[i], ey[i] )
@@ -68,6 +68,7 @@ class Graph:
         self.graph.SetLineWidth(4)
         self.graph.SetMarkerStyle(marker)
         self.graph.Draw(options)
+        input()
 
     def ArrayFromPointer( self, pointer ):
         return np.array( np.fromiter(
