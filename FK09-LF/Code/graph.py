@@ -17,11 +17,9 @@ class MultiGraph :
         multigraph = TMultiGraph()
         for y, name in zip(content, y_names):
             if not name == None:
-                graph = TGraph( len(x) )
-                for i in range(len(x)):
-                    graph.SetPoint( i, x[i], y[i] )
+                graph = Graph( x, y, name )
                 subgraphs.append( graph )
-                multigraph.Add( graph, name )
+                multigraph.Add( graph.graph, name )
 
         graph = MultiGraph()
         graph.subgraphs = subgraphs
@@ -30,37 +28,51 @@ class MultiGraph :
 
     def Draw( self, i=None, options="AP", marker=6 ):
         if i==None:
-            to_draw = self.multigraph
+            self.multigraph.SetLineWidth(4)
+            self.multigraph.SetMarkerStyle(marker)
+            self.multigraph.Draw(options)
         else:
-            to_draw = self.subgraphs[i]
+            self.subgraphs[i].Draw( options=options, marker=marker )
 
-        to_draw.SetLineWidth(4)
-        to_draw.SetMarkerStyle(marker)
-        to_draw.Draw(options)
+    def GetX( self, i ):
+        return self.subgraphs[i].GetX()
 
-    def ArrayFromPointer( self, i, pointer ):
+    def GetY( self, i ):
+        return self.subgraphs[i].GetY()
+
+    def GetEX( self, i ):
+        return self.subgraphs[i].GetEX()
+
+    def GetEY( self, i ):
+        return self.subgraphs[i].GetEY()
+
+class Graph:
+    def __init__( self, x, y, name ):
+        self.name = name
+        self.graph = TGraph( len(x) )
+        for i in range(len(x)):
+            self.graph.SetPoint( i, x[i], y[i] )
+
+    def Draw( self, options="AP", marker=6 ):
+        self.graph.SetLineWidth(4)
+        self.graph.SetMarkerStyle(marker)
+        self.graph.Draw(options)
+
+    def ArrayFromPointer( self, pointer ):
         return np.array( np.fromiter(
             pointer,
             dtype=np.float64,
-            count=( self.subgraphs[i]).GetN())
-            )
+            count=self.graph.GetN()
+            ) )
 
-    def GetX( self, i ):
-        return self.ArrayFromPointer( i, (
-            self.subgraphs[i]
-            ).GetX() )
+    def GetX( self ):
+        return self.ArrayFromPointer( self.graph.GetX() )
 
-    def GetY( self, i ):
-        return self.ArrayFromPointer( i, (
-            self.subgraphs[i]
-            ).GetY() )
+    def GetY( self ):
+        return self.ArrayFromPointer( self.graph.GetY() )
 
-    def GetEX( self, i ):
-        return self.ArrayFromPointer( i, (
-            self.subgraphs[i]
-            ).GetEX() )
+    def GetEX( self ):
+        return self.ArrayFromPointer( self.graph.GetEX() )
 
-    def GetEY( self, i ):
-        return self.ArrayFromPointer( i, (
-            self.subgraphs[i]
-            ).GetEY() )
+    def GetEY( self ):
+        return self.ArrayFromPointer( self.graph.GetEY() )
