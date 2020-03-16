@@ -1,6 +1,6 @@
 import codecs
 import numpy as np
-from ROOT import TGraph, TMultiGraph
+from ROOT import TGraph, TGraphErrors, TMultiGraph
 
 class MultiGraph :
     def Read( file_name, x_axis, y_names ):
@@ -17,7 +17,7 @@ class MultiGraph :
         multigraph = TMultiGraph()
         for y, name in zip(content, y_names):
             if not name == None:
-                graph = Graph( x, y, name )
+                graph = Graph( name, x, y )
                 subgraphs.append( graph )
                 multigraph.Add( graph.graph, name )
 
@@ -47,9 +47,20 @@ class MultiGraph :
         return self.subgraphs[i].GetEY()
 
 class Graph:
-    def __init__( self, x, y, name ):
+    def __init__( self, name, x, y, ex=None, ey=None ):
         self.name = name
-        self.graph = TGraph( len(x) )
+        if not (ex==None and ey==None):
+            self.graph=TGraphErrors( len(x) )
+            if ex == None:
+                ex = np.zeros(len(x))
+            if ey == None:
+                ey = np.zeros(len(y))
+            for i in range(len(x)):
+                self.graph.SetPointError( i, ex[i], ey[i] )
+
+        else :
+            self.graph = TGraph( len(x) )
+
         for i in range(len(x)):
             self.graph.SetPoint( i, x[i], y[i] )
 
@@ -72,7 +83,11 @@ class Graph:
         return self.ArrayFromPointer( self.graph.GetY() )
 
     def GetEX( self ):
+        if not type(self.graph)==TGraphErrors:
+            raise ValueError("GetEX cant be called on Graph of type {}".format(type(self.graph)))
         return self.ArrayFromPointer( self.graph.GetEX() )
 
     def GetEY( self ):
+        if not type(self.graph)==TGraphErrors:
+            raise ValueError("GetEY cant be called on Graph of type {}".format(type(self.graph)))
         return self.ArrayFromPointer( self.graph.GetEY() )
