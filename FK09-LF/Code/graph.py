@@ -6,12 +6,12 @@ class MultiGraph :
     def Read( file_name, x_axis, y_names ):
         with codecs.open(file_name, 'r', 'iso-8859-1') as f:
             content = f.readlines()
-        content = np.array([ [ float(x) for x in row.strip().replace(",",".").split() ] for row in content ])
+        content = np.array([ [ float(x) for x in row.strip().replace(",",".").split() ] for row in content if not row.strip()=="" ])
         x = np.array([ x_axis(row) for row in content ])
         content = content.T
 
         if not len(content) == len(y_names):
-            raise ValueError
+            raise ValueError("len(content) = {} is not equal to len(y_names)={}".format(len(content),len(y_names)))
 
         subgraphs = []
         multigraph = TMultiGraph()
