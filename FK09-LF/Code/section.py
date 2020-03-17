@@ -4,7 +4,8 @@ from calibration import calibrate_C, calibrate_Pt
 from graph import Graph, MultiGraph
 
 def section( graph, tresh=0.07 ):
-    T = np.array(graph.GetX(0))
+    temps = np.array(graph.GetX())
+    T = temps[0]
     vals = np.array(graph.GetY())
     new_vals = []
     start = None
@@ -15,9 +16,18 @@ def section( graph, tresh=0.07 ):
         if np.abs(1-T[i]/np.mean(T[start:i])) > tresh :
             if i+1<len(T) and np.abs( np.mean(T[start:i])-T[i] ) < np.abs( T[i]-T[i+1] ):
                 continue
+
+            r_vals = []
+            for v in range(len(vals)):
+                filtered = np.array([ vals[v][j] for j in range(start,i) if T[j] in temps[v] ])
+                if len(filtered) > 0:
+                    r_vals.append( (np.mean( filtered ), np.std( filtered )) )
+                else:
+                    r_vals.append( (None,None) )
+
             new_vals.append( (
                     (np.mean( T[start:i] ), np.std( T[start:i] )),
-                    *[ (np.mean( v[start:i] ), np.std( v[start:i] )) for v in vals]
+                    *r_vals
                 ) )
             start = None
     else :
