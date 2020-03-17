@@ -59,7 +59,7 @@ class Calibration:
             count=self.function.GetNpar()
             ) )
 
-def calibrate( func, temps, resistance, column, y_name ):
+def calibrate( func, temps, resistance, column, y_name, out=False ):
     y_names = [ y_name if i == column else None  for i in range(7) ]
 
     data_res = np.zeros(len(temps))
@@ -75,6 +75,12 @@ def calibrate( func, temps, resistance, column, y_name ):
         data_tem[i] = temp[0]
         error_tem[i] = temp[1]
 
+    if out:
+        print("Data:")
+        for temp, sig_temp, res, sig_res in zip( data_tem, error_tem, data_res, error_res ):
+            print( (temp, sig_temp, res, sig_res) )
+        print()
+
     calibration_graph = Graph( "Calibration " + y_name,
             data_tem, data_res,
             error_tem, error_res )
@@ -83,17 +89,17 @@ def calibrate( func, temps, resistance, column, y_name ):
 
     return Calibration( calibration_graph, func )
 
-def calibrate_C():
+def calibrate_C( out=False ):
     func = TF1("Calibration C", "[0]+[1]*e^(-[2]/x)")
     func.SetParameter( 0, 4000 )
     func.SetParameter( 1, -3000 )
     func.SetParameter( 2, 1e-4*(eVolt/k_boltzmann)/2 )
-    calibration = calibrate( func, cali_temps, cali_data, 1, "C" )
+    calibration = calibrate( func, cali_temps, cali_data, 1, "C", out=out )
     return calibration
 
-def calibrate_Pt():
+def calibrate_Pt( out=False ):
     func = TF1("Calibration Pt", "[0]+[1]*x")
-    calibration = calibrate( func, cali_temps[:2], cali_data[:2], 0, "Pt" )
+    calibration = calibrate( func, cali_temps[:2], cali_data[:2], 0, "Pt", out=out )
     return calibration
 
 def main():
@@ -101,7 +107,7 @@ def main():
     canvas.Divide(0,2)
 
     print("Calibration C:")
-    caliC = calibrate_C()
+    caliC = calibrate_C( out=True )
     paras = caliC.GetParameters()
     sigParas = caliC.GetParErrors()
     print("A = {:7.2f} +- {:7.2f}".format(paras[0], sigParas[0]))
@@ -117,7 +123,7 @@ def main():
     caliC.Draw()
 
     print("Calibration Pt:")
-    caliPt = calibrate_Pt()
+    caliPt = calibrate_Pt( out=True )
     paras = caliPt.GetParameters()
     sigParas = caliPt.GetParErrors()
     print("A = {:7.4f} +- {:7.4f}".format(paras[0], sigParas[0]))
