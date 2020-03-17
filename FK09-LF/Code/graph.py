@@ -3,6 +3,10 @@ import numpy as np
 from ROOT import TGraph, TGraphErrors, TMultiGraph
 
 class MultiGraph :
+    def __init__( self ):
+        self.subgraphs = []
+        self.multigraph = TMultiGraph()
+
     def Read( file_name, x_axis, y_names ):
         with codecs.open(file_name, 'r', 'iso-8859-1') as f:
             content = f.readlines()
@@ -27,25 +31,48 @@ class MultiGraph :
         graph.multigraph = multigraph
         return graph
 
+    def Apply( self, func, i=None ):
+        if i==None:
+            for g in self.subgraphs:
+                g.Apply( func )
+        else:
+            self.subgraphs[i].Apply( func )
+
     def Draw( self, i=None, options="AP", marker=6 ):
         if i==None:
-            self.multigraph.SetLineWidth(4)
-            self.multigraph.SetMarkerStyle(marker)
+            #self.multigraph.SetLineWidth(4)
+            #self.multigraph.SetMarkerStyle(marker)
             self.multigraph.Draw(options)
         else:
             self.subgraphs[i].Draw( options=options, marker=marker )
 
-    def GetX( self, i ):
-        return self.subgraphs[i].GetX()
+    def Add( self, graph ):
+        self.subgraphs.append( graph )
+        self.multigraph.Add( graph.graph )
 
-    def GetY( self, i ):
-        return self.subgraphs[i].GetY()
+    def GetX( self, i=None ):
+        if i==None:
+            return [ g.GetX() for g in self.subgraphs ]
+        else:
+            return self.subgraphs[i].GetX()
 
-    def GetEX( self, i ):
-        return self.subgraphs[i].GetEX()
+    def GetY( self, i=None ):
+        if i==None:
+            return [ g.GetY() for g in self.subgraphs ]
+        else:
+            return self.subgraphs[i].GetY()
 
-    def GetEY( self, i ):
-        return self.subgraphs[i].GetEY()
+    def GetEX( self, i=None ):
+        if i==None:
+            return [ g.GetEX() for g in self.subgraphs ]
+        else:
+            return self.subgraphs[i].GetEX()
+
+    def GetEY( self, i=None ):
+        if i==None:
+            return [ g.GetEY() for g in self.subgraphs ]
+        else:
+            return self.subgraphs[i].GetEY()
 
 class Graph:
     def __init__( self, name, x, y, ex=None, ey=None ):
@@ -69,6 +96,9 @@ class Graph:
             if x[i]==None or y[i]==None:
                 continue
             self.graph.SetPoint( i, x[i], y[i] )
+
+    def Apply( self, func ):
+        self.graph.Apply( func.function )
 
     def Draw( self, options="AP", marker=6 ):
         self.graph.SetLineWidth(4)
