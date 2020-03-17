@@ -117,8 +117,8 @@ def main():
     caliPt = calibrate_Pt()
     paras = caliPt.GetParameters()
     sigParas = caliPt.GetParErrors()
-    print("A = {:7.2f} +- {:7.2f}".format(paras[0], sigParas[0]))
-    print("B = {:7.2f} +- {:7.2f}".format(paras[1], sigParas[1]))
+    print("A = {:7.4f} +- {:7.4f}".format(paras[0], sigParas[0]))
+    print("B = {:7.4f} +- {:7.4f}".format(paras[1], sigParas[1]))
     if caliPt.GetNDF() == 0:
         print("Chi = {:4.2f}".format(caliPt.GetChisquare()))
         print("You overfitted with laughable few data points!\nWhat did you expect?")
