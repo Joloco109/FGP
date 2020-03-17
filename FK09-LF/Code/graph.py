@@ -68,7 +68,6 @@ class Graph:
         self.graph.SetLineWidth(4)
         self.graph.SetMarkerStyle(marker)
         self.graph.Draw(options)
-        input()
 
     def ArrayFromPointer( self, pointer ):
         return np.array( np.fromiter(
