@@ -1,4 +1,4 @@
-from ROOT import TF1, TCanvas
+from ROOT import TF1, TCanvas, TLegend
 from graph import MultiGraph, Graph
 import numpy as np
 
@@ -96,6 +96,11 @@ def calibrate( func, temps, resistance, column, y_name, out=False ):
     calibration_graph.GetXaxis().SetLimits( 0, 325 )
     calibration_graph.GetXaxis().SetTitle( "T/K" )
     calibration_graph.GetYaxis().SetTitle( "R/\\Omega" )
+    calibration_graph.GetXaxis().SetTitleSize(0.05)
+    calibration_graph.GetYaxis().SetTitleSize(0.05)
+    calibration_graph.GetYaxis().SetTitleOffset(0.85)
+    calibration_graph.GetXaxis().SetLabelSize(0.04)
+    calibration_graph.GetYaxis().SetLabelSize(0.04)
 
     return Calibration( calibration_graph, func )
 
@@ -131,6 +136,10 @@ def main():
     print()
     canvas.cd(1)
     caliC.Draw()
+    legendC = TLegend(.40,.77,.60,.92)
+    legendC.AddEntry(caliC.graph.graph, "Data")
+    legendC.AddEntry(caliC.function, r"R = A + B e^{-C/T}")
+    legendC.Draw()
 
     print("Calibration Pt:")
     caliPt = calibrate_Pt( out=True )
@@ -146,8 +155,14 @@ def main():
     print()
     canvas.cd(2)
     caliPt.Draw()
+    legendPt = TLegend(.40,.77,.60,.92)
+    legendPt.AddEntry(caliPt.graph.graph, "Data")
+    legendPt.AddEntry(caliPt.function, r"R = A + B T")
+    legendPt.Draw()
+
     canvas.Update()
     input()
+    canvas.SaveAs("Graphs/calibration.eps")
 
 
 if __name__ == "__main__":
