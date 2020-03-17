@@ -6,7 +6,8 @@ class MultiGraph :
     def Read( file_name, x_axis, y_names ):
         with codecs.open(file_name, 'r', 'iso-8859-1') as f:
             content = f.readlines()
-        content = np.array([ [ float(x) for x in row.strip().replace(",",".").split() ] for row in content if not row.strip()=="" ])
+        content = np.array([ [ float(x) if float(x) < 989999999999999934e20 else None
+            for x in row.strip().replace(",",".").split() ] for row in content if not row.strip()=="" ])
         x = np.array([ x_axis(row) for row in content ])
         content = content.T
 
@@ -56,6 +57,8 @@ class Graph:
             if type(None) == type(ey):
                 ey = np.zeros(len(y))
             for i in range(len(x)):
+                if x[i]==None or y[i]==None:
+                    continue
                 self.graph.SetPointError( i, ex[i], ey[i] )
 
         else :
@@ -63,6 +66,8 @@ class Graph:
 
         self.graph.SetTitle( name )
         for i in range(len(x)):
+            if x[i]==None or y[i]==None:
+                continue
             self.graph.SetPoint( i, x[i], y[i] )
 
     def Draw( self, options="AP", marker=6 ):
