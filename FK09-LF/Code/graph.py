@@ -61,6 +61,7 @@ class Graph:
         else :
             self.graph = TGraph( len(x) )
 
+        self.graph.SetTitle( name )
         for i in range(len(x)):
             self.graph.SetPoint( i, x[i], y[i] )
 
@@ -91,3 +92,9 @@ class Graph:
         if not type(self.graph)==TGraphErrors:
             raise ValueError("GetEY cant be called on Graph of type {}".format(type(self.graph)))
         return self.ArrayFromPointer( self.graph.GetEY() )
+
+    def GetXaxis( self ):
+        return self.graph.GetXaxis()
+
+    def GetYaxis( self ):
+        return self.graph.GetYaxis()

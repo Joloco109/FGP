@@ -46,18 +46,24 @@ class Calibration:
     def GetChisquare( self ):
         return self.function.GetChisquare()
 
-    def GetParameters( self ):
-        return self.ArrayFromPointer( self.function.GetParameters() )
-
-    def GetParErrors( self ):
-        return self.ArrayFromPointer( self.function.GetParErrors() )
-
     def ArrayFromPointer( self, pointer ):
         return np.array( np.fromiter(
             pointer,
             dtype=np.float64,
             count=self.function.GetNpar()
             ) )
+
+    def GetParameters( self ):
+        return self.ArrayFromPointer( self.function.GetParameters() )
+
+    def GetParErrors( self ):
+        return self.ArrayFromPointer( self.function.GetParErrors() )
+
+    def GetXaxis( self ):
+        return self.graph.GetXaxis()
+
+    def GetYaxis( self ):
+        return self.graph.GetYaxis()
 
 def calibrate( func, temps, resistance, column, y_name, out=False ):
     y_names = [ y_name if i == column else None  for i in range(7) ]
@@ -86,6 +92,10 @@ def calibrate( func, temps, resistance, column, y_name, out=False ):
             error_tem, error_res )
 
     calibration_graph.graph.Fit( func )
+
+    calibration_graph.GetXaxis().SetLimits( 0, 325 )
+    calibration_graph.GetXaxis().SetTitle( "T/K" )
+    calibration_graph.GetYaxis().SetTitle( "R/\\Omega" )
 
     return Calibration( calibration_graph, func )
 
