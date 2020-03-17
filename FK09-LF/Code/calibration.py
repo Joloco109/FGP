@@ -1,4 +1,4 @@
-from ROOT import TF1
+from ROOT import TF1, TCanvas
 from graph import MultiGraph, Graph
 import numpy as np
 
@@ -17,8 +17,8 @@ with open(data_dir+"RT_Value_K.txt") as f:
     cali_temps = [
             ( float( f.read().strip()[:-1] ),
                 0.1/np.sqrt(12)),
-            ( 77.15, 0.01),
-            ( 4.2, 0.01 ) ]
+            ( 77, 1/np.sqrt(12)),
+            ( 4.2, 0.1/np.sqrt(12) ) ]
 
 class Calibration:
     def __init__( self, graph, function ):
@@ -85,20 +85,21 @@ def calibrate( func, temps, resistance, column, y_name ):
 
 def calibrate_C():
     func = TF1("Calibration C", "[0]+[1]*e^(-[2]/x)")
-    func.SetParameter( 0, 1000 )
-    func.SetParameter( 1, 2000 )
+    func.SetParameter( 0, 4000 )
+    func.SetParameter( 1, -3000 )
     func.SetParameter( 2, 1e-4*(eVolt/k_boltzmann)/2 )
     calibration = calibrate( func, cali_temps, cali_data, 1, "C" )
-    calibration.Draw()
     return calibration
 
 def calibrate_Pt():
     func = TF1("Calibration Pt", "[0]+[1]*x")
     calibration = calibrate( func, cali_temps[:2], cali_data[:2], 0, "Pt" )
-    calibration.Draw()
     return calibration
 
 def main():
+    canvas = TCanvas("Calibration", "Calibration" )
+    canvas.Divide(0,2)
+
     print("Calibration C:")
     caliC = calibrate_C()
     paras = caliC.GetParameters()
@@ -112,6 +113,8 @@ def main():
     else:
         print("Chi/Ndf = {:4.2f}".format(caliC.GetChisquare()/caliC.GetNDF()))
     print()
+    canvas.cd(1)
+    caliC.Draw()
 
     print("Calibration Pt:")
     caliPt = calibrate_Pt()
@@ -125,6 +128,10 @@ def main():
     else:
         print("Chi/Ndf = {:4.2f}".format(caliPt.GetChisquare()/caliPt.GetNDF()))
     print()
+    canvas.cd(2)
+    caliPt.Draw()
+    canvas.Update()
+    input()
 
 
 if __name__ == "__main__":
