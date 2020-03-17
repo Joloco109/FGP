@@ -93,14 +93,17 @@ def calibrate( func, temps, resistance, column, y_name, out=False ):
 
     calibration_graph.graph.Fit( func )
 
-    calibration_graph.GetXaxis().SetLimits( 0, 325 )
-    calibration_graph.GetXaxis().SetTitle( "T/K" )
-    calibration_graph.GetYaxis().SetTitle( "R/\\Omega" )
-    calibration_graph.GetXaxis().SetTitleSize(0.05)
-    calibration_graph.GetYaxis().SetTitleSize(0.05)
-    calibration_graph.GetYaxis().SetTitleOffset(0.85)
-    calibration_graph.GetXaxis().SetLabelSize(0.04)
-    calibration_graph.GetYaxis().SetLabelSize(0.04)
+    xAxis = calibration_graph.GetXaxis()
+    yAxis = calibration_graph.GetYaxis()
+    xAxis.SetLimits( 0, 325 )
+    xAxis.SetTitle( "T/K" )
+    yAxis.SetTitle( "R/\\Omega" )
+    xAxis.SetTitleSize(0.06)
+    yAxis.SetTitleSize(0.06)
+    xAxis.SetTitleOffset(0.80)
+    yAxis.SetTitleOffset(0.84)
+    xAxis.SetLabelSize(0.055)
+    yAxis.SetLabelSize(0.055)
 
     return Calibration( calibration_graph, func )
 
