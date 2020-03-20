@@ -100,6 +100,14 @@ class Graph:
     def Apply( self, func ):
         self.graph.Apply( func.function )
 
+    def ApplyX( self, func ):
+        x = self.GetX()
+        ex = self.GetEX()
+        for i in range(len(x)):
+            new_x = func.Get(( x[i], ex[i] ))
+            self.graph.SetPointX( i, new_x[0] )
+            self.graph.SetErrorX( i, new_x[1] )
+
     def Draw( self, options="AP", marker=6 ):
         self.graph.SetLineWidth(4)
         self.graph.SetMarkerStyle(marker)
