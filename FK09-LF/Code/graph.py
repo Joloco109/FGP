@@ -31,6 +31,13 @@ class MultiGraph :
         graph.multigraph = multigraph
         return graph
 
+    def Clone( self ):
+        c = MultiGraph()
+        c.subgraphs = [ graph.Clone() for graph in self.subgraphs  ]
+        for graph in c.subgraphs:
+            c.multigraph.Add( graph.graph, graph.name )
+        return c
+
     def Apply( self, func, i=None ):
         if i==None:
             for g in self.subgraphs:
@@ -96,6 +103,11 @@ class Graph:
         self.graph.SetTitle( name )
         for i in range(len(data)):
             self.graph.SetPoint( i, data[i][0], data[i][1] )
+
+    def Clone( self ):
+        c = Graph( self.name, [], [])
+        c.graph = self.graph.Clone()
+        return c
 
     def Apply( self, func ):
         self.graph.Apply( func.function )
