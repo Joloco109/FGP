@@ -78,24 +78,24 @@ class Graph:
     def __init__( self, name, x, y, ex=None, ey=None ):
         self.name = name
         if not (type(None)==type(ex) and type(None)==type(ey)):
-            self.graph=TGraphErrors( len(x) )
             if type(None) == type(ex):
                 ex = np.zeros(len(x))
             if type(None) == type(ey):
                 ey = np.zeros(len(y))
-            for i in range(len(x)):
-                if x[i]==None or y[i]==None:
-                    continue
-                self.graph.SetPointError( i, ex[i], ey[i] )
+
+            data = np.array([ d for d in zip(x,y,ex,ey) if not (d[0]==None or d[1]==None) ])
+            self.graph=TGraphErrors( len(data) )
+
+            for i in range(len(data)):
+                self.graph.SetPointError( i, data[i][2], data[i][3] )
 
         else :
-            self.graph = TGraph( len(x) )
+            data = np.array([ d for d in zip(x,y) if not (d[0]==None or d[1]==None) ])
+            self.graph = TGraph( len(data) )
 
         self.graph.SetTitle( name )
-        for i in range(len(x)):
-            if x[i]==None or y[i]==None:
-                continue
-            self.graph.SetPoint( i, x[i], y[i] )
+        for i in range(len(data)):
+            self.graph.SetPoint( i, data[i][0], data[i][1] )
 
     def Apply( self, func ):
         self.graph.Apply( func.function )
