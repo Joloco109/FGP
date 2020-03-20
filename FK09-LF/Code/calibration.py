@@ -1,5 +1,6 @@
 from ROOT import TF1, TCanvas, TLegend
 from graph import MultiGraph, Graph
+from function import Function
 import numpy as np
 
 eVolt = 1.602176e-19
@@ -20,25 +21,13 @@ with open(data_dir+"RT_Value_K.txt") as f:
             ( 77, 1/np.sqrt(12)),
             ( 4.2, 0.1/np.sqrt(12) ) ]
 
-class Calibration:
+class Calibration(Function):
     def __init__( self, graph, function ):
         self.graph = graph
         self.function = function
 
     def Draw( self ):
         self.graph.Draw()
-
-    def Get( self, x ):
-        return (
-                self.function.Eval( x[0] ),
-                np.abs(self.function.Derivative( x[0] )) * x[1]
-                )
-
-    def GetX( self, y ):
-        x = self.function.GetX( y[0], 0, 1e5 )
-        return ( x,
-                y[1] / np.abs(self.function.Derivative( x ))
-                )
 
     def GetNDF( self ):
         return self.function.GetNDF()
