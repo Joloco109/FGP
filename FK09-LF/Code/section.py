@@ -3,7 +3,7 @@ import numpy as np
 from calibration import calibrate_C, calibrate_Pt
 from graph import Graph, MultiGraph
 
-def section( graph, tresh=0.07 ):
+def section( graph, tresh=0.005 ):
     temps = np.array(graph.GetX())
     T = temps[0]
     vals = np.array(graph.GetY())
