@@ -103,10 +103,12 @@ class Graph:
     def ApplyX( self, func ):
         x = self.GetX()
         ex = self.GetEX()
+        y = self.GetY()
+        ey = self.GetEY()
         for i in range(len(x)):
             new_x = func.Get(( x[i], ex[i] ))
-            self.graph.SetPointX( i, new_x[0] )
-            self.graph.SetErrorX( i, new_x[1] )
+            self.graph.SetPoint( i, new_x[0], y[i] )
+            self.graph.SetPointError( i, new_x[1], ey[i] )
 
     def Draw( self, options="AP", marker=6 ):
         self.graph.SetLineWidth(4)
