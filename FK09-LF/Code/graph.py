@@ -109,6 +109,21 @@ class Graph:
         c.graph = self.graph.Clone()
         return c
 
+    def Slice( self, start, end ):
+        x = self.GetX()
+        i, = np.where( start <= x )
+        j, = np.where( x < end )
+        i = np.intersect1d( i, j )
+        x = np.take( x, i )
+        y = np.take( self.GetY(), i )
+        try:
+            ex = np.take( self.GetEX(), i )
+            ey = np.take( self.GetEY(), i )
+        except ValueError:
+            ex = None
+            ey = None
+        return Graph( self.name, x, y, ex, ey )
+
     def Apply( self, func ):
         self.graph.Apply( func.function )
 
