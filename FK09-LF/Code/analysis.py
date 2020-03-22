@@ -9,8 +9,9 @@ from section import section
 graph_dir = "Graphs/"
 
 minT = 20
-maxT = 77
+maxT = 70
 minLin = 150
+maxSpr = 40
 minExt = 0
 maxExt = 377
 
@@ -154,7 +155,9 @@ if __name__=="__main__":
         f.function.SetParLimits( 2, 1, 10 )
 
     CuHe = sectionHe.subgraphs[0].Slice(minT,maxT)
+    CuN = sectionN.subgraphs[0].Slice(minT,maxT)
     TaHe = sectionHe.subgraphs[1].Slice(minT,maxT)
+    TaN = sectionN.subgraphs[1].Slice(minT,maxT)
 
     for f,g in zip( [f_CuHe, f_TaHe ],
                     [CuHe, TaHe ]):
@@ -173,6 +176,9 @@ if __name__=="__main__":
     CuHe.graph.SetMarkerSize( 2 )
     CuHe.graph.SetMarkerColor( 2 )
     CuHe.Draw( options="AP", marker=5 )
+    CuN.graph.SetMarkerSize( 2 )
+    CuN.graph.SetMarkerColor( 4 )
+    CuN.Draw( options="P", marker=5 )
     canvas.SaveAs( graph_dir + "a/Cu.eps" )
     input()
 
@@ -180,26 +186,56 @@ if __name__=="__main__":
     TaHe.graph.SetMarkerSize( 2 )
     TaHe.graph.SetMarkerColor( 2 )
     TaHe.Draw( options="AP", marker=5 )
+    TaN.graph.SetMarkerSize( 2 )
+    TaN.graph.SetMarkerColor( 4 )
+    TaN.Draw( options="P", marker=5 )
     canvas.SaveAs( graph_dir + "a/Ta.eps" )
     input()
 
     # ln(R) over ln(T)
+    f_CuHelog = Function( TF1( "CuHe", "log([0] + [1]*e^(x*[2]))", 3.5, 4.5 ))
+    f_TaHelog = Function( TF1( "TaHe", "log([0] + [1]*e^(x*[2]))", 3.5, 4.5 ))
+    for f_log, f in zip( [f_CuHelog, f_TaHelog ], [f_CuHe, f_TaHe ] ):
+        p = f.GetParameters()
+        for i in range(len(p)):
+            f_log.function.SetParameter( i, p[i] )
+
     canvas = TCanvas("canvas","canvas")
     CuHe.ApplyX( flog ).Apply( flog )
     CuN.ApplyX( flog ).Apply( flog )
     CuHe.Draw( options="AP", marker=5 )
     CuN.Draw( options="P", marker=5 )
+    f_CuHelog.function.Draw( "LSame" )
     canvas.SaveAs( graph_dir + "a/ln_Cu.eps" )
     input()
 
-    #canvas3 = TCanvas("canvas3","canvas3")
     canvas = TCanvas("canvas","canvas")
-    TaHe.Apply( flog )
-    TaN.Apply( flog )
+    TaHe.ApplyX( flog ).Apply( flog )
+    TaN.ApplyX( flog ).Apply( flog )
     TaHe.Draw( options="AP", marker=5 )
     TaN.Draw( options="P", marker=5 )
+    f_TaHelog.function.Draw( "LSame" )
     canvas.SaveAs( graph_dir + "a/ln_Ta.eps" )
     input()
+
+    # Sprung
+    TaHe_spr = sectionHe.subgraphs[1].Slice(None,maxSpr)
+    T = TaHe_spr.GetX()
+    Tc_min = max( [ t for t in T if t < 20] )
+    Tc_max = min( [ t for t in T if t > 20] )
+    Tc = (Tc_max+Tc_min)/2
+    err_Tc = (Tc_max-Tc_min)/np.sqrt(12)
+    print( "Tc = {:6.5f} +- {:6.5f}".format( Tc, err_Tc ))
+    Tcline = TLine( Tc, 0, Tc, 0.15 )
+
+    canvas = TCanvas("canvas","canvas")
+    TaHe_spr.graph.SetMarkerSize( 2 )
+    TaHe_spr.graph.SetMarkerColor( 2 )
+    TaHe_spr.Draw( options="AP", marker=5 )
+    Tcline.Draw()
+    canvas.SaveAs( graph_dir + "a/Ta.eps" )
+    input()
+
 
     # ln 1/R over ln 1/T
     canvas = TCanvas("canvas","canvas")
