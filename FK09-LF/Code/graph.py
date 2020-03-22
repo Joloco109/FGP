@@ -113,8 +113,14 @@ class Graph:
 
     def Slice( self, start, end ):
         x = self.GetX()
-        i, = np.where( start <= x )
-        j, = np.where( x < end )
+        if not start == None:
+            i, = np.where( start <= x )
+        else :
+            i = np.array([ range(len(x)) ])
+        if not end== None:
+            j, = np.where( x < end )
+        else:
+            j = np.array([ range(len(x)) ])
         i = np.intersect1d( i, j )
         x = np.take( x, i )
         y = np.take( self.GetY(), i )
@@ -153,6 +159,12 @@ class Graph:
         scaler.function.SetParameter( 0, s )
         self.Apply( scaler )
         return self
+
+    def Fit( self, function, options=None ):
+        if options==None:
+            return self.graph.Fit( function.function )
+        else:
+            return self.graph.Fit( function.function, options )
 
     def Draw( self, options="AP", marker=6 ):
         self.graph.SetLineWidth(1)
