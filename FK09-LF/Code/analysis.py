@@ -51,12 +51,9 @@ if __name__=="__main__":
     TaHe.Draw( options="P", marker=5 )
 
     SiHe = sectionHe.subgraphs[2]
-    print(np.max(SiHe.GetY()))
     rightmax = 1.1*np.max(SiHe.GetY())
     scale = max( np.max(CuHe.GetY()), np.max(TaHe.GetY()) ) / rightmax
-    print(scale)
     SiHe.Scale( scale )
-    print(np.max(SiHe.GetY()))
     SiHe.graph.SetMarkerSize( 2 )
     SiHe.graph.SetMarkerColor( 5 )
     SiHe.Draw( options="P", marker=5 )
@@ -80,12 +77,7 @@ if __name__=="__main__":
     TaN.Draw( options="P", marker=5 )
 
     SiN = sectionN.subgraphs[2]
-    print(np.max(SiN.GetY()))
-    rightmax = 1.1*np.max(SiN.GetY())
-    scale = max( np.max(CuN.GetY()), np.max(TaN.GetY()) ) / rightmax
-    print(scale)
     SiN.Scale( scale )
-    print(np.max(SiN.GetY()))
     SiN.graph.SetMarkerSize( 2 )
     SiN.graph.SetMarkerColor( 5 )
     SiN.Draw( options="P", marker=5 )
