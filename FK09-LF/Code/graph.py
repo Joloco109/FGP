@@ -1,6 +1,8 @@
 import codecs
 import numpy as np
-from ROOT import TGraph, TGraphErrors, TMultiGraph
+from ROOT import TGraph, TGraphErrors, TMultiGraph, TF1
+
+from function import Function
 
 class MultiGraph :
     def __init__( self ):
@@ -126,6 +128,7 @@ class Graph:
 
     def Apply( self, func ):
         self.graph.Apply( func.function )
+        return self
 
     def ApplyX( self, func ):
         x = self.GetX()
@@ -136,9 +139,16 @@ class Graph:
             new_x = func.Get(( x[i], ex[i] ))
             self.graph.SetPoint( i, new_x[0], y[i] )
             self.graph.SetPointError( i, new_x[1], ey[i] )
+        return self
+
+    def Scale( self, s ):
+        scaler = Function( TF1("scale", "[0]*x" ) )
+        scaler.function.SetParameter( 0, s )
+        print( scaler.function.Eval(max(self.GetY())) )
+        return self.Apply( scaler )
 
     def Draw( self, options="AP", marker=6 ):
-        self.graph.SetLineWidth(4)
+        self.graph.SetLineWidth(1)
         self.graph.SetMarkerStyle(marker)
         self.graph.Draw(options)
 
