@@ -10,6 +10,8 @@ graph_dir = "Graphs/"
 
 minT = 20
 maxT = 77
+minExt = 0
+maxExt = 377
 
 def draw( graph, funcX=None, funcY=None, options=None ):
     if not funcY==None:
@@ -136,4 +138,29 @@ if __name__=="__main__":
     TaHe.Draw( options="AP", marker=5 )
     TaN.Draw( options="P", marker=5 )
     canvas.SaveAs( graph_dir + "a/ln_Ta.eps" )
+    input()
+
+    # ln 1/R over ln 1/T
+    canvas = TCanvas("canvas","canvas")
+    SiHe = sectionHe.subgraphs[2].Slice(minExt,maxExt).Apply( finv_log ).ApplyX( finv_log )
+    SiN = sectionN.subgraphs[2].Slice(minExt,maxExt).Apply( finv_log ).ApplyX( finv_log )
+    SiHe.graph.SetMarkerSize( 2 )
+    SiHe.graph.SetMarkerColor( 2 )
+    SiHe.Draw( options="AP", marker=5 )
+    SiN.graph.SetMarkerSize( 2 )
+    SiN.graph.SetMarkerColor( 4 )
+    SiN.Draw( options="P", marker=5 )
+    canvas.SaveAs( graph_dir + "b/Si_inv.eps" )
+    input()
+
+    canvas = TCanvas("canvas","canvas")
+    SiHe = sectionHe.subgraphs[2].Slice(minExt,maxExt).Apply( finv_log ).ApplyX( flog )
+    SiN = sectionN.subgraphs[2].Slice(minExt,maxExt).Apply( finv_log ).ApplyX( flog )
+    SiHe.graph.SetMarkerSize( 2 )
+    SiHe.graph.SetMarkerColor( 2 )
+    SiHe.Draw( options="AP", marker=5 )
+    SiN.graph.SetMarkerSize( 2 )
+    SiN.graph.SetMarkerColor( 4 )
+    SiN.Draw( options="P", marker=5 )
+    canvas.SaveAs( graph_dir + "b/Si.eps" )
     input()
