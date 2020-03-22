@@ -127,7 +127,14 @@ class Graph:
         return Graph( self.name, x, y, ex, ey )
 
     def Apply( self, func ):
-        self.graph.Apply( func.function )
+        x = self.GetX()
+        ex = self.GetEX()
+        y = self.GetY()
+        ey = self.GetEY()
+        for i in range(len(y)):
+            new_y = func.Get(( y[i], ey[i] ))
+            self.graph.SetPoint( i, x[i], new_y[0] )
+            self.graph.SetPointError( i, ex[i], new_y[1] )
         return self
 
     def ApplyX( self, func ):
@@ -142,10 +149,10 @@ class Graph:
         return self
 
     def Scale( self, s ):
-        scaler = Function( TF1("scale", "[0]*x" ) )
+        scaler = Function( TF1("scale_{}".format(s), "[0]*x" ) )
         scaler.function.SetParameter( 0, s )
-        print( scaler.function.Eval(max(self.GetY())) )
-        return self.Apply( scaler )
+        self.Apply( scaler )
+        return self
 
     def Draw( self, options="AP", marker=6 ):
         self.graph.SetLineWidth(1)
