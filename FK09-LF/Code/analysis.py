@@ -1,5 +1,5 @@
 import numpy as np
-from ROOT import TF1, TCanvas, TLine
+from ROOT import TF1, TCanvas, TLine, TLegend
 
 from graph import MultiGraph
 from calibration import calibrate_C, calibrate_Pt
@@ -47,7 +47,8 @@ if __name__=="__main__":
     CuHe.graph.SetMarkerSize( 2 )
     CuHe.graph.SetMarkerColor( 4 )
     CuHe.Draw( options="AP", marker=5 )
-
+    CuHe.graph.SetTitle("helium measurement")
+    
     TaHe = sectionHe.subgraphs[1]
     TaHe.graph.SetMarkerSize( 2 )
     TaHe.graph.SetMarkerColor( 2 )
@@ -58,9 +59,15 @@ if __name__=="__main__":
     scale = max( np.max(CuHe.GetY()), np.max(TaHe.GetY()) ) / rightmax
     SiHe.Scale( scale )
     SiHe.graph.SetMarkerSize( 2 )
-    SiHe.graph.SetMarkerColor( 5 )
+    SiHe.graph.SetMarkerColor( 6 )
     SiHe.Draw( options="P", marker=5 )
-
+    
+    legendHe = TLegend(.40,.77,.60,.92)
+    legendHe.AddEntry(CuHe.graph, "Cu")
+    legendHe.AddEntry(TaHe.graph, "Ta")
+    legendHe.AddEntry(SiHe.graph, "Si")
+    legendHe.Draw()
+    
     minTline = TLine( minT, 0, minT, 20 )
     maxTline = TLine( maxT, 0, maxT, 20 )
     minLinline = TLine( minLin, 0, minLin, 20 )
@@ -75,7 +82,8 @@ if __name__=="__main__":
     CuN.graph.SetMarkerSize( 2 )
     CuN.graph.SetMarkerColor( 4 )
     CuN.Draw( options="AP", marker=5 )
-
+    CuN.graph.SetTitle("nitrogen measurement")
+    
     TaN = sectionN.subgraphs[1]
     TaN.graph.SetMarkerSize( 2 )
     TaN.graph.SetMarkerColor( 2 )
@@ -84,8 +92,14 @@ if __name__=="__main__":
     SiN = sectionN.subgraphs[2]
     SiN.Scale( scale )
     SiN.graph.SetMarkerSize( 2 )
-    SiN.graph.SetMarkerColor( 5 )
+    SiN.graph.SetMarkerColor( 6 )
     SiN.Draw( options="P", marker=5 )
+
+    legendN = TLegend(.40,.77,.60,.92)
+    legendN.AddEntry(CuHe.graph, "Cu")
+    legendN.AddEntry(TaHe.graph, "Ta")
+    legendN.AddEntry(SiHe.graph, "Si")
+    legendN.Draw()
 
     minTline = TLine( minT, 0, minT, 20 )
     maxTline = TLine( maxT, 0, maxT, 20 )
@@ -127,21 +141,37 @@ if __name__=="__main__":
     # R over T
     canvas = TCanvas("canvas","canvas")
     CuHe_lin.graph.SetMarkerSize( 2 )
-    CuHe_lin.graph.SetMarkerColor( 2 )
-    CuHe_lin.Draw( options="AP", marker=5 )
+    CuHe_lin.graph.SetMarkerColor( 6 )
+    CuHe_lin.Draw( options="AP", marker=5, xName = "T [#circ C]" )
+    CuHe_lin.graph.SetTitle("linear regime Cu")
     CuN_lin.graph.SetMarkerSize( 2 )
     CuN_lin.graph.SetMarkerColor( 4 )
     CuN_lin.Draw( options="P", marker=5 )
+    
+    legendCu_lin = TLegend(.40,.77,.60,.92)
+    legendCu_lin.AddEntry(CuHe_lin.graph, "Cu He")
+    legendCu_lin.AddEntry(CuN_lin.graph, "Cu N")
+    legendCu_lin.AddEntry(flin_CuN.function, "R = R_0(1+\\alpha T)")
+    legendCu_lin.Draw()
+    
     canvas.SaveAs( graph_dir + "c/Cu_lin.eps" )
     input()
-
+    
     canvas = TCanvas("canvas","canvas")
     TaHe_lin.graph.SetMarkerSize( 2 )
-    TaHe_lin.graph.SetMarkerColor( 2 )
-    TaHe_lin.Draw( options="AP", marker=5 )
+    TaHe_lin.graph.SetMarkerColor( 6 )
+    TaHe_lin.Draw( options="AP", marker=5, xName = "T [#circ C]" )
+    TaHe_lin.graph.SetTitle("linear regime Ta")
     TaN_lin.graph.SetMarkerSize( 2 )
     TaN_lin.graph.SetMarkerColor( 4 )
     TaN_lin.Draw( options="P", marker=5 )
+    
+    legendTa_lin = TLegend(.40,.77,.60,.92)
+    legendTa_lin.AddEntry(TaHe_lin.graph, "Ta He")
+    legendTa_lin.AddEntry(TaN_lin.graph, "Ta N")
+    legendTa_lin.AddEntry(flin_TaN.function, "R = R_0(1+\\alpha T)")
+    legendTa_lin.Draw()
+    
     canvas.SaveAs( graph_dir + "c/Ta_lin.eps" )
     input()
 
@@ -174,21 +204,37 @@ if __name__=="__main__":
     # R over T
     canvas = TCanvas("canvas","canvas")
     CuHe.graph.SetMarkerSize( 2 )
-    CuHe.graph.SetMarkerColor( 2 )
+    CuHe.graph.SetMarkerColor( 6 )
     CuHe.Draw( options="AP", marker=5 )
+    CuHe.graph.SetTitle("non-linear regime Cu")
     CuN.graph.SetMarkerSize( 2 )
     CuN.graph.SetMarkerColor( 4 )
     CuN.Draw( options="P", marker=5 )
+    
+    legendCu = TLegend(.40,.77,.60,.92)
+    legendCu.AddEntry(CuHe.graph, "Cu He")
+    legendCu.AddEntry(CuN.graph, "Cu N")
+    legendCu.AddEntry(f_CuHe.function, "R = R_0+A\\cdot T^\\beta")
+    legendCu.Draw()
+    
     canvas.SaveAs( graph_dir + "a/Cu.eps" )
     input()
 
     canvas = TCanvas("canvas","canvas")
     TaHe.graph.SetMarkerSize( 2 )
-    TaHe.graph.SetMarkerColor( 2 )
+    TaHe.graph.SetMarkerColor( 6 )
     TaHe.Draw( options="AP", marker=5 )
+    TaHe.graph.SetTitle("non-linear regime Ta")
     TaN.graph.SetMarkerSize( 2 )
     TaN.graph.SetMarkerColor( 4 )
     TaN.Draw( options="P", marker=5 )
+    
+    legendTa = TLegend(.40,.77,.60,.92)
+    legendTa.AddEntry(TaHe.graph, "Ta He")
+    legendTa.AddEntry(TaN.graph, "Ta N")
+    legendTa.AddEntry(f_TaHe.function, "R = R_0+A\\cdot T^\\beta")
+    legendTa.Draw()
+    
     canvas.SaveAs( graph_dir + "a/Ta.eps" )
     input()
 
@@ -203,18 +249,34 @@ if __name__=="__main__":
     canvas = TCanvas("canvas","canvas")
     CuHe.ApplyX( flog ).Apply( flog )
     CuN.ApplyX( flog ).Apply( flog )
-    CuHe.Draw( options="AP", marker=5 )
+    CuHe.Draw( options="AP", marker=5, xName= "ln(T) [K]", yName= "ln(R) [\\Omega]")
+    CuHe.graph.SetTitle("log scale non-linear regime Cu")
     CuN.Draw( options="P", marker=5 )
     f_CuHelog.function.Draw( "LSame" )
+    
+    legendCu = TLegend(.28,.76,.72,.93)
+    legendCu.AddEntry(CuHe.graph, "Cu He")
+    legendCu.AddEntry(CuN.graph, "Cu N")
+    legendCu.AddEntry(f_CuHelog.function, "ln(R) = ln(R_0 + A e^{T \\cdot \\beta })")
+    legendCu.Draw()
+    
     canvas.SaveAs( graph_dir + "a/ln_Cu.eps" )
     input()
 
     canvas = TCanvas("canvas","canvas")
     TaHe.ApplyX( flog ).Apply( flog )
     TaN.ApplyX( flog ).Apply( flog )
-    TaHe.Draw( options="AP", marker=5 )
+    TaHe.Draw( options="AP", marker=5, xName= "ln(T) [K]", yName= "ln(R) [\\Omega]" )
+    TaHe.graph.SetTitle("log scale non-linear regime Ta")
     TaN.Draw( options="P", marker=5 )
     f_TaHelog.function.Draw( "LSame" )
+    
+    legendTa = TLegend(.28,.76,.72,.93)
+    legendTa.AddEntry(TaHe.graph, "Ta He")
+    legendTa.AddEntry(TaN.graph, "Ta N")
+    legendTa.AddEntry(f_TaHelog.function, "ln(R) = ln(R_0 + A e^{T \\cdot \\beta })")
+    legendTa.Draw()
+    
     canvas.SaveAs( graph_dir + "a/ln_Ta.eps" )
     input()
 
@@ -227,12 +289,16 @@ if __name__=="__main__":
     err_Tc = (Tc_max-Tc_min)/np.sqrt(12)
     print( "Tc = {:6.5f} +- {:6.5f}".format( Tc, err_Tc ))
     Tcline = TLine( Tc, 0, Tc, 0.15 )
+    Tc_minline = TLine( Tc_min, 0, Tc_min, 0.15 )
+    Tc_maxline = TLine( Tc_max, 0, Tc_max, 0.15 )
 
     canvas = TCanvas("canvas","canvas")
     TaHe_spr.graph.SetMarkerSize( 2 )
     TaHe_spr.graph.SetMarkerColor( 2 )
     TaHe_spr.Draw( options="AP", marker=5 )
     Tcline.Draw()
+    Tc_minline.Draw()
+    Tc_maxline.Draw()
     canvas.SaveAs( graph_dir + "a/Ta.eps" )
     input()
 
@@ -243,21 +309,37 @@ if __name__=="__main__":
     SiN = sectionN.subgraphs[2].Slice(minExt,maxExt).Apply( finv_log ).ApplyX( finv_log )
     SiHe.graph.SetMarkerSize( 2 )
     SiHe.graph.SetMarkerColor( 2 )
-    SiHe.Draw( options="AP", marker=5 )
+    SiHe.Draw( options="AP", marker=5, xName= "ln(1/T) [1/K]", yName= "ln(1/R) [1/\\Omega]" )
+    SiHe.graph.SetTitle("inverse log scale Si")
     SiN.graph.SetMarkerSize( 2 )
     SiN.graph.SetMarkerColor( 4 )
     SiN.Draw( options="P", marker=5 )
+    
+    legendSi_inv = TLegend(.40,.77,.60,.92)
+    legendSi_inv.AddEntry(SiHe.graph, "Si He")
+    legendSi_inv.AddEntry(SiN.graph, "Si N")
+    legendSi_inv.Draw()
+    
     canvas.SaveAs( graph_dir + "b/Si_inv.eps" )
     input()
 
+
+    # ln 1/R over ln T
     canvas = TCanvas("canvas","canvas")
     SiHe = sectionHe.subgraphs[2].Slice(minExt,maxExt).Apply( finv_log ).ApplyX( flog )
     SiN = sectionN.subgraphs[2].Slice(minExt,maxExt).Apply( finv_log ).ApplyX( flog )
     SiHe.graph.SetMarkerSize( 2 )
     SiHe.graph.SetMarkerColor( 2 )
-    SiHe.Draw( options="AP", marker=5 )
+    SiHe.Draw( options="AP", marker=5, xName= "ln(T) [K]", yName= "ln(1/R) [1/\\Omega]" )
+    SiHe.graph.SetTitle("Mobility in Si ")
     SiN.graph.SetMarkerSize( 2 )
     SiN.graph.SetMarkerColor( 4 )
     SiN.Draw( options="P", marker=5 )
+    
+    legendSi = TLegend(.40,.77,.60,.92)
+    legendSi.AddEntry(SiHe.graph, "Si He")
+    legendSi.AddEntry(SiN.graph, "Si N")
+    legendSi.Draw()
+    
     canvas.SaveAs( graph_dir + "b/Si.eps" )
     input()

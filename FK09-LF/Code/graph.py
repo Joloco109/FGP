@@ -166,11 +166,13 @@ class Graph:
         else:
             return self.graph.Fit( function.function, options )
 
-    def Draw( self, options="AP", marker=6 ):
+    def Draw( self, options="AP", marker=6, xName = "T [K]", yName = "R [\\Omega]" ):
         self.graph.SetLineWidth(1)
         self.graph.SetMarkerStyle(marker)
         self.graph.Draw(options)
-
+        self.GetXaxis().SetTitle( xName )
+        self.GetYaxis().SetTitle( yName ) 
+        
     def ArrayFromPointer( self, pointer ):
         return np.array( np.fromiter(
             pointer,
