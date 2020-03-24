@@ -77,6 +77,7 @@ if __name__=="__main__":
     canvas.SaveAs( graph_dir + "Helium.eps" )
     input()
 
+
     canvas = TCanvas("canvas","canvas")
     CuN = sectionN.subgraphs[0]
     CuN.graph.SetMarkerSize( 2 )
@@ -109,7 +110,60 @@ if __name__=="__main__":
     minLinline.Draw()
     canvas.SaveAs( graph_dir + "Nitrogen.eps" )
     input()
+    
+    #whole data
+    canvas = TCanvas("canvas","canvas")
+    CuN = sectionN.subgraphs[0]
+    CuN.graph.SetMarkerSize( 2 )
+    CuN.graph.SetMarkerColor( 7 )
+    CuN.Draw( options="AP", marker=5 )
+    CuN.graph.SetTitle("averaged and calibrated measurement")
+    
+    TaN = sectionN.subgraphs[1]
+    TaN.graph.SetMarkerSize( 2 )
+    TaN.graph.SetMarkerColor( 3 )
+    TaN.Draw( options="P", marker=5 )
 
+    SiN = sectionN.subgraphs[2]
+    SiN.graph.SetMarkerSize( 2 )
+    SiN.graph.SetMarkerColor( 1 )
+    SiN.Draw( options="P", marker=5 )
+
+    CuHe = sectionHe.subgraphs[0]
+    CuHe.graph.SetMarkerSize( 2 )
+    CuHe.graph.SetMarkerColor( 4 )
+    CuHe.Draw( options="P", marker=5 )
+    
+    TaHe = sectionHe.subgraphs[1]
+    TaHe.graph.SetMarkerSize( 2 )
+    TaHe.graph.SetMarkerColor( 2 )
+    TaHe.Draw( options="P", marker=5 )
+
+    SiHe = sectionHe.subgraphs[2]
+    SiHe.graph.SetMarkerSize( 2 )
+    SiHe.graph.SetMarkerColor( 6 )
+    SiHe.Draw( options="P", marker=5 )
+    
+    legend = TLegend(.80,.14,.89,.45)
+    legend.AddEntry(CuHe.graph, "Cu He")
+    legend.AddEntry(TaHe.graph, "Ta He")
+    legend.AddEntry(SiHe.graph, "Si He")
+    legend.AddEntry(CuN.graph, "Cu N")
+    legend.AddEntry(TaN.graph, "Ta N")
+    legend.AddEntry(SiN.graph, "Si N")
+    legend.Draw()
+
+    minTline = TLine( minT, 0, minT, 20 )
+    maxTline = TLine( maxT, 0, maxT, 20 )
+    minLinline = TLine( minLin, 0, minLin, 20 )
+    minTline.Draw()
+    maxTline.Draw()
+    minLinline.Draw()
+    
+    canvas.SaveAs( graph_dir + "Data.eps" )
+    input()
+    
+    
     # Fits
     #   linear
     flin_CuHe = Function( TF1( "lin_CuHe", "pol1" ))
