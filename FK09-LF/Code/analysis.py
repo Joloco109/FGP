@@ -29,6 +29,7 @@ def draw( graph, funcX=None, funcY=None, options=None ):
 if __name__=="__main__":
     flog = Function( TF1("log", "log(x)" ) )
     finv_log = Function( TF1("inv log", "log(1/x)" ) )
+    finv = Function( TF1("inv", "1/x" ) )
     fto_C = Function( TF1("to_C", "x-273.15" ) )
 
     caliC = calibrate_C()
@@ -357,10 +358,10 @@ if __name__=="__main__":
     input()
 
 
-    # ln 1/R over ln 1/T
+    # ln 1/R over 1/T
     canvas = TCanvas("canvas","canvas")
-    SiHe = sectionHe.subgraphs[2].Slice(minExt,maxExt).Apply( finv_log ).ApplyX( finv_log )
-    SiN = sectionN.subgraphs[2].Slice(minExt,maxExt).Apply( finv_log ).ApplyX( finv_log )
+    SiHe = sectionHe.subgraphs[2].Slice(minExt,maxExt).Apply( finv_log ).ApplyX( finv )
+    SiN = sectionN.subgraphs[2].Slice(minExt,maxExt).Apply( finv_log ).ApplyX( finv )
     SiHe.graph.SetMarkerSize( 2 )
     SiHe.graph.SetMarkerColor( 2 )
     SiHe.Draw( options="AP", marker=5, xName= "ln(1/T) [1/K]", yName= "ln(1/R) [1/\\Omega]" )
@@ -376,7 +377,6 @@ if __name__=="__main__":
     
     canvas.SaveAs( graph_dir + "b/Si_inv.eps" )
     input()
-
 
     # ln 1/R over ln T
     canvas = TCanvas("canvas","canvas")
