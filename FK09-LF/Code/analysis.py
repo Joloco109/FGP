@@ -5,6 +5,7 @@ from graph import MultiGraph
 from calibration import calibrate_C, calibrate_Pt
 from function import Function
 from section import section
+from calibration import k_boltzmann, eVolt
 
 graph_dir = "Graphs/"
 
@@ -12,8 +13,10 @@ minT = 20
 maxT = 70
 minLin = 150
 maxSpr = 40
-minExt = 0
-maxExt = 377
+minRes = [ 1, 1 ]
+maxRes = [ 170, 240 ]
+minExt = [ 170, 245 ]
+maxExt = [ 220, 300 ]
 
 def draw( graph, funcX=None, funcY=None, options=None ):
     if not funcY==None:
@@ -382,46 +385,99 @@ if __name__=="__main__":
     Tcline.Draw()
     Tc_minline.Draw()
     Tc_maxline.Draw()
-    canvas.SaveAs( graph_dir + "a/Ta.eps" )
+    canvas.SaveAs( graph_dir + "e/Sprung.eps" )
     input()
 
 
     # ln 1/R over 1/T
+    fres_SiHe = Function( TF1( "res_SiHe", "pol1", 1/maxRes[0], 1/minRes[0] ))
+    fres_SiN  = Function( TF1( "res_SiN", "pol1", 1/maxRes[1], 1/minRes[1] ))
+    for f in [fres_SiHe, fres_SiN ]:
+        f.function.SetParameter( 0, 0 )
+        f.function.SetParameter( 1, -6e2 )
+
+    SiHe_res = sectionHe.subgraphs[2].Clone().Apply( finv_log ).ApplyX( finv )
+    SiN_res = sectionN.subgraphs[2].Clone().Apply( finv_log ).ApplyX( finv )
+
+    for f,g in zip( [ fres_SiHe, fres_SiN ],
+                    [ SiHe_res, SiN_res ] ) :
+        g.Fit( f, "RQ" )
+        pars = f.GetParameters()
+        es = f.GetParErrors()
+        print( f.function )
+        print( "A     = {:6.3f} +- {:6.3f}".format( pars[0], es[0] ) )
+        print( "delta = {:6.5f} +- {:6.5f}".format( pars[1], es[1] ))
+        print( "Chi/N = {:6.3f}".format( f.GetChisquare()/f.GetNDF() ))
+        energy_d = -2*k_boltzmann / eVolt * pars[1]
+        sig_ed = -2*k_boltzmann / eVolt * es[1]
+        print( "E_d   =({:6.5f} +- {:6.5f})eV".format( energy_d, sig_ed ))
+        print()
+
     canvas = TCanvas("canvas","canvas")
-    SiHe = sectionHe.subgraphs[2].Slice(minExt,maxExt).Apply( finv_log ).ApplyX( finv )
-    SiN = sectionN.subgraphs[2].Slice(minExt,maxExt).Apply( finv_log ).ApplyX( finv )
-    SiHe.graph.SetMarkerSize( 2 )
-    SiHe.graph.SetMarkerColor( 2 )
-    SiHe.Draw( options="AP", marker=5, xName= "1/T [1/K]", yName= "ln(1/R) [1/\\Omega]" )
-    SiHe.graph.SetTitle("inverse log scale Si")
-    SiN.graph.SetMarkerSize( 2 )
-    SiN.graph.SetMarkerColor( 4 )
-    SiN.Draw( options="P", marker=5 )
+    #minResLine = TLine( 1/minRes, -18, 1/minRes, -12 )
+    #maxResLine = TLine( 1/maxRes, -18, 1/maxRes, -12 )
+    #minResLine.Draw()
+    #maxResLine.Draw()
+
+    SiHe_res.graph.SetMarkerSize( 2 )
+    SiHe_res.graph.SetMarkerColor( 2 )
+    SiHe_res.Draw( options="AP", marker=5, xName= "1/T [1/K]", yName= "ln(1/R) [1/\\Omega]" )
+    SiHe_res.graph.SetTitle("inverse log scale Si")
+    SiN_res.graph.SetMarkerSize( 2 )
+    SiN_res.graph.SetMarkerColor( 4 )
+    SiN_res.Draw( options="P", marker=5 )
     
     legendSi_inv = TLegend(.40,.77,.60,.92)
-    legendSi_inv.AddEntry(SiHe.graph, "Si He")
-    legendSi_inv.AddEntry(SiN.graph, "Si N")
+    legendSi_inv.AddEntry(SiHe_res.graph, "Si He")
+    legendSi_inv.AddEntry(SiN_res.graph, "Si N")
     legendSi_inv.Draw()
     
     canvas.SaveAs( graph_dir + "b/Si_inv.eps" )
     input()
 
     # ln 1/R over ln T
+    fext_SiHe = Function( TF1( "ext_SiHe", "pol1", np.log(minExt[0]), np.log(maxExt[0]) ))
+    fext_SiN  = Function( TF1( "ext_SiN", "pol1", np.log(minExt[1]), np.log(maxExt[1]) ))
+    for f in [fext_SiHe, fext_SiN ]:
+        f.function.SetParameter( 0, 0 )
+        f.function.SetParameter( 1, -6e2 )
+
+    SiHe_ext = sectionHe.subgraphs[2].Clone().Apply( finv_log ).ApplyX( flog )
+    SiN_ext = sectionN.subgraphs[2].Clone().Apply( finv_log ).ApplyX( flog )
+
+    for f,g in zip( [ fext_SiHe, fext_SiN ],
+                    [ SiHe_ext, SiN_ext ] ) :
+        g.Fit( f, "RQ" )
+        pars = f.GetParameters()
+        es = f.GetParErrors()
+        print( f.function )
+        print( "ln(A) = {:6.3f} +- {:6.3f}".format( pars[0], es[0] ) )
+        print( "gamma = {:6.5f} +- {:6.5f}".format( pars[1], es[1] ))
+        if f.GetNDF() == 0:
+            print("Chi = {:4.2f}".format(f.GetChisquare()))
+            print("You overfitted with laughable few data points!\nWhat did you expect?")
+        else:
+            print("Chi/Ndf = {:4.2f}".format(f.GetChisquare()/f.GetNDF()))
+        print()
+
     canvas = TCanvas("canvas","canvas")
-    SiHe = sectionHe.subgraphs[2].Slice(minExt,maxExt).Apply( finv_log ).ApplyX( flog )
-    SiN = sectionN.subgraphs[2].Slice(minExt,maxExt).Apply( finv_log ).ApplyX( flog )
-    SiHe.graph.SetMarkerSize( 2 )
-    SiHe.graph.SetMarkerColor( 2 )
-    SiHe.Draw( options="AP", marker=5, xName= "ln(T) [K]", yName= "ln(1/R) [1/\\Omega]" )
-    SiHe.graph.SetTitle("Mobility in Si ")
-    SiN.graph.SetMarkerSize( 2 )
-    SiN.graph.SetMarkerColor( 4 )
-    SiN.Draw( options="P", marker=5 )
+    #minResLine = TLine( np.log(minExt), -18, np.log(minExt), -13 )
+    #maxResLine = TLine( np.log(maxExt), -18, np.log(maxExt), -13 )
+    #minResLine.Draw()
+    #maxResLine.Draw()
+
+    SiHe_ext.graph.SetMarkerSize( 2 )
+    SiHe_ext.graph.SetMarkerColor( 2 )
+    SiHe_ext.Draw( options="AP", marker=5, xName= "ln(T[K])", yName= "ln(1/R[\\Omega])" )
+    SiHe_ext.graph.SetTitle("Mobility in Si ")
+    SiN_ext.graph.SetMarkerSize( 2 )
+    SiN_ext.graph.SetMarkerColor( 4 )
+    SiN_ext.Draw( options="P", marker=5 )
     
-    legendSi = TLegend(.40,.77,.60,.92)
-    legendSi.AddEntry(SiHe.graph, "Si He")
-    legendSi.AddEntry(SiN.graph, "Si N")
-    legendSi.Draw()
+    legendSi_ext = TLegend(.40,.77,.60,.92)
+    legendSi_ext.AddEntry(SiHe_ext.graph, "Si He")
+    legendSi_ext.AddEntry(SiN_ext.graph, "Si N")
+    legendSi_ext.Draw()
     
     canvas.SaveAs( graph_dir + "b/Si.eps" )
     input()
