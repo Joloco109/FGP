@@ -1,5 +1,5 @@
 import numpy as np
-from ROOT import TF1, TCanvas, TLine, TLegend
+from ROOT import TF1, TCanvas, TLine, TLegend, gPad, TGaxis
 
 from graph import MultiGraph
 from calibration import calibrate_C, calibrate_Pt
@@ -43,55 +43,71 @@ if __name__=="__main__":
 
     #Sections
     canvas = TCanvas("canvas","canvas")
-
-    CuHe = sectionHe.subgraphs[0]
-    CuHe.graph.SetMarkerSize( 2 )
-    CuHe.graph.SetMarkerColor( 4 )
-    CuHe.Draw( options="AP", marker=5 )
-    CuHe.graph.SetTitle("helium measurement")
-    
-    TaHe = sectionHe.subgraphs[1]
-    TaHe.graph.SetMarkerSize( 2 )
-    TaHe.graph.SetMarkerColor( 2 )
-    TaHe.Draw( options="P", marker=5 )
-
-    SiHe = sectionHe.subgraphs[2]
-    rightmax = 1.1*np.max(SiHe.GetY())
-    scale = max( np.max(CuHe.GetY()), np.max(TaHe.GetY()) ) / rightmax
-    SiHe.Scale( scale )
-    SiHe.graph.SetMarkerSize( 2 )
-    SiHe.graph.SetMarkerColor( 6 )
-    SiHe.Draw( options="P", marker=5 )
-    
-    legendHe = TLegend(.40,.77,.60,.92)
-    legendHe.AddEntry(CuHe.graph, "Cu")
-    legendHe.AddEntry(TaHe.graph, "Ta")
-    legendHe.AddEntry(SiHe.graph, "Si")
-    legendHe.Draw()
-    
     minTline = TLine( minT, 0, minT, 20 )
     maxTline = TLine( maxT, 0, maxT, 20 )
     minLinline = TLine( minLin, 0, minLin, 20 )
     minTline.Draw()
     maxTline.Draw()
     minLinline.Draw()
+
+    CuHe = sectionHe.subgraphs[0]
+    CuHe.graph.SetMarkerSize( 2 )
+    CuHe.graph.SetMarkerColor( 4 )
+    CuHe.Draw( options="AP", marker=5 )
+    CuHe.graph.SetTitle("helium measurement")
+
+    TaHe = sectionHe.subgraphs[1]
+    TaHe.graph.SetMarkerSize( 2 )
+    TaHe.graph.SetMarkerColor( 2 )
+    TaHe.Draw( options="P", marker=5 )
+
+    SiHe = sectionHe.subgraphs[2].Clone()
+    rightmax = 1.1*np.max(SiHe.GetY())
+    scale = max( np.max(CuHe.GetY()), np.max(TaHe.GetY()) ) / rightmax
+    SiHe.Scale( scale )
+    SiHe.graph.SetMarkerSize( 2 )
+    SiHe.graph.SetMarkerColor( 6 )
+    SiHe.Draw( options="P", marker=5 )
+
+    legendHe = TLegend(.40,.77,.60,.92)
+    legendHe.AddEntry(CuHe.graph, "Cu")
+    legendHe.AddEntry(TaHe.graph, "Ta")
+    legendHe.AddEntry(SiHe.graph, "Si")
+    legendHe.Draw()
+
+    axis = TGaxis( gPad.GetUxmax(), gPad.GetUymin(),
+            gPad.GetUxmax(), gPad.GetUymax(),
+            0, rightmax, 510, "+L" )
+    axis.SetLineColor( 6 )
+    axis.SetLabelColor( 6 )
+    axis.Draw()
+
     canvas.SaveAs( graph_dir + "Helium.eps" )
     input()
 
 
     canvas = TCanvas("canvas","canvas")
+    minTline = TLine( minT, 0, minT, 20 )
+    maxTline = TLine( maxT, 0, maxT, 20 )
+    minLinline = TLine( minLin, 0, minLin, 20 )
+    minTline.Draw()
+    maxTline.Draw()
+    minLinline.Draw()
+
     CuN = sectionN.subgraphs[0]
     CuN.graph.SetMarkerSize( 2 )
     CuN.graph.SetMarkerColor( 4 )
     CuN.Draw( options="AP", marker=5 )
     CuN.graph.SetTitle("nitrogen measurement")
-    
+
     TaN = sectionN.subgraphs[1]
     TaN.graph.SetMarkerSize( 2 )
     TaN.graph.SetMarkerColor( 2 )
     TaN.Draw( options="P", marker=5 )
 
-    SiN = sectionN.subgraphs[2]
+    SiN = sectionN.subgraphs[2].Clone()
+    rightmax = 1.1*np.max(SiN.GetY())
+    scale = max( np.max(CuN.GetY()), np.max(TaN.GetY()) ) / rightmax
     SiN.Scale( scale )
     SiN.graph.SetMarkerSize( 2 )
     SiN.graph.SetMarkerColor( 6 )
@@ -103,48 +119,60 @@ if __name__=="__main__":
     legendN.AddEntry(SiHe.graph, "Si")
     legendN.Draw()
 
+    axis = TGaxis( gPad.GetUxmax(), gPad.GetUymin(),
+            gPad.GetUxmax(), gPad.GetUymax(),
+            0, rightmax, 510, "+L" )
+    axis.SetLineColor( 6 )
+    axis.SetLabelColor( 6 )
+    axis.Draw()
+
+    canvas.SaveAs( graph_dir + "Nitrogen.eps" )
+    input()
+
+    #whole data
+    canvas = TCanvas("canvas","canvas")
     minTline = TLine( minT, 0, minT, 20 )
     maxTline = TLine( maxT, 0, maxT, 20 )
     minLinline = TLine( minLin, 0, minLin, 20 )
     minTline.Draw()
     maxTline.Draw()
     minLinline.Draw()
-    canvas.SaveAs( graph_dir + "Nitrogen.eps" )
-    input()
-    
-    #whole data
-    canvas = TCanvas("canvas","canvas")
+
     CuN = sectionN.subgraphs[0]
     CuN.graph.SetMarkerSize( 2 )
     CuN.graph.SetMarkerColor( 7 )
     CuN.Draw( options="AP", marker=5 )
     CuN.graph.SetTitle("averaged and calibrated measurement")
-    
+
     TaN = sectionN.subgraphs[1]
     TaN.graph.SetMarkerSize( 2 )
     TaN.graph.SetMarkerColor( 3 )
     TaN.Draw( options="P", marker=5 )
 
-    SiN = sectionN.subgraphs[2]
-    SiN.graph.SetMarkerSize( 2 )
-    SiN.graph.SetMarkerColor( 1 )
-    SiN.Draw( options="P", marker=5 )
-
     CuHe = sectionHe.subgraphs[0]
     CuHe.graph.SetMarkerSize( 2 )
     CuHe.graph.SetMarkerColor( 4 )
     CuHe.Draw( options="P", marker=5 )
-    
+
     TaHe = sectionHe.subgraphs[1]
     TaHe.graph.SetMarkerSize( 2 )
     TaHe.graph.SetMarkerColor( 2 )
     TaHe.Draw( options="P", marker=5 )
 
-    SiHe = sectionHe.subgraphs[2]
+    SiN = sectionN.subgraphs[2].Clone()
+    SiHe = sectionHe.subgraphs[2].Clone()
+    rightmax = 1.1*max( np.max(SiN.GetY()), np.max(SiHe.GetY()) )
+    scale = max( np.max(CuHe.GetY()), np.max(TaHe.GetY()), np.max(CuN.GetY()), np.max(TaN.GetY()) ) / rightmax
+    SiN.Scale( scale )
+    SiN.graph.SetMarkerSize( 2 )
+    SiN.graph.SetMarkerColor( 1 )
+    SiN.Draw( options="P", marker=5 )
+
+    SiHe.Scale( scale )
     SiHe.graph.SetMarkerSize( 2 )
     SiHe.graph.SetMarkerColor( 6 )
     SiHe.Draw( options="P", marker=5 )
-    
+
     legend = TLegend(.80,.14,.89,.45)
     legend.AddEntry(CuHe.graph, "Cu He")
     legend.AddEntry(TaHe.graph, "Ta He")
@@ -154,13 +182,13 @@ if __name__=="__main__":
     legend.AddEntry(SiN.graph, "Si N")
     legend.Draw()
 
-    minTline = TLine( minT, 0, minT, 20 )
-    maxTline = TLine( maxT, 0, maxT, 20 )
-    minLinline = TLine( minLin, 0, minLin, 20 )
-    minTline.Draw()
-    maxTline.Draw()
-    minLinline.Draw()
-    
+    axis = TGaxis( gPad.GetUxmax(), gPad.GetUymin(),
+            gPad.GetUxmax(), gPad.GetUymax(),
+            0, rightmax, 510, "+L" )
+    axis.SetLineColor( 6 )
+    axis.SetLabelColor( 6 )
+    axis.Draw()
+
     canvas.SaveAs( graph_dir + "Data.eps" )
     input()
     
@@ -250,7 +278,7 @@ if __name__=="__main__":
         pars = f.GetParameters()
         es = f.GetParErrors()
         print( f.function )
-        print( "T_0 = {:6.3f} +- {:6.3f}".format( pars[0], es[0] ) )
+        print( "T_0 = {:6.5f} +- {:6.5f}".format( pars[0], es[0] ) )
         print( "A   =({:6.5f} +- {:6.5f})*10^-6".format( pars[1]*1e6, es[1]*1e6 ) )
         print( "beta= {:6.5f} +- {:6.5f}".format( pars[2], es[2] ) )
         print( "Chi/N = {:6.3f}".format( f.GetChisquare()/f.GetNDF() ))
@@ -364,7 +392,7 @@ if __name__=="__main__":
     SiN = sectionN.subgraphs[2].Slice(minExt,maxExt).Apply( finv_log ).ApplyX( finv )
     SiHe.graph.SetMarkerSize( 2 )
     SiHe.graph.SetMarkerColor( 2 )
-    SiHe.Draw( options="AP", marker=5, xName= "ln(1/T) [1/K]", yName= "ln(1/R) [1/\\Omega]" )
+    SiHe.Draw( options="AP", marker=5, xName= "1/T [1/K]", yName= "ln(1/R) [1/\\Omega]" )
     SiHe.graph.SetTitle("inverse log scale Si")
     SiN.graph.SetMarkerSize( 2 )
     SiN.graph.SetMarkerColor( 4 )
