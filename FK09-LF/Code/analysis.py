@@ -16,7 +16,7 @@ maxSpr = 40
 minRes = [ 1, 1 ]
 maxRes = [ 170, 200 ]
 minExt = [ 170, 200 ]
-maxExt = [ 220, 300 ]
+maxExt = [ 220, 255 ]
 
 def draw( graph, funcX=None, funcY=None, options=None ):
     if not funcY==None:
