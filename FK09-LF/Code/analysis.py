@@ -94,6 +94,7 @@ if __name__=="__main__":
     axis.SetTitleColor( 6 )
     axis.Draw()
 
+    canvas.Update()
     canvas.SaveAs( graph_dir + "Helium.eps" )
     input()
 
@@ -140,6 +141,7 @@ if __name__=="__main__":
     axis.SetTitleColor( 6 )
     axis.Draw()
 
+    canvas.Update()
     canvas.SaveAs( graph_dir + "Nitrogen.eps" )
     input()
 
@@ -206,6 +208,7 @@ if __name__=="__main__":
     axis.SetTitleColor( 6 )
     axis.Draw()
 
+    canvas.Update()
     canvas.SaveAs( graph_dir + "Data.eps" )
     input()
 
@@ -255,6 +258,7 @@ if __name__=="__main__":
     legendCu_lin.AddEntry(flin_CuN.function, "R = R_0(1+\\alpha T)")
     legendCu_lin.Draw()
 
+    canvas.Update()
     canvas.SaveAs( graph_dir + "c/Cu_lin.eps" )
     input()
 
@@ -274,6 +278,7 @@ if __name__=="__main__":
     legendTa_lin.AddEntry(flin_TaN.function, "R = R_0(1+\\alpha T)")
     legendTa_lin.Draw()
 
+    canvas.Update()
     canvas.SaveAs( graph_dir + "c/Ta_lin.eps" )
     input()
 
@@ -319,6 +324,7 @@ if __name__=="__main__":
     legendCu.AddEntry(f_CuHe.function, "R = R_0+A T^\\beta")
     legendCu.Draw()
 
+    canvas.Update()
     canvas.SaveAs( graph_dir + "a/Cu.eps" )
     input()
 
@@ -336,6 +342,7 @@ if __name__=="__main__":
     legendTa.AddEntry(f_TaHe.function, "R = R_0+A T^\\beta")
     legendTa.Draw()
 
+    canvas.Update()
     canvas.SaveAs( graph_dir + "a/Ta.eps" )
     input()
 
@@ -360,6 +367,7 @@ if __name__=="__main__":
     legendCu.AddEntry(f_CuHelog.function, "ln(R) = ln(R_0 + A e^{T \\beta })")
     legendCu.Draw()
 
+    canvas.Update()
     canvas.SaveAs( graph_dir + "a/ln_Cu.eps" )
     input()
 
@@ -376,6 +384,7 @@ if __name__=="__main__":
     legendTa.AddEntry(f_TaHelog.function, "ln(R) = ln(R_0 + A e^{T \\beta })")
     legendTa.Draw()
 
+    canvas.Update()
     canvas.SaveAs( graph_dir + "a/ln_Ta.eps" )
     input()
 
@@ -398,6 +407,7 @@ if __name__=="__main__":
     Tcline.Draw()
     Tc_minline.Draw()
     Tc_maxline.Draw()
+    canvas.Update()
     canvas.SaveAs( graph_dir + "e/Sprung.eps" )
     input()
 
@@ -451,6 +461,7 @@ if __name__=="__main__":
     legendSi_inv.AddEntry(SiN_res.graph, "Si N")
     legendSi_inv.Draw()
 
+    canvas.Update()
     canvas.SaveAs( graph_dir + "b/Si_inv.eps" )
     input()
 
@@ -499,5 +510,6 @@ if __name__=="__main__":
     legendSi_ext.AddEntry(SiN_ext.graph, "Si N")
     legendSi_ext.Draw()
 
+    canvas.Update()
     canvas.SaveAs( graph_dir + "b/Si.eps" )
     input()
