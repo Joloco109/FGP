@@ -169,9 +169,9 @@ class Graph:
     def Draw( self, options="AP", marker=6, xName = "T [K]", yName = "R [\\Omega]" ):
         self.graph.SetLineWidth(1)
         self.graph.SetMarkerStyle(marker)
-        self.graph.Draw(options)
         self.GetXaxis().SetTitle( xName )
         self.GetYaxis().SetTitle( yName ) 
+        self.graph.Draw(options)
         
     def ArrayFromPointer( self, pointer ):
         return np.array( np.fromiter(
