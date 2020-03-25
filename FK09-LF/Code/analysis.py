@@ -43,6 +43,12 @@ if __name__=="__main__":
     graphN = MultiGraph.Read( "Data/N.txt", lambda x: caliPt.GetX((x[0],0))[0], [None,None,"Cu","Ta","Si",None,None] )
     sectionN = section(graphN)
 
+    minT = min( 0,
+            *[ np.min(g.GetX()) for g in sectionHe.subgraphs ],
+            *[ np.min(g.GetX()) for g in sectionN.subgraphs ])
+    maxT = max(
+            *[ np.max(g.GetX()) for g in sectionHe.subgraphs ],
+            *[ np.max(g.GetX()) for g in sectionN.subgraphs ])
 
     #Sections
     canvas = TCanvas("canvas","canvas")
@@ -83,6 +89,8 @@ if __name__=="__main__":
             0, rightmax, 510, "+L" )
     axis.SetLineColor( 6 )
     axis.SetLabelColor( 6 )
+    axis.SetTitle( "R [\\Omega] (Si)" )
+    axis.SetTitleColor( 6 )
     axis.Draw()
 
     canvas.SaveAs( graph_dir + "Helium.eps" )
@@ -127,6 +135,8 @@ if __name__=="__main__":
             0, rightmax, 510, "+L" )
     axis.SetLineColor( 6 )
     axis.SetLabelColor( 6 )
+    axis.SetTitle( "R [\\Omega] (Si)" )
+    axis.SetTitleColor( 6 )
     axis.Draw()
 
     canvas.SaveAs( graph_dir + "Nitrogen.eps" )
@@ -141,26 +151,27 @@ if __name__=="__main__":
     maxNLinline.Draw()
     minLinline.Draw()
 
-    CuN = sectionN.subgraphs[0]
-    CuN.graph.SetMarkerSize( 2 )
-    CuN.graph.SetMarkerColor( 7 )
-    CuN.Draw( options="AP", marker=5 )
-    CuN.graph.SetTitle("averaged and calibrated measurement")
-
-    TaN = sectionN.subgraphs[1]
-    TaN.graph.SetMarkerSize( 2 )
-    TaN.graph.SetMarkerColor( 3 )
-    TaN.Draw( options="P", marker=5 )
-
     CuHe = sectionHe.subgraphs[0]
     CuHe.graph.SetMarkerSize( 2 )
     CuHe.graph.SetMarkerColor( 4 )
-    CuHe.Draw( options="P", marker=5 )
+    CuHe.GetXaxis().SetLimits( minT, maxT )
+    CuHe.Draw( options="AP", marker=5 )
+    CuHe.graph.SetTitle("averaged and calibrated measurement")
 
     TaHe = sectionHe.subgraphs[1]
     TaHe.graph.SetMarkerSize( 2 )
     TaHe.graph.SetMarkerColor( 2 )
     TaHe.Draw( options="P", marker=5 )
+
+    CuN = sectionN.subgraphs[0]
+    CuN.graph.SetMarkerSize( 2 )
+    CuN.graph.SetMarkerColor( 7 )
+    CuN.Draw( options="P", marker=5 )
+
+    TaN = sectionN.subgraphs[1]
+    TaN.graph.SetMarkerSize( 2 )
+    TaN.graph.SetMarkerColor( 3 )
+    TaN.Draw( options="P", marker=5 )
 
     SiN = sectionN.subgraphs[2].Clone()
     SiHe = sectionHe.subgraphs[2].Clone()
@@ -190,6 +201,8 @@ if __name__=="__main__":
             0, rightmax, 510, "+L" )
     axis.SetLineColor( 6 )
     axis.SetLabelColor( 6 )
+    axis.SetTitle( "R [\\Omega] (Si)" )
+    axis.SetTitleColor( 6 )
     axis.Draw()
 
     canvas.SaveAs( graph_dir + "Data.eps" )
@@ -228,6 +241,7 @@ if __name__=="__main__":
     canvas = TCanvas("canvas","canvas")
     CuHe_lin.graph.SetMarkerSize( 2 )
     CuHe_lin.graph.SetMarkerColor( 6 )
+    CuHe_lin.GetXaxis().SetLimits( fto_C.Eval(minLin), fto_C.Eval(maxT) )
     CuHe_lin.Draw( options="AP", marker=5, xName = "T [#circ C]" )
     CuHe_lin.graph.SetTitle("linear regime Cu")
     CuN_lin.graph.SetMarkerSize( 2 )
@@ -246,6 +260,7 @@ if __name__=="__main__":
     canvas = TCanvas("canvas","canvas")
     TaHe_lin.graph.SetMarkerSize( 2 )
     TaHe_lin.graph.SetMarkerColor( 6 )
+    TaHe_lin.GetXaxis().SetLimits( fto_C.Eval(minLin), fto_C.Eval(maxT) )
     TaHe_lin.Draw( options="AP", marker=5, xName = "T [#circ C]" )
     TaHe_lin.graph.SetTitle("linear regime Ta")
     TaN_lin.graph.SetMarkerSize( 2 )
@@ -390,6 +405,11 @@ if __name__=="__main__":
 
 
     # ln 1/R over 1/T
+    minT = min( np.min( sectionHe.subgraphs[2].GetX() ),
+            np.min( sectionN.subgraphs[2].GetX() ))
+    maxT = max( np.max( sectionHe.subgraphs[2].GetX() ),
+            np.max( sectionN.subgraphs[2].GetX() ))
+
     fres_SiHe = Function( TF1( "res_SiHe", "pol1", 1/maxRes[0], 1/minRes[0] ))
     fres_SiN  = Function( TF1( "res_SiN", "pol1", 1/maxRes[1], 1/minRes[1] ))
     for f in [fres_SiHe, fres_SiN ]:
@@ -421,6 +441,7 @@ if __name__=="__main__":
 
     SiHe_res.graph.SetMarkerSize( 2 )
     SiHe_res.graph.SetMarkerColor( 2 )
+    SiHe_res.GetXaxis().SetLimits( finv.Eval(maxT), finv.Eval(minT) )
     SiHe_res.Draw( options="AP", marker=5, xName= "1/T [1/K]", yName= "ln(1/R[K])" )
     SiHe_res.graph.SetTitle("inverse log scale Si")
     SiN_res.graph.SetMarkerSize( 2 )
@@ -468,6 +489,7 @@ if __name__=="__main__":
 
     SiHe_ext.graph.SetMarkerSize( 2 )
     SiHe_ext.graph.SetMarkerColor( 2 )
+    SiHe_ext.GetXaxis().SetLimits( flog.Eval(minT), flog.Eval(maxT) )
     SiHe_ext.Draw( options="AP", marker=5, xName= "ln(T[K])", yName= "ln(1/R[\\Omega])" )
     SiHe_ext.graph.SetTitle("Mobility in Si ")
     SiN_ext.graph.SetMarkerSize( 2 )
