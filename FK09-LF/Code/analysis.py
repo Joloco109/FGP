@@ -9,7 +9,7 @@ from calibration import k_boltzmann, eVolt
 
 graph_dir = "Graphs/"
 
-minNLin = 20
+minNLin = 36
 maxNLin = 70
 minLin = 150
 maxSpr = 40
@@ -283,6 +283,7 @@ if __name__=="__main__":
         f.function.SetParameter( 0, 1e-3 )
         f.function.SetParameter( 1, 6.6e-6 )
         f.function.SetParameter( 2, 3 )
+        f.function.SetParameter( 2, 5.0 )
         f.function.SetParLimits( 2, 1, 10 )
 
     CuHe = sectionHe.subgraphs[0].Slice(minNLin,maxNLin)
