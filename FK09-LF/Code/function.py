@@ -10,6 +10,9 @@ class Function:
                 np.abs(self.function.Derivative( x[0] )) * x[1]
                 )
 
+    def Eval( self, x ):
+        return self.function.Eval( x )
+
     def GetX( self, y ):
         x = self.function.GetX( y[0], 0, 1e5 )
         return ( x,
