@@ -9,13 +9,13 @@ from calibration import k_boltzmann, eVolt
 
 graph_dir = "Graphs/"
 
-minT = 20
-maxT = 70
+minNLin = 20
+maxNLin = 70
 minLin = 150
 maxSpr = 40
 minRes = [ 1, 1 ]
-maxRes = [ 170, 240 ]
-minExt = [ 170, 245 ]
+maxRes = [ 170, 200 ]
+minExt = [ 170, 200 ]
 maxExt = [ 220, 300 ]
 
 def draw( graph, funcX=None, funcY=None, options=None ):
@@ -46,11 +46,11 @@ if __name__=="__main__":
 
     #Sections
     canvas = TCanvas("canvas","canvas")
-    minTline = TLine( minT, 0, minT, 20 )
-    maxTline = TLine( maxT, 0, maxT, 20 )
+    minNLinline = TLine( minNLin, 0, minNLin, 20 )
+    maxNLinline = TLine( maxNLin, 0, maxNLin, 20 )
     minLinline = TLine( minLin, 0, minLin, 20 )
-    minTline.Draw()
-    maxTline.Draw()
+    minNLinline.Draw()
+    maxNLinline.Draw()
     minLinline.Draw()
 
     CuHe = sectionHe.subgraphs[0]
@@ -90,11 +90,11 @@ if __name__=="__main__":
 
 
     canvas = TCanvas("canvas","canvas")
-    minTline = TLine( minT, 0, minT, 20 )
-    maxTline = TLine( maxT, 0, maxT, 20 )
+    minNLinline = TLine( minNLin, 0, minNLin, 20 )
+    maxNLinline = TLine( maxNLin, 0, maxNLin, 20 )
     minLinline = TLine( minLin, 0, minLin, 20 )
-    minTline.Draw()
-    maxTline.Draw()
+    minNLinline.Draw()
+    maxNLinline.Draw()
     minLinline.Draw()
 
     CuN = sectionN.subgraphs[0]
@@ -134,11 +134,11 @@ if __name__=="__main__":
 
     #whole data
     canvas = TCanvas("canvas","canvas")
-    minTline = TLine( minT, 0, minT, 20 )
-    maxTline = TLine( maxT, 0, maxT, 20 )
+    minNLinline = TLine( minNLin, 0, minNLin, 20 )
+    maxNLinline = TLine( maxNLin, 0, maxNLin, 20 )
     minLinline = TLine( minLin, 0, minLin, 20 )
-    minTline.Draw()
-    maxTline.Draw()
+    minNLinline.Draw()
+    maxNLinline.Draw()
     minLinline.Draw()
 
     CuN = sectionN.subgraphs[0]
@@ -270,10 +270,10 @@ if __name__=="__main__":
         f.function.SetParameter( 2, 3 )
         f.function.SetParLimits( 2, 1, 10 )
 
-    CuHe = sectionHe.subgraphs[0].Slice(minT,maxT)
-    CuN = sectionN.subgraphs[0].Slice(minT,maxT)
-    TaHe = sectionHe.subgraphs[1].Slice(minT,maxT)
-    TaN = sectionN.subgraphs[1].Slice(minT,maxT)
+    CuHe = sectionHe.subgraphs[0].Slice(minNLin,maxNLin)
+    CuN = sectionN.subgraphs[0].Slice(minNLin,maxNLin)
+    TaHe = sectionHe.subgraphs[1].Slice(minNLin,maxNLin)
+    TaN = sectionN.subgraphs[1].Slice(minNLin,maxNLin)
 
     for f,g in zip( [f_CuHe, f_TaHe ],
                     [CuHe, TaHe ]):
@@ -421,7 +421,7 @@ if __name__=="__main__":
 
     SiHe_res.graph.SetMarkerSize( 2 )
     SiHe_res.graph.SetMarkerColor( 2 )
-    SiHe_res.Draw( options="AP", marker=5, xName= "1/T [1/K]", yName= "ln(1/R) [1/\\Omega]" )
+    SiHe_res.Draw( options="AP", marker=5, xName= "1/T [1/K]", yName= "ln(1/R[K])" )
     SiHe_res.graph.SetTitle("inverse log scale Si")
     SiN_res.graph.SetMarkerSize( 2 )
     SiN_res.graph.SetMarkerColor( 4 )
