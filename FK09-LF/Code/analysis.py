@@ -313,10 +313,9 @@ if __name__=="__main__":
     CuN.graph.SetMarkerColor( 4 )
     CuN.Draw( options="P", marker=5 )
     
-    legendCu = TLegend(.40,.77,.60,.92)
+    legendCu = TLegend(.34,.79,.66,.92)
     legendCu.AddEntry(CuHe.graph, "Cu He")
-    legendCu.AddEntry(CuN.graph, "Cu N")
-    legendCu.AddEntry(f_CuHe.function, "R = R_0+A\\cdot T^\\beta")
+    legendCu.AddEntry(f_CuHe.function, "R = R_0+A T^\\beta")
     legendCu.Draw()
     
     canvas.SaveAs( graph_dir + "a/Cu.eps" )
@@ -331,10 +330,9 @@ if __name__=="__main__":
     TaN.graph.SetMarkerColor( 4 )
     TaN.Draw( options="P", marker=5 )
     
-    legendTa = TLegend(.40,.77,.60,.92)
+    legendTa = TLegend(.34,.79,.66,.92)
     legendTa.AddEntry(TaHe.graph, "Ta He")
-    legendTa.AddEntry(TaN.graph, "Ta N")
-    legendTa.AddEntry(f_TaHe.function, "R = R_0+A\\cdot T^\\beta")
+    legendTa.AddEntry(f_TaHe.function, "R = R_0+A T^\\beta")
     legendTa.Draw()
     
     canvas.SaveAs( graph_dir + "a/Ta.eps" )
@@ -356,10 +354,9 @@ if __name__=="__main__":
     CuN.Draw( options="P", marker=5 )
     f_CuHelog.function.Draw( "LSame" )
     
-    legendCu = TLegend(.28,.76,.72,.93)
+    legendCu = TLegend(.26,.78,.74,.93)
     legendCu.AddEntry(CuHe.graph, "Cu He")
-    legendCu.AddEntry(CuN.graph, "Cu N")
-    legendCu.AddEntry(f_CuHelog.function, "ln(R) = ln(R_0 + A e^{T \\cdot \\beta })")
+    legendCu.AddEntry(f_CuHelog.function, "ln(R) = ln(R_0 + A e^{T \\beta })")
     legendCu.Draw()
     
     canvas.SaveAs( graph_dir + "a/ln_Cu.eps" )
@@ -373,10 +370,9 @@ if __name__=="__main__":
     TaN.Draw( options="P", marker=5 )
     f_TaHelog.function.Draw( "LSame" )
     
-    legendTa = TLegend(.28,.76,.72,.93)
+    legendTa = TLegend(.26,.78,.74,.93)
     legendTa.AddEntry(TaHe.graph, "Ta He")
-    legendTa.AddEntry(TaN.graph, "Ta N")
-    legendTa.AddEntry(f_TaHelog.function, "ln(R) = ln(R_0 + A e^{T \\cdot \\beta })")
+    legendTa.AddEntry(f_TaHelog.function, "ln(R) = ln(R_0 + A e^{T \\beta })")
     legendTa.Draw()
     
     canvas.SaveAs( graph_dir + "a/ln_Ta.eps" )
