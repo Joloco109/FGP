@@ -208,8 +208,8 @@ if __name__=="__main__":
 
     canvas.SaveAs( graph_dir + "Data.eps" )
     input()
-    
-    
+
+
     # Fits
     #   linear
     flin_CuHe = Function( TF1( "lin_CuHe", "pol1" ))
@@ -445,12 +445,12 @@ if __name__=="__main__":
     SiN_res.graph.SetMarkerSize( 2 )
     SiN_res.graph.SetMarkerColor( 4 )
     SiN_res.Draw( options="P", marker=5 )
-    
+
     legendSi_inv = TLegend(.40,.77,.60,.92)
     legendSi_inv.AddEntry(SiHe_res.graph, "Si He")
     legendSi_inv.AddEntry(SiN_res.graph, "Si N")
     legendSi_inv.Draw()
-    
+
     canvas.SaveAs( graph_dir + "b/Si_inv.eps" )
     input()
 
@@ -493,11 +493,11 @@ if __name__=="__main__":
     SiN_ext.graph.SetMarkerSize( 2 )
     SiN_ext.graph.SetMarkerColor( 4 )
     SiN_ext.Draw( options="P", marker=5 )
-    
+
     legendSi_ext = TLegend(.40,.77,.60,.92)
     legendSi_ext.AddEntry(SiHe_ext.graph, "Si He")
     legendSi_ext.AddEntry(SiN_ext.graph, "Si N")
     legendSi_ext.Draw()
-    
+
     canvas.SaveAs( graph_dir + "b/Si.eps" )
     input()
