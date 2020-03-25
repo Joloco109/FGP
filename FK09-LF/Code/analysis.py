@@ -248,16 +248,16 @@ if __name__=="__main__":
     CuN_lin.graph.SetMarkerSize( 2 )
     CuN_lin.graph.SetMarkerColor( 4 )
     CuN_lin.Draw( options="P", marker=5 )
-    
+
     legendCu_lin = TLegend(.40,.77,.60,.92)
     legendCu_lin.AddEntry(CuHe_lin.graph, "Cu He")
     legendCu_lin.AddEntry(CuN_lin.graph, "Cu N")
     legendCu_lin.AddEntry(flin_CuN.function, "R = R_0(1+\\alpha T)")
     legendCu_lin.Draw()
-    
+
     canvas.SaveAs( graph_dir + "c/Cu_lin.eps" )
     input()
-    
+
     canvas = TCanvas("canvas","canvas")
     TaHe_lin.graph.SetMarkerSize( 2 )
     TaHe_lin.graph.SetMarkerColor( 6 )
@@ -267,13 +267,13 @@ if __name__=="__main__":
     TaN_lin.graph.SetMarkerSize( 2 )
     TaN_lin.graph.SetMarkerColor( 4 )
     TaN_lin.Draw( options="P", marker=5 )
-    
+
     legendTa_lin = TLegend(.40,.77,.60,.92)
     legendTa_lin.AddEntry(TaHe_lin.graph, "Ta He")
     legendTa_lin.AddEntry(TaN_lin.graph, "Ta N")
     legendTa_lin.AddEntry(flin_TaN.function, "R = R_0(1+\\alpha T)")
     legendTa_lin.Draw()
-    
+
     canvas.SaveAs( graph_dir + "c/Ta_lin.eps" )
     input()
 
@@ -313,12 +313,12 @@ if __name__=="__main__":
     CuN.graph.SetMarkerSize( 2 )
     CuN.graph.SetMarkerColor( 4 )
     CuN.Draw( options="P", marker=5 )
-    
+
     legendCu = TLegend(.34,.79,.66,.92)
     legendCu.AddEntry(CuHe.graph, "Cu He")
     legendCu.AddEntry(f_CuHe.function, "R = R_0+A T^\\beta")
     legendCu.Draw()
-    
+
     canvas.SaveAs( graph_dir + "a/Cu.eps" )
     input()
 
@@ -330,12 +330,12 @@ if __name__=="__main__":
     TaN.graph.SetMarkerSize( 2 )
     TaN.graph.SetMarkerColor( 4 )
     TaN.Draw( options="P", marker=5 )
-    
+
     legendTa = TLegend(.34,.79,.66,.92)
     legendTa.AddEntry(TaHe.graph, "Ta He")
     legendTa.AddEntry(f_TaHe.function, "R = R_0+A T^\\beta")
     legendTa.Draw()
-    
+
     canvas.SaveAs( graph_dir + "a/Ta.eps" )
     input()
 
@@ -354,12 +354,12 @@ if __name__=="__main__":
     CuHe.graph.SetTitle("log scale non-linear regime Cu")
     CuN.Draw( options="P", marker=5 )
     f_CuHelog.function.Draw( "LSame" )
-    
+
     legendCu = TLegend(.26,.78,.74,.93)
     legendCu.AddEntry(CuHe.graph, "Cu He")
     legendCu.AddEntry(f_CuHelog.function, "ln(R) = ln(R_0 + A e^{T \\beta })")
     legendCu.Draw()
-    
+
     canvas.SaveAs( graph_dir + "a/ln_Cu.eps" )
     input()
 
@@ -370,12 +370,12 @@ if __name__=="__main__":
     TaHe.graph.SetTitle("log scale non-linear regime Ta")
     TaN.Draw( options="P", marker=5 )
     f_TaHelog.function.Draw( "LSame" )
-    
+
     legendTa = TLegend(.26,.78,.74,.93)
     legendTa.AddEntry(TaHe.graph, "Ta He")
     legendTa.AddEntry(f_TaHelog.function, "ln(R) = ln(R_0 + A e^{T \\beta })")
     legendTa.Draw()
-    
+
     canvas.SaveAs( graph_dir + "a/ln_Ta.eps" )
     input()
 
