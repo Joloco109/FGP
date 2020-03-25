@@ -43,12 +43,13 @@ if __name__=="__main__":
     graphN = MultiGraph.Read( "Data/N.txt", lambda x: caliPt.GetX((x[0],0))[0], [None,None,"Cu","Ta","Si",None,None] )
     sectionN = section(graphN)
 
-    minT = min( 0,
+    minT = 0.9*min( 0,
             *[ np.min(g.GetX()) for g in sectionHe.subgraphs ],
             *[ np.min(g.GetX()) for g in sectionN.subgraphs ])
-    maxT = max(
+    maxT = 1.1* max(
             *[ np.max(g.GetX()) for g in sectionHe.subgraphs ],
             *[ np.max(g.GetX()) for g in sectionN.subgraphs ])
+
 
     #Sections
     canvas = TCanvas("canvas","canvas")
@@ -402,10 +403,10 @@ if __name__=="__main__":
 
 
     # ln 1/R over 1/T
-    minT = min( np.min( sectionHe.subgraphs[2].GetX() ),
-            np.min( sectionN.subgraphs[2].GetX() ))
-    maxT = max( np.max( sectionHe.subgraphs[2].GetX() ),
-            np.max( sectionN.subgraphs[2].GetX() ))
+    minT = 0.9 * min( np.min( sectionHe.subgraphs[2].GetX() ),
+                np.min( sectionN.subgraphs[2].GetX() ))
+    maxT = 1.1 * max( np.max( sectionHe.subgraphs[2].GetX() ),
+                np.max( sectionN.subgraphs[2].GetX() ))
 
     fres_SiHe = Function( TF1( "res_SiHe", "pol1", 1/maxRes[0], 1/minRes[0] ))
     fres_SiN  = Function( TF1( "res_SiN", "pol1", 1/maxRes[1], 1/minRes[1] ))
