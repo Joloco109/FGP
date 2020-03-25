@@ -18,6 +18,10 @@ maxRes = [ 170, 200 ]
 minExt = [ 170, 200 ]
 maxExt = [ 220, 255 ]
 
+colorsCu = [ 4, 7 ]
+colorsTa = [ 2, 3 ]
+colorsSi = [ 6, 1 ]
+
 def draw( graph, funcX=None, funcY=None, options=None ):
     if not funcY==None:
         graph.Apply( funcY )
@@ -50,168 +54,90 @@ if __name__=="__main__":
             *[ np.max(g.GetX()) for g in sectionHe.subgraphs ],
             *[ np.max(g.GetX()) for g in sectionN.subgraphs ])
 
+    minTSi = 0.9 * min( np.min( sectionHe.subgraphs[2].GetX() ),
+                np.min( sectionN.subgraphs[2].GetX() ))
+    maxTSi = 1.1 * max( np.max( sectionHe.subgraphs[2].GetX() ),
+                np.max( sectionN.subgraphs[2].GetX() ))
+
 
     #Sections
-    # No Fucking idea, unfixable, Fuck you ROOT
-
-    canvas = TCanvas("canvas","canvas")
-    minNLinline = TLine( minNLin, 0, minNLin, 20 )
-    maxNLinline = TLine( maxNLin, 0, maxNLin, 20 )
-    minLinline = TLine( minLin, 0, minLin, 20 )
-    minNLinline.Draw()
-    maxNLinline.Draw()
-    minLinline.Draw()
-
-    CuHe = sectionHe.subgraphs[0]
-    CuHe.graph.SetMarkerSize( 2 )
-    CuHe.graph.SetMarkerColor( 4 )
-    CuHe.Draw( options="AP", marker=5 )
-    CuHe.graph.SetTitle("helium measurement")
-
-    TaHe = sectionHe.subgraphs[1]
-    TaHe.graph.SetMarkerSize( 2 )
-    TaHe.graph.SetMarkerColor( 2 )
-    TaHe.Draw( options="P", marker=5 )
-
-    SiHe = sectionHe.subgraphs[2].Clone()
-    rightmax = 1.1*np.max(SiHe.GetY())
-    scale = max( np.max(CuHe.GetY()), np.max(TaHe.GetY()) ) / rightmax
-    SiHe.Scale( scale )
-    SiHe.graph.SetMarkerSize( 2 )
-    SiHe.graph.SetMarkerColor( 6 )
-    SiHe.Draw( options="P", marker=5 )
-
-    legendHe = TLegend(.40,.77,.60,.92)
-    legendHe.AddEntry(CuHe.graph, "Cu")
-    legendHe.AddEntry(TaHe.graph, "Ta")
-    legendHe.AddEntry(SiHe.graph, "Si")
-    legendHe.Draw()
-
-    axis = TGaxis( gPad.GetUxmax(), gPad.GetUymin(),
-            gPad.GetUxmax(), gPad.GetUymax(),
-            0, rightmax, 510, "+L" )
-    axis.SetLineColor( 6 )
-    axis.SetLabelColor( 6 )
-    axis.SetTitle( "R [\\Omega] (Si)" )
-    axis.SetTitleColor( 6 )
-    axis.Draw()
-
-    canvas.Update()
-    canvas.SaveAs( graph_dir + "Helium.eps" )
-    input()
-
-
-    canvas = TCanvas("canvas","canvas")
-    minNLinline = TLine( minNLin, 0, minNLin, 20 )
-    maxNLinline = TLine( maxNLin, 0, maxNLin, 20 )
-    minLinline = TLine( minLin, 0, minLin, 20 )
-    minNLinline.Draw()
-    maxNLinline.Draw()
-    minLinline.Draw()
-
-    CuN = sectionN.subgraphs[0]
-    CuN.graph.SetMarkerSize( 2 )
-    CuN.graph.SetMarkerColor( 4 )
-    CuN.Draw( options="AP", marker=5 )
-    CuN.graph.SetTitle("nitrogen measurement")
-
-    TaN = sectionN.subgraphs[1]
-    TaN.graph.SetMarkerSize( 2 )
-    TaN.graph.SetMarkerColor( 2 )
-    TaN.Draw( options="P", marker=5 )
-
-    SiN = sectionN.subgraphs[2].Clone()
-    rightmax = 1.1*np.max(SiN.GetY())
-    scale = max( np.max(CuN.GetY()), np.max(TaN.GetY()) ) / rightmax
-    SiN.Scale( scale )
-    SiN.graph.SetMarkerSize( 2 )
-    SiN.graph.SetMarkerColor( 6 )
-    SiN.Draw( options="P", marker=5 )
-
-    legendN = TLegend(.40,.77,.60,.92)
-    legendN.AddEntry(CuHe.graph, "Cu")
-    legendN.AddEntry(TaHe.graph, "Ta")
-    legendN.AddEntry(SiHe.graph, "Si")
-    legendN.Draw()
-
-    axis = TGaxis( gPad.GetUxmax(), gPad.GetUymin(),
-            gPad.GetUxmax(), gPad.GetUymax(),
-            0, rightmax, 510, "+L" )
-    axis.SetLineColor( 6 )
-    axis.SetLabelColor( 6 )
-    axis.SetTitle( "R [\\Omega] (Si)" )
-    axis.SetTitleColor( 6 )
-    axis.Draw()
-
-    canvas.Update()
-    canvas.SaveAs( graph_dir + "Nitrogen.eps" )
-    input()
-
     #whole data
     canvas = TCanvas("canvas","canvas")
-    minNLinline = TLine( minNLin, 0, minNLin, 20 )
-    maxNLinline = TLine( maxNLin, 0, maxNLin, 20 )
-    minLinline = TLine( minLin, 0, minLin, 20 )
-    minNLinline.Draw()
-    maxNLinline.Draw()
-    minLinline.Draw()
 
     CuHe = sectionHe.subgraphs[0]
     CuHe.graph.SetMarkerSize( 2 )
-    CuHe.graph.SetMarkerColor( 4 )
+    CuHe.graph.SetMarkerColor( colorsCu[0] )
     CuHe.GetXaxis().SetLimits( minT, maxT )
     CuHe.Draw( options="AP", marker=5 )
-    CuHe.graph.SetTitle("averaged and calibrated measurement")
+    CuHe.graph.SetTitle("averaged and calibrated measurement (Cu + Ta)")
 
     TaHe = sectionHe.subgraphs[1]
     TaHe.graph.SetMarkerSize( 2 )
-    TaHe.graph.SetMarkerColor( 2 )
+    TaHe.graph.SetMarkerColor( colorsTa[0] )
     TaHe.Draw( options="P", marker=5 )
 
     CuN = sectionN.subgraphs[0]
     CuN.graph.SetMarkerSize( 2 )
-    CuN.graph.SetMarkerColor( 7 )
+    CuN.graph.SetMarkerColor( colorsCu[1] )
     CuN.Draw( options="P", marker=5 )
 
     TaN = sectionN.subgraphs[1]
     TaN.graph.SetMarkerSize( 2 )
-    TaN.graph.SetMarkerColor( 3 )
+    TaN.graph.SetMarkerColor( colorsTa[1] )
     TaN.Draw( options="P", marker=5 )
-
-    SiN = sectionN.subgraphs[2].Clone()
-    SiHe = sectionHe.subgraphs[2].Clone()
-    rightmax = 1.1*max( np.max(SiN.GetY()), np.max(SiHe.GetY()) )
-    scale = max( np.max(CuHe.GetY()), np.max(TaHe.GetY()), np.max(CuN.GetY()), np.max(TaN.GetY()) ) / rightmax
-    SiN.Scale( scale )
-    SiN.graph.SetMarkerSize( 2 )
-    SiN.graph.SetMarkerColor( 1 )
-    SiN.Draw( options="P", marker=5 )
-
-    SiHe.Scale( scale )
-    SiHe.graph.SetMarkerSize( 2 )
-    SiHe.graph.SetMarkerColor( 6 )
-    SiHe.Draw( options="P", marker=5 )
 
     legend = TLegend(.80,.14,.89,.45)
     legend.AddEntry(CuHe.graph, "Cu He")
     legend.AddEntry(TaHe.graph, "Ta He")
-    legend.AddEntry(SiHe.graph, "Si He")
     legend.AddEntry(CuN.graph, "Cu N")
     legend.AddEntry(TaN.graph, "Ta N")
-    legend.AddEntry(SiN.graph, "Si N")
     legend.Draw()
 
-    axis = TGaxis( gPad.GetUxmax(), gPad.GetUymin(),
-            gPad.GetUxmax(), gPad.GetUymax(),
-            0, rightmax, 510, "+L" )
-    axis.SetLineColor( 6 )
-    axis.SetLabelColor( 6 )
-    axis.SetTitle( "R [\\Omega] (Si)" )
-    axis.SetTitleColor( 6 )
-    axis.Draw()
+    minNLinline = TLine( minNLin, 0, minNLin, 20 )
+    maxNLinline = TLine( maxNLin, 0, maxNLin, 20 )
+    minLinline = TLine( minLin, 0, minLin, 20 )
+    minNLinline.Draw()
+    maxNLinline.Draw()
+    minLinline.Draw()
 
     canvas.Update()
-    canvas.SaveAs( graph_dir + "Data.eps" )
+    canvas.SaveAs( graph_dir + "Cu_Ta.eps" )
+    input()
+
+    canvas = TCanvas("canvas","canvas")
+    for i in range(2):
+        print(maxRes[i])
+        minResline = TLine( minRes[i], 0, minRes[i], 120e6 )
+        maxResline = TLine( maxRes[i], 0, maxRes[i], 120e6 )
+        minResline.SetLineColor( colorsSi[i] )
+        maxResline.SetLineColor( colorsSi[i] )
+        minResline.Draw()
+        maxResline.Draw()
+        minExtline = TLine( minExt[i], 0, minExt[i], 120e6 )
+        maxExtline = TLine( maxExt[i], 0, maxExt[i], 120e6 )
+        minExtline.SetLineColor( colorsSi[i] )
+        maxExtline.SetLineColor( colorsSi[i] )
+        minExtline.Draw()
+        maxExtline.Draw()
+
+    SiHe = sectionHe.subgraphs[2].Clone()
+    SiHe.graph.SetMarkerSize( 2 )
+    SiHe.graph.SetMarkerColor( colorsSi[0])
+    SiHe.GetXaxis().SetLimits( minTSi, maxTSi )
+    SiHe.Draw( options="AP", marker=5 )
+    SiHe.graph.SetTitle("averaged and calibrated measurement (Si)")
+
+    SiN = sectionN.subgraphs[2].Clone()
+    SiN.graph.SetMarkerSize( 2 )
+    SiN.graph.SetMarkerColor( colorsSi[1])
+    SiN.Draw( options="P", marker=5 )
+
+    legend = TLegend(.80,.14,.89,.45)
+    legend.AddEntry(SiHe.graph, "Si He")
+    legend.AddEntry(SiN.graph, "Si N")
+
+    canvas.Update()
+    canvas.SaveAs( graph_dir + "Si.eps" )
     input()
 
 
@@ -246,12 +172,12 @@ if __name__=="__main__":
     # R over T
     canvas = TCanvas("canvas","canvas")
     CuHe_lin.graph.SetMarkerSize( 2 )
-    CuHe_lin.graph.SetMarkerColor( 6 )
+    CuHe_lin.graph.SetMarkerColor( colorsCu[0])
     CuHe_lin.GetXaxis().SetLimits( fto_C.Eval(minLin), fto_C.Eval(maxT) )
     CuHe_lin.Draw( options="AP", marker=5, xName = "T [#circ C]" )
     CuHe_lin.graph.SetTitle("linear regime Cu")
     CuN_lin.graph.SetMarkerSize( 2 )
-    CuN_lin.graph.SetMarkerColor( 4 )
+    CuN_lin.graph.SetMarkerColor( colorsCu[1] )
     CuN_lin.Draw( options="P", marker=5 )
 
     legendCu_lin = TLegend(.40,.77,.60,.92)
@@ -266,12 +192,12 @@ if __name__=="__main__":
 
     canvas = TCanvas("canvas","canvas")
     TaHe_lin.graph.SetMarkerSize( 2 )
-    TaHe_lin.graph.SetMarkerColor( 6 )
+    TaHe_lin.graph.SetMarkerColor( colorsTa[0])
     TaHe_lin.GetXaxis().SetLimits( fto_C.Eval(minLin), fto_C.Eval(maxT) )
     TaHe_lin.Draw( options="AP", marker=5, xName = "T [#circ C]" )
     TaHe_lin.graph.SetTitle("linear regime Ta")
     TaN_lin.graph.SetMarkerSize( 2 )
-    TaN_lin.graph.SetMarkerColor( 4 )
+    TaN_lin.graph.SetMarkerColor( colorsTa[1] )
     TaN_lin.Draw( options="P", marker=5 )
 
     legendTa_lin = TLegend(.40,.77,.60,.92)
@@ -314,11 +240,11 @@ if __name__=="__main__":
     # R over T
     canvas = TCanvas("canvas","canvas")
     CuHe.graph.SetMarkerSize( 2 )
-    CuHe.graph.SetMarkerColor( 6 )
+    CuHe.graph.SetMarkerColor( colorsCu[0])
     CuHe.Draw( options="AP", marker=5 )
     CuHe.graph.SetTitle("non-linear regime Cu")
     CuN.graph.SetMarkerSize( 2 )
-    CuN.graph.SetMarkerColor( 4 )
+    CuN.graph.SetMarkerColor( colorsCu[1] )
     CuN.Draw( options="P", marker=5 )
 
     legendCu = TLegend(.34,.79,.66,.92)
@@ -332,11 +258,11 @@ if __name__=="__main__":
 
     canvas = TCanvas("canvas","canvas")
     TaHe.graph.SetMarkerSize( 2 )
-    TaHe.graph.SetMarkerColor( 6 )
+    TaHe.graph.SetMarkerColor( colorsTa[0])
     TaHe.Draw( options="AP", marker=5 )
     TaHe.graph.SetTitle("non-linear regime Ta")
     TaN.graph.SetMarkerSize( 2 )
-    TaN.graph.SetMarkerColor( 4 )
+    TaN.graph.SetMarkerColor( colorsTa[1] )
     TaN.Draw( options="P", marker=5 )
 
     legendTa = TLegend(.34,.79,.66,.92)
@@ -404,7 +330,7 @@ if __name__=="__main__":
 
     canvas = TCanvas("canvas","canvas")
     TaHe_spr.graph.SetMarkerSize( 2 )
-    TaHe_spr.graph.SetMarkerColor( 2 )
+    TaHe_spr.graph.SetMarkerColor( colorsTa[0] )
     TaHe_spr.Draw( options="AP", marker=5 )
     Tcline.Draw()
     Tc_minline.Draw()
@@ -415,11 +341,6 @@ if __name__=="__main__":
 
 
     # ln 1/R over 1/T
-    minT = 0.9 * min( np.min( sectionHe.subgraphs[2].GetX() ),
-                np.min( sectionN.subgraphs[2].GetX() ))
-    maxT = 1.1 * max( np.max( sectionHe.subgraphs[2].GetX() ),
-                np.max( sectionN.subgraphs[2].GetX() ))
-
     fres_SiHe = Function( TF1( "res_SiHe", "pol1", 1/maxRes[0], 1/minRes[0] ))
     fres_SiN  = Function( TF1( "res_SiN", "pol1", 1/maxRes[1], 1/minRes[1] ))
     for f in [fres_SiHe, fres_SiN ]:
@@ -450,12 +371,12 @@ if __name__=="__main__":
     #maxResLine.Draw()
 
     SiHe_res.graph.SetMarkerSize( 2 )
-    SiHe_res.graph.SetMarkerColor( 2 )
-    SiHe_res.GetXaxis().SetLimits( finv.Eval(maxT), finv.Eval(minT) )
+    SiHe_res.graph.SetMarkerColor( colorsSi[0] )
+    SiHe_res.GetXaxis().SetLimits( finv.Eval(maxTSi), finv.Eval(minTSi) )
     SiHe_res.Draw( options="AP", marker=5, xName= "1/T [1/K]", yName= "ln(1/R[K])" )
     SiHe_res.graph.SetTitle("inverse log scale Si")
     SiN_res.graph.SetMarkerSize( 2 )
-    SiN_res.graph.SetMarkerColor( 4 )
+    SiN_res.graph.SetMarkerColor( colorsSi[1] )
     SiN_res.Draw( options="P", marker=5 )
 
     legendSi_inv = TLegend(.40,.77,.60,.92)
@@ -499,12 +420,12 @@ if __name__=="__main__":
     #maxResLine.Draw()
 
     SiHe_ext.graph.SetMarkerSize( 2 )
-    SiHe_ext.graph.SetMarkerColor( 2 )
-    SiHe_ext.GetXaxis().SetLimits( flog.Eval(minT), flog.Eval(maxT) )
+    SiHe_ext.graph.SetMarkerColor( colorsSi[0] )
+    SiHe_ext.GetXaxis().SetLimits( flog.Eval(minTSi), flog.Eval(maxTSi) )
     SiHe_ext.Draw( options="AP", marker=5, xName= "ln(T[K])", yName= "ln(1/R[\\Omega])" )
     SiHe_ext.graph.SetTitle("Mobility in Si ")
     SiN_ext.graph.SetMarkerSize( 2 )
-    SiN_ext.graph.SetMarkerColor( 4 )
+    SiN_ext.graph.SetMarkerColor( colorsSi[1] )
     SiN_ext.Draw( options="P", marker=5 )
 
     legendSi_ext = TLegend(.40,.77,.60,.92)
