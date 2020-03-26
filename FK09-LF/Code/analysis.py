@@ -15,7 +15,7 @@ minLin = 150
 maxSpr = 40
 minRes = [ 1, 1 ]
 maxRes = [ 170, 200 ]
-minExt = [ 170, 200 ]
+minExt = [ 175, 200 ]
 maxExt = [ 220, 255 ]
 
 colorsCu = [ 4, 7 ]
