@@ -227,11 +227,11 @@ if __name__=="__main__":
     f_CuHe = Function( TF1( "CuHe", "[0] + [1]*x^[2]" ))
     f_TaHe = Function( TF1( "TaHe", "[0] + [1]*x^[2]" ))
     for f in [f_CuHe, f_TaHe ]:
-        f.function.SetParameter( 0, 1e-3 )
-        f.function.SetParameter( 1, 6.6e-6 )
-        f.function.SetParameter( 2, 3 )
+        f.function.SetParameter( 0, 0.1 )
+        f.function.SetParameter( 1, 0.001e-6 )
+        f.function.SetParLimits( 1, 0.0005e-6, 0.004e-6 )
         f.function.SetParameter( 2, 5.0 )
-        f.function.SetParLimits( 2, 1, 10 )
+        f.function.SetParLimits( 2, 4.5, 5.5 )
 
     CuHe = sectionHe.subgraphs[0].Slice(minNLin,maxNLin)
     CuN = sectionN.subgraphs[0].Slice(minNLin,maxNLin)
