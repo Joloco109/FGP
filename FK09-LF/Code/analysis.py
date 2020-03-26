@@ -7,7 +7,9 @@ from function import Function
 from section import section
 from calibration import k_boltzmann, eVolt
 
-graph_dir = "Graphs/"
+import os
+
+graph_dir = "Graphs/build/"
 
 minNLin = 36
 maxNLin = 70
@@ -34,6 +36,15 @@ def draw( graph, funcX=None, funcY=None, options=None ):
 
 
 if __name__=="__main__":
+    if not os.path.exists( graph_dir ):
+        os.makedirs( graph_dir )
+    if not os.path.exists( graph_dir + "a/" ):
+        os.makedirs( graph_dir + "b/" )
+    if not os.path.exists( graph_dir + "c/" ):
+        os.makedirs( graph_dir + "c/" )
+    if not os.path.exists( graph_dir + "e/" ):
+        os.makedirs( graph_dir + "e/" )
+
     flog = Function( TF1("log", "log(x)" ) )
     finv_log = Function( TF1("inv log", "log(1/x)" ) )
     finv = Function( TF1("inv", "1/x" ) )

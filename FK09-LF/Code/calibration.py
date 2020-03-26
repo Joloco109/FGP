@@ -153,7 +153,7 @@ def main():
     legendPt.Draw()
 
     canvas.Update()
-    canvas.SaveAs("Graphs/calibration.eps")
+    canvas.SaveAs("Graphs/build/calibration.eps")
     input()
 
 
