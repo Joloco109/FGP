@@ -145,9 +145,10 @@ if __name__=="__main__":
     SiN.graph.SetMarkerColor( colorsSi[1])
     SiN.Draw( options="P", marker=5 )
 
-    legend = TLegend(.80,.14,.89,.45)
+    legend = TLegend(.80,.14,.89,.30)
     legend.AddEntry(SiHe.graph, "Si He")
     legend.AddEntry(SiN.graph, "Si N")
+    legend.Draw()
 
     canvas.Update()
     canvas.SaveAs( graph_dir + "Si.eps" )
@@ -193,7 +194,7 @@ if __name__=="__main__":
     CuN_lin.graph.SetMarkerColor( colorsCu[1] )
     CuN_lin.Draw( options="P", marker=5 )
 
-    legendCu_lin = TLegend(.40,.77,.60,.92)
+    legendCu_lin = TLegend(.70,.14,.89,.30)
     legendCu_lin.AddEntry(CuHe_lin.graph, "Cu He")
     legendCu_lin.AddEntry(CuN_lin.graph, "Cu N")
     legendCu_lin.AddEntry(flin_CuN.function, "R = R_0(1+\\alpha T)")
@@ -213,7 +214,7 @@ if __name__=="__main__":
     TaN_lin.graph.SetMarkerColor( colorsTa[1] )
     TaN_lin.Draw( options="P", marker=5 )
 
-    legendTa_lin = TLegend(.40,.77,.60,.92)
+    legendTa_lin = TLegend(.70,.14,.89,.30)
     legendTa_lin.AddEntry(TaHe_lin.graph, "Ta He")
     legendTa_lin.AddEntry(TaN_lin.graph, "Ta N")
     legendTa_lin.AddEntry(flin_TaN.function, "R = R_0(1+\\alpha T)")
@@ -387,15 +388,15 @@ if __name__=="__main__":
     SiHe_res.graph.SetMarkerColor( colorsSi[0] )
     SiHe_res.GetXaxis().SetLimits( finv.Eval(maxTSi), finv.Eval(minTSi) )
     SiHe_res.Draw( options="AP", marker=5, xName= "1/T [1/K]", yName= "ln(1/R[K])" )
-    SiHe_res.graph.SetTitle("Mobility in Si against 1/T")
+    SiHe_res.graph.SetTitle("Fit on freeze out regime of Si")
     SiN_res.graph.SetMarkerSize( 2 )
     SiN_res.graph.SetMarkerColor( colorsSi[1] )
     SiN_res.Draw( options="P", marker=5 )
 
-    legendSi_inv = TLegend(.40,.77,.60,.92)
+    legendSi_inv = TLegend(.26,.78,.74,.93)
     legendSi_inv.AddEntry(SiHe_res.graph, "Si He")
     legendSi_inv.AddEntry(SiN_res.graph, "Si N")
-    legendSi_inv.AddEntry(fres_SiHe.function, "1/R = A exp( delta/T )")
+    legendSi_inv.AddEntry(fres_SiHe.function, "1/R = A exp( \\delta/T )")
     legendSi_inv.Draw()
 
     canvas.Update()
@@ -438,15 +439,15 @@ if __name__=="__main__":
     SiHe_ext.graph.SetMarkerColor( colorsSi[0] )
     SiHe_ext.GetXaxis().SetLimits( flog.Eval(minTSi), flog.Eval(maxTSi) )
     SiHe_ext.Draw( options="AP", marker=5, xName= "ln(T[K])", yName= "ln(1/R[\\Omega])" )
-    SiHe_ext.graph.SetTitle("Mobility in Si against log T")
+    SiHe_ext.graph.SetTitle("Fit on extrinsic regime of Si")
     SiN_ext.graph.SetMarkerSize( 2 )
     SiN_ext.graph.SetMarkerColor( colorsSi[1] )
     SiN_ext.Draw( options="P", marker=5 )
 
-    legendSi_ext = TLegend(.40,.77,.60,.92)
+    legendSi_ext = TLegend(.30,.78,.70,.93)
     legendSi_ext.AddEntry(SiHe_ext.graph, "Si He")
     legendSi_ext.AddEntry(SiN_ext.graph, "Si N")
-    legendSi_ext.AddEntry(fext_SiN.function, "1/R = A T^gamma")
+    legendSi_ext.AddEntry(fext_SiN.function, "1/R = A T^\\gamma")
     legendSi_ext.Draw()
 
     canvas.Update()
