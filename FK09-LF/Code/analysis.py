@@ -39,6 +39,8 @@ if __name__=="__main__":
     if not os.path.exists( graph_dir ):
         os.makedirs( graph_dir )
     if not os.path.exists( graph_dir + "a/" ):
+        os.makedirs( graph_dir + "a/" )
+    if not os.path.exists( graph_dir + "b/" ):
         os.makedirs( graph_dir + "b/" )
     if not os.path.exists( graph_dir + "c/" ):
         os.makedirs( graph_dir + "c/" )
