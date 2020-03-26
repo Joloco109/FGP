@@ -387,7 +387,7 @@ if __name__=="__main__":
     SiHe_res.graph.SetMarkerColor( colorsSi[0] )
     SiHe_res.GetXaxis().SetLimits( finv.Eval(maxTSi), finv.Eval(minTSi) )
     SiHe_res.Draw( options="AP", marker=5, xName= "1/T [1/K]", yName= "ln(1/R[K])" )
-    SiHe_res.graph.SetTitle("inverse log scale Si")
+    SiHe_ext.graph.SetTitle("Mobility in Si against 1/T")
     SiN_res.graph.SetMarkerSize( 2 )
     SiN_res.graph.SetMarkerColor( colorsSi[1] )
     SiN_res.Draw( options="P", marker=5 )
@@ -398,7 +398,7 @@ if __name__=="__main__":
     legendSi_inv.Draw()
 
     canvas.Update()
-    canvas.SaveAs( graph_dir + "b/Si_inv.eps" )
+    canvas.SaveAs( graph_dir + "b/Si_Tinv.eps" )
     input()
 
     # ln 1/R over ln T
@@ -436,7 +436,7 @@ if __name__=="__main__":
     SiHe_ext.graph.SetMarkerColor( colorsSi[0] )
     SiHe_ext.GetXaxis().SetLimits( flog.Eval(minTSi), flog.Eval(maxTSi) )
     SiHe_ext.Draw( options="AP", marker=5, xName= "ln(T[K])", yName= "ln(1/R[\\Omega])" )
-    SiHe_ext.graph.SetTitle("Mobility in Si ")
+    SiHe_ext.graph.SetTitle("Mobility in Si against log T")
     SiN_ext.graph.SetMarkerSize( 2 )
     SiN_ext.graph.SetMarkerColor( colorsSi[1] )
     SiN_ext.Draw( options="P", marker=5 )
@@ -447,5 +447,5 @@ if __name__=="__main__":
     legendSi_ext.Draw()
 
     canvas.Update()
-    canvas.SaveAs( graph_dir + "b/Si.eps" )
+    canvas.SaveAs( graph_dir + "b/Si_doubleLog.eps" )
     input()
