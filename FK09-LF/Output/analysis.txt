@@ -1,0 +1,70 @@
+ FCN=2.90762e-09 FROM MIGRAD    STATUS=CONVERGED     382 CALLS         383 TOTAL
+                     EDM=5.81555e-09    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           3.47395e+03   3.62021e+00   1.65651e-03   6.16405e-04
+   2  p1          -2.54827e+03   3.33102e+00   1.21511e-03   6.12610e-04
+   3  p2           1.39834e+01   8.48249e-02   6.84148e-06   4.93087e-03
+ FCN=3.55964e-07 FROM MIGRAD    STATUS=CONVERGED      82 CALLS          83 TOTAL
+                     EDM=7.11927e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -7.07659e+00   1.58142e-01   2.66074e-05   1.99254e-02
+   2  p1           4.00070e-01   6.05373e-04   1.90768e-07   4.06905e+00
+170
+200
+Name: lin_CuHe Title: pol1
+T_0   = 23.587 +-  0.011
+alpha =(3.63677 +- 0.00541)*10^3
+Chi/N = 114.630
+
+Name: lin_CuN Title: pol1
+T_0   = 21.613 +-  0.003
+alpha =(4.39500 +- 0.00192)*10^3
+Chi/N = 10.385
+
+Name: lin_TaHe Title: pol1
+T_0   = 17.214 +-  0.008
+alpha =(3.61158 +- 0.00540)*10^3
+Chi/N = 119.787
+
+Name: lin_TaN Title: pol1
+T_0   = 15.774 +-  0.002
+alpha =(4.37020 +- 0.00191)*10^3
+Chi/N =  5.280
+
+Name: CuHe Title: [0] + [1]*x^[2]
+T_0 = 0.15543 +- 0.00082
+A   =(0.00050 +- 0.00002)*10^-6
+beta= 5.25128 +- 0.00081
+Chi/N =  4.040
+
+Name: TaHe Title: [0] + [1]*x^[2]
+T_0 = 0.05710 +- 0.00060
+A   =(0.00050 +- 0.00001)*10^-6
+beta= 5.17156 +- 0.00081
+Chi/N =  6.956
+
+Tc = 23.46076 +- 5.31813
+Name: res_SiHe Title: pol1
+A     = -11.087 +-  0.022
+delta = -671.13853 +- 2.57695
+Chi/N = 24.441
+E_d   =(0.11567 +- -0.00044)eV
+
+Name: res_SiN Title: pol1
+A     = -10.966 +-  0.013
+delta = -821.07856 +- 2.12893
+Chi/N = 217.833
+E_d   =(0.14151 +- -0.00037)eV
+
+Name: ext_SiHe Title: pol1
+ln(A) = -30.769 +-  0.062
+gamma = 3.09623 +- 0.01179
+Chi/Ndf = 75.59
+
+Name: ext_SiN Title: pol1
+ln(A) = -38.702 +-  0.291
+gamma = 4.47804 +- 0.05314
+Chi/Ndf = 9.60
+
