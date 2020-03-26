@@ -387,7 +387,7 @@ if __name__=="__main__":
     SiHe_res.graph.SetMarkerColor( colorsSi[0] )
     SiHe_res.GetXaxis().SetLimits( finv.Eval(maxTSi), finv.Eval(minTSi) )
     SiHe_res.Draw( options="AP", marker=5, xName= "1/T [1/K]", yName= "ln(1/R[K])" )
-    SiHe_ext.graph.SetTitle("Mobility in Si against 1/T")
+    SiHe_res.graph.SetTitle("Mobility in Si against 1/T")
     SiN_res.graph.SetMarkerSize( 2 )
     SiN_res.graph.SetMarkerColor( colorsSi[1] )
     SiN_res.Draw( options="P", marker=5 )
@@ -418,6 +418,7 @@ if __name__=="__main__":
         es = f.GetParErrors()
         print( f.function )
         print( "ln(A) = {:6.3f} +- {:6.3f}".format( pars[0], es[0] ) )
+        print( "A     = {:6.3f} +- {:6.3f}".format( np.exp(pars[0]), np.exp(pars[0])*es[0] ) )
         print( "gamma = {:6.5f} +- {:6.5f}".format( pars[1], es[1] ))
         if f.GetNDF() == 0:
             print("Chi = {:4.2f}".format(f.GetChisquare()))
