@@ -178,7 +178,7 @@ if __name__=="__main__":
         print( "T_0   = {:6.3f} +- {:6.3f}".format( pars[0], es[0] ) )
         alpha = pars[1]/pars[0]
         e_alpha = np.sqrt( (es[1]/pars[0])**2 + (es[0]*pars[1]/(pars[0])**2)**2 )
-        print( "alpha =({:6.5f} +- {:6.5f})*10^3".format( alpha*1e3, e_alpha*1e3 ))
+        print( "alpha =({:6.5f} +- {:6.5f})*10^-3".format( alpha*1e3, e_alpha*1e3 ))
         print( "Chi/N = {:6.3f}".format( f.GetChisquare()/f.GetNDF() ))
         print()
 
