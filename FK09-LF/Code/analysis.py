@@ -395,6 +395,7 @@ if __name__=="__main__":
     legendSi_inv = TLegend(.40,.77,.60,.92)
     legendSi_inv.AddEntry(SiHe_res.graph, "Si He")
     legendSi_inv.AddEntry(SiN_res.graph, "Si N")
+    legendSi_inv.AddEntry(fres_SiHe.function, "1/R = A exp( delta/T )")
     legendSi_inv.Draw()
 
     canvas.Update()
@@ -418,7 +419,7 @@ if __name__=="__main__":
         es = f.GetParErrors()
         print( f.function )
         print( "ln(A) = {:6.3f} +- {:6.3f}".format( pars[0], es[0] ) )
-        print( "A     = {:6.3f} +- {:6.3f}".format( np.exp(pars[0]), np.exp(pars[0])*es[0] ) )
+        print( "A     = {:6.3e} +- {:6.3e}".format( np.exp(pars[0]), np.exp(pars[0])*es[0] ) )
         print( "gamma = {:6.5f} +- {:6.5f}".format( pars[1], es[1] ))
         if f.GetNDF() == 0:
             print("Chi = {:4.2f}".format(f.GetChisquare()))
@@ -445,6 +446,7 @@ if __name__=="__main__":
     legendSi_ext = TLegend(.40,.77,.60,.92)
     legendSi_ext.AddEntry(SiHe_ext.graph, "Si He")
     legendSi_ext.AddEntry(SiN_ext.graph, "Si N")
+    legendSi_ext.AddEntry(fext_SiN.function, "1/R = A T^gamma")
     legendSi_ext.Draw()
 
     canvas.Update()
