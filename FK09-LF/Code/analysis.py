@@ -305,7 +305,7 @@ if __name__=="__main__":
 
     legendCu = TLegend(.26,.78,.74,.93)
     legendCu.AddEntry(CuHe.graph, "Cu He")
-    legendCu.AddEntry(f_CuHelog.function, "ln(R) = ln(R_0 + A e^{T \\beta })")
+    legendCu.AddEntry(f_CuHelog.function, "R = R_0 + A T^\\beta")
     legendCu.Draw()
 
     canvas.Update()
@@ -322,7 +322,7 @@ if __name__=="__main__":
 
     legendTa = TLegend(.26,.78,.74,.93)
     legendTa.AddEntry(TaHe.graph, "Ta He")
-    legendTa.AddEntry(f_TaHelog.function, "ln(R) = ln(R_0 + A e^{T \\beta })")
+    legendTa.AddEntry(f_TaHelog.function, "R = R_0 + A T^\\beta")
     legendTa.Draw()
 
     canvas.Update()
