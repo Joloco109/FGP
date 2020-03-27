@@ -1,0 +1,37 @@
+ FCN=2.90762e-09 FROM MIGRAD    STATUS=CONVERGED     382 CALLS         383 TOTAL
+                     EDM=5.81555e-09    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           3.47395e+03   3.62021e+00   1.65651e-03   6.16405e-04
+   2  p1          -2.54827e+03   3.33102e+00   1.21511e-03   6.12610e-04
+   3  p2           1.39834e+01   8.48249e-02   6.84148e-06   4.93087e-03
+ FCN=3.55964e-07 FROM MIGRAD    STATUS=CONVERGED      82 CALLS          83 TOTAL
+                     EDM=7.11927e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -7.07659e+00   1.58142e-01   2.66074e-05   1.99254e-02
+   2  p1           4.00070e-01   6.05373e-04   1.90768e-07   4.06905e+00
+Calibration C:
+Data:
+(293.4, 0.02886751345948129, 1044.2741938461538, 0.12077451243718088)
+(77.0, 0.2886751345948129, 1348.857588181818, 0.04100803209973411)
+(4.2, 0.02886751345948129, 3382.6786658333335, 1.5316537163115402)
+
+A = 3473.95 +-    3.62
+B = -2548.27 +-    3.33
+C = 13.9834 +-  0.0848
+Chi = 0.00
+You overfitted with laughable few data points!
+What did you expect?
+
+Calibration Pt:
+Data:
+(293.4, 0.02886751345948129, 110.30382923076922, 0.06071870610149017)
+(77.0, 0.2886751345948129, 23.728716772727275, 0.001917821371239269)
+
+A = -7.0766 +-  0.1581
+B =  0.4001 +-  0.0006
+Chi = 0.00
+You overfitted with laughable few data points!
+What did you expect?
+
