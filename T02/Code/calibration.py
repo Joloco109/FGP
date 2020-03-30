@@ -11,25 +11,6 @@ class Calibration(Function):
     def Draw( self ):
         self.graph.Draw()
 
-    def GetNDF( self ):
-        return self.function.GetNDF()
-
-    def GetChisquare( self ):
-        return self.function.GetChisquare()
-
-    def ArrayFromPointer( self, pointer ):
-        return np.array( np.fromiter(
-            pointer,
-            dtype=np.float64,
-            count=self.function.GetNpar()
-            ) )
-
-    def GetParameters( self ):
-        return self.ArrayFromPointer( self.function.GetParameters() )
-
-    def GetParErrors( self ):
-        return self.ArrayFromPointer( self.function.GetParErrors() )
-
     def GetXaxis( self ):
         return self.graph.GetXaxis()
 
