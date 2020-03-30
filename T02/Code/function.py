@@ -1,3 +1,4 @@
+from ctypes import pointer, c_float
 import numpy as np
 
 class Function:
@@ -7,7 +8,9 @@ class Function:
     def Get( self, x ):
         return (
                 self.function.Eval( x[0] ),
-                np.abs(self.function.Derivative( x[0] )) * x[1]
+                np.abs(self.function.Derivative( x[0] )) * x[1],
+                sum([ (print(ep, x[0]) ,self.function.GradientPar( i, pointer(c_float(x[0])) ) * ep )**2
+                    for i, ep in zip(range(self.function.GetNpar()), self.GetParErrors()) ])
                 )
 
     def Eval( self, x ):
