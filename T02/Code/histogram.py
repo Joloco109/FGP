@@ -53,8 +53,11 @@ class Histogram:
             self.GetYaxis().SetTitle( yName ) 
         self.hist.Draw(options)
         
-    def GetBins( self ):
-        return np.array([ self.hist.GetBinContent(i+1) for i in range(self.GetNcells()) ])
+    def GetBinCenters( self ):
+        return np.array([ self.hist.GetBinCenter(i+1) for i in range(self.GetNcells()) ])
+
+    def GetBinCenterErrors( self ):
+        return np.array([ self.hist.GetBinWidth(i+1) for i in range(self.GetNcells()) ])/np.sqrt(12)
 
     def GetBinContents( self ):
         return np.array([ self.hist.GetBinContent(i+1) for i in range(self.GetNcells()) ])
