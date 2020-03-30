@@ -5,7 +5,7 @@ from ROOT import TGraph, TGraphErrors, TF1
 from function import Function
 
 class Graph:
-    def __init__( self, name, x, y, ex=None, ey=None ):
+    def __init__( self, name, x, y, ex=None, ey=None, esx=None, esy=None ):
         self.name = name
         if not (type(None)==type(ex) and type(None)==type(ey)):
             if type(None) == type(ex):
@@ -27,9 +27,18 @@ class Graph:
         for i in range(len(data)):
             self.graph.SetPoint( i, data[i][0], data[i][1] )
 
+        if type(None) == type(esx):
+            esx = np.zeros(len(x))
+        if type(None) == type(esy):
+            esy = np.zeros(len(y))
+        self.syserrorsX2 = esx**2
+        self.syserrorsY2 = esy**2
+
     def Clone( self ):
         c = Graph( self.name, [], [])
         c.graph = self.graph.Clone()
+        c.syserrorsX2 = self.syserrorsX2.copy()
+        c.syserrorsY2 = self.syserrorsY2.copy()
         return c
 
     def Slice( self, start, end ):
@@ -51,7 +60,9 @@ class Graph:
         except ValueError:
             ex = None
             ey = None
-        return Graph( self.name, x, y, ex, ey )
+        esx = np.take( self.GetEXSys(), i )
+        esy = np.take( self.GetEYSys(), i )
+        return Graph( self.name, x, y, ex, ey, esx, esy )
 
     def ApplyY( self, func ):
         x = self.GetX()
@@ -62,6 +73,9 @@ class Graph:
             new_y = func.Get(( y[i], ey[i] ))
             self.graph.SetPoint( i, x[i], new_y[0] )
             self.graph.SetPointError( i, ex[i], new_y[1] )
+
+            new_y = func.Get(( y[i], np.sqrt(self.syserrorsY2[i]) ))
+            self.syserrorsY2[i] = new_y[2]**2 + self.syserrorsY2[i]
         return self
 
     def ApplyX( self, func ):
@@ -73,12 +87,17 @@ class Graph:
             new_x = func.Get(( x[i], ex[i] ))
             self.graph.SetPoint( i, new_x[0], y[i] )
             self.graph.SetPointError( i, new_x[1], ey[i] )
+
+            new_x = func.Get(( x[i], np.sqrt(self.syserrorsX2[i]) ))
+            self.syserrorsX2[i] = new_x[2]**2 + self.syserrorsX2[i]
         return self
 
     def Scale( self, s ):
         scaler = Function( TF1("scale_{}".format(s), "[0]*x" ) )
         scaler.function.SetParameter( 0, s )
         self.Apply( scaler )
+        self.syserrorsX2 *= s**2
+        self.syserrorsY2 *= s**2
         return self
 
     def Fit( self, function, options=None ):
@@ -116,6 +135,12 @@ class Graph:
         if not type(self.graph)==TGraphErrors:
             raise ValueError("GetEY cant be called on Graph of type {}".format(type(self.graph)))
         return self.ArrayFromPointer( self.graph.GetEY() )
+
+    def GetEXSys( self ):
+        return np.sqrt( self.syserrorsX2 )
+
+    def GetEYSys( self ):
+        return np.sqrt( self.syserrorsY2 )
 
     def GetXaxis( self ):
         return self.graph.GetXaxis()
