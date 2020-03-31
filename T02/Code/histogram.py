@@ -95,6 +95,9 @@ class Histogram:
     def GetBinErrors( self ):
         return np.array([ self.hist.GetBinError(i+1) for i in range(self.hist.GetNcells()) ])
 
+    def GetN( self ):
+        return self.hist.GetNcells()
+
     def GetXaxis( self ):
         return self.hist.GetXaxis()
 
