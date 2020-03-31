@@ -10,7 +10,7 @@ def calibrate():
         opt, hist = Histogram.Read( cfg.cali_dir+f, f[:-4], f[:-4] )
         hist -= opt.time / opt_rausch.time * rausch
 
-        edges = find_edges( hist, 10, 6, 40 )
+        edges = find_edges( hist, 10, 10, 35 )
 
         hist.Draw()
         input()
