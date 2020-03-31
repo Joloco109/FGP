@@ -19,7 +19,7 @@ def slope( x, y, w ):
 
 
 def find_edges( hist, acc, width, degree ):
-    i = 0
+    i = acc
     N = hist.GetN()
 
     centers = hist.GetBinCenters()
@@ -37,16 +37,16 @@ def find_edges( hist, acc, width, degree ):
     while i < len(weights) - width - acc:
         m_last = slope( centers[i-acc:i], contents[i-acc:i], weights[i-acc:i] )
         m = slope( centers[i+width:i+width+acc], contents[i+width:i+width+acc], weights[i+width:i+width+acc] )
-        if np.arcsin( m ) - np.arcsin( m_last ) > degree/180*np.pi:
+        if np.sin( m ) - np.sin( m_last ) > degree/180*np.pi:
             print( "Rising at {}: from {:.3e}({:.2f}°) to {:.3e}({:.2f}°)".format(
                 i,
-                m_last, 180/np.pi*np.arcsin(m_last),
-                m, 180/np.pi*np.arcsin(m)  )  )
+                m_last, 180/np.pi*np.sin(m_last),
+                m, 180/np.pi*np.sin(m)  )  )
             #i += acc
-        if np.arcsin( m ) - np.arcsin( m_last ) < -degree/180*np.pi:
+        if np.sin( m ) - np.sin( m_last ) < -degree/180*np.pi:
             print( "Sinking at {}: from {:.3e}({:.2f}°) to {:.3e}({:.2f}°)".format(
-                i, 180/np.pi*m_last, np.arcsin(m_last),
-                m, 180/np.pi*np.arcsin(m)  )  )
+                i, 180/np.pi*m_last, np.sin(m_last),
+                m, 180/np.pi*np.sin(m)  )  )
             #i += acc
         i += 1
     return max_cont
