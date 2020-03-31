@@ -1,29 +1,35 @@
 import codecs
 import numpy as np
-from ROOT import TH1I
+import numbers
+from ROOT import TH1I, TF1
+
+from function import Function
 
 class DataOptions:
     def __init__( self, time ):
         self.time = time
 
 class Histogram:
-    def __init__( self, bins, name, title=None, calibration=None ):
+    def __init__( self, name, title=None, bins=None, calibration=None ):
         if title==None:
             title = name
             
         self.name = name
         self.title = title
 
-        if calibration==None:
-            self.hist = TH1I( self.name, self.title, len(bins), 0, len(bins) )
-            self.cali = None
-        else:
-            self.hist = TH1I( self.name, self.title, len(bins), calibration.Eval(0), calibration.Eval(len(bins)) )
-            self.cali = calibration
+        self.cali = calibration
 
-        for i in range(len(bins)):
-            self.hist.SetBinContent( i+1, bins[i] )
-        self.hist.Sumw2()
+        if not bins == None:
+            if calibration==None:
+                self.hist = TH1I( self.name, self.title, len(bins), 0, len(bins) )
+            else:
+                self.hist = TH1I( self.name, self.title, len(bins), calibration.Eval(0), calibration.Eval(len(bins)) )
+
+            for i in range(len(bins)):
+                self.hist.SetBinContent( i+1, bins[i] )
+            self.hist.Sumw2()
+        else:
+            self.hist = None
             
 
     def Read( file_name, name, title ):
@@ -33,12 +39,12 @@ class Histogram:
         time = float(content[0])
         data = [ int(x) for x in content[1:] if not x=='' ]
 
-        return DataOptions( time ), Histogram( data, name, title )
+        return DataOptions( time ), Histogram( name, title, data )
 
     def Clone( self ):
-        h = Histogram( [], self.name, self.title, self.calibration )
+        h = Histogram( self.name, self.title, None, self.cali )
         h.hist = self.hist.Clone()
-        return c
+        return h
 
     def Fit( self, function, options=None ):
         if options==None:
@@ -75,3 +81,68 @@ class Histogram:
 
     def GetYaxis( self ):
         return self.hist.GetYaxis()
+
+    def Add( self, rhs ):
+        if isinstance( rhs, Histogram ):
+            self.hist.Add( rhs.hist )
+        elif isinstance( rhs, Function ):
+            self.hist.Add( rhs.function )
+        else:
+            raise TypeError
+        return self
+
+    def Multiply( self, rhs ):
+        if isinstance( rhs, Histogram ):
+            self.hist.Multiply( rhs.hist )
+        elif isinstance( rhs, Function ):
+            self.hist.Multiply( rhs.function )
+        elif isinstance( rhs, numbers.Number ):
+            self.hist.Scale( rhs )
+        else:
+            raise TypeError
+        return self
+
+    def Divide( self, rhs ):
+        if isinstance( rhs, Histogram ):
+            self.hist.Divide( rhs.hist )
+        elif isinstance( rhs, Function ):
+            self.hist.Divide( rhs.function )
+        elif isinstance( rhs, numbers.Number ):
+            self.hist.Scale( 1/rhs )
+        else:
+            raise TypeError
+        return self
+
+    def __neg__( self ):
+        return self.Clone() * -1
+
+    def __add__( self, rhs ):
+        return self.Clone().Add( rhs )
+
+    __radd__ = __add__
+
+    def __sub__( self, rhs ):
+        return self.Clone().Add( -rhs )
+
+    def __rsub__( self, rhs ):
+        return -( self - rhs )
+
+    def __mul__( self, rhs ):
+        return self.Clone().Multiply( rhs )
+
+    __rmul__ = __mul__
+
+    def __truediv__( self, rhs ):
+        return self.Clone().Divide( rhs )
+
+    def __iadd__( self, rhs ):
+        return self.Add( rhs )
+
+    def __isub__( self, rhs ):
+        return self.Add( -rhs )
+
+    def __imul__( self, rhs ):
+        return self.Multiply( rhs )
+
+    def __itruediv__( self, rhs ):
+        return self.Divide( rhs )

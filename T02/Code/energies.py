@@ -2,7 +2,6 @@ import numpy as np
 import json
 
 from config import cali_dir, cali_energy_file
-#from enum import 
 
 time_units= { 'Y' : 365, 'M' : 30, 'H' : 1/24 }
 
