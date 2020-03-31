@@ -46,6 +46,27 @@ class Histogram:
         h.hist = self.hist.Clone()
         return h
 
+    def Slice( self, start, end ):
+        lows = self.GetBinLowEdges()
+        if not start == None:
+            i = np.where( start <= lows )[0][0]
+        else :
+            i = 0
+        if not end== None:
+            j = np.where( end <= lows )[0][0]
+        else:
+            j = len(lows)
+
+        low = lows[i]
+        high = lows[j]
+        lows = np.take( lows, range(i,j) )
+        content = np.take( self.GetBinContents(), range(i,j) )
+        ec = np.take( self.GetBinErrors(), range(i,j) )
+
+        hist = self.Clone()
+        hist.hist.SetBins( int(j-i), low, high )
+        return hist
+
     def Fit( self, function, options=None ):
         if options==None:
             return self.hist.Fit( function.function )
@@ -59,22 +80,20 @@ class Histogram:
             self.GetYaxis().SetTitle( yName ) 
         self.hist.Draw(options)
         
+    def GetBinLowEdges( self ):
+        return np.array([ self.hist.GetBinLowEdge(i+1) for i in range(self.hist.GetNcells()) ])
+
     def GetBinCenters( self ):
-        return np.array([ self.hist.GetBinCenter(i+1) for i in range(self.GetNcells()) ])
+        return np.array([ self.hist.GetBinCenter(i+1) for i in range(self.hist.GetNcells()) ])
 
     def GetBinCenterErrors( self ):
-        return np.array([ self.hist.GetBinWidth(i+1) for i in range(self.GetNcells()) ])/np.sqrt(12)
+        return np.array([ self.hist.GetBinWidth(i+1) for i in range(self.hist.GetNcells()) ])/np.sqrt(12)
 
     def GetBinContents( self ):
-        return np.array([ self.hist.GetBinContent(i+1) for i in range(self.GetNcells()) ])
+        return np.array([ self.hist.GetBinContent(i+1) for i in range(self.hist.GetNcells()) ])
 
     def GetBinErrors( self ):
-        return np.array([ self.hist.GetBinError(i+1) for i in range(self.GetNcells()) ])
-
-    def GetEY( self ):
-        if not type(self.graph)==TGraphErrors:
-            raise ValueError("GetEY cant be called on Graph of type {}".format(type(self.graph)))
-        return self.ArrayFromPointer( self.graph.GetEY() )
+        return np.array([ self.hist.GetBinError(i+1) for i in range(self.hist.GetNcells()) ])
 
     def GetXaxis( self ):
         return self.hist.GetXaxis()
