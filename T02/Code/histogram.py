@@ -1,7 +1,7 @@
 import codecs
 import numpy as np
 import numbers
-from ROOT import TH1I, TF1
+from ROOT import TH1F, TF1
 
 from function import Function
 
@@ -21,9 +21,9 @@ class Histogram:
 
         if not bins == None:
             if calibration==None:
-                self.hist = TH1I( self.name, self.title, len(bins), 0, len(bins) )
+                self.hist = TH1F( self.name, self.title, len(bins), 0, len(bins) )
             else:
-                self.hist = TH1I( self.name, self.title, len(bins), calibration.Eval(0), calibration.Eval(len(bins)) )
+                self.hist = TH1F( self.name, self.title, len(bins), calibration.Eval(0), calibration.Eval(len(bins)) )
 
             for i in range(len(bins)):
                 self.hist.SetBinContent( i+1, bins[i] )
