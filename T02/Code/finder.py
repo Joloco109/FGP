@@ -23,7 +23,7 @@ def slope( x, y, w ):
     return m, sig2_m
 
 
-def find_edges( hist, acc, width, degree ):
+def find_edges( hist, acc, width, min_angle ):
     i = acc
     N = hist.GetN()
 
@@ -39,22 +39,46 @@ def find_edges( hist, acc, width, degree ):
     with np.errstate(divide='ignore'):
         weights = 1/errors**2
 
+    old_angles = []
     while i < len(weights) - width - acc:
         m_last, sig2_m_last = slope( centers[i-acc:i], contents[i-acc:i], weights[i-acc:i] )
         m, sig2_m = slope( centers[i+width:i+width+acc], contents[i+width:i+width+acc], weights[i+width:i+width+acc] )
         #print(sig2_m_last, sig2_m)
-        if np.sin( m ) - np.sin( m_last ) > degree/180*np.pi:
-            print( "Rising at {}: from {:.3e}({:.2f}°) to {:.3e}({:.2f}°)".format(
-                i,
-                m_last, 180/np.pi*np.sin(m_last),
-                m, 180/np.pi*np.sin(m)  )  )
-            #i += acc
-        if np.sin( m ) - np.sin( m_last ) < -degree/180*np.pi:
-            print( "Sinking at {}: from {:.3e}({:.2f}°) to {:.3e}({:.2f}°)".format(
-                i, 180/np.pi*m_last, np.sin(m_last),
-                m, 180/np.pi*np.sin(m)  )  )
-            #i += acc
-        i += 1
+        angle = np.sin( m ) - np.sin( m_last )
+        if len(old_angles) == 0:
+            if np.abs(angle) > np.pi/180*min_angle:
+                print_edge( angle > 0, i, m_last, m )
+                old_angles = [ angle ]
+            i += 1
+        elif len(old_angles) < width:
+            old_angles.append(angle)
+        elif old_angles[0] > 0:
+            if angle > min(old_angles):
+                print_edge( True, i, m_last, m )
+                old_angles.remove(min(old_angles))
+                old_angles.append(angle)
+                i += 1
+            else:
+                print("Found {}!\n".format(max(old_angles)))
+                old_angles = []
+                i += acc
+        elif old_angles[0] < 0:
+            if angle < max(old_angles):
+                print_edge( False, i, m_last, m )
+                old_angles.remove(max(old_angles))
+                old_angles.append(angle)
+                i += 1
+            else:
+                print("Found {}!\n".format(min(old_angles)))
+                old_angles = []
+                i += width + acc
+
+
+def print_edge( rising, i, m_last, m ):
+    text = "Rising" if rising else "Sinking"
+    print( text + " at {}: from {:.3e}({:.2f}°) to {:.3e}({:.2f}°)".format(
+        i, m_last, 180/np.pi*np.sin(m_last),
+        m, 180/np.pi*np.sin(m)  )  )
 
 def peak_fit( hist, peaks ):
     fits = []
