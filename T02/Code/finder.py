@@ -71,3 +71,38 @@ def peak_fit( hist, peaks ):
 
         fits.append( fit )
     return fits
+
+def edge_fit( hist, edges, right=False ):
+    fits = []
+    for (start, end), i in zip(edges, range(len(edges))):
+
+        # c/2d *( (x-a)(erf(x/(sqrt(3)sig)) + erf((d-x)/(sqrt(2)sig))) + sqrt(2/pi) sig*(e^-(x^2/2sig^2) - e^-((d-x)^2/2sig^2) ) )
+        # c/2d *( (x-a)(erf(x/(sqrt(3)sig)) - erf((d+x)/(sqrt(2)sig))) + sqrt(2/pi) sig*(e^-(x^2/2sig^2) - e^-((d+x)^2/2sig^2) ) )
+        function = "[0]+[1]*(\n\t(x-[2])*(\n{}\n\t)\n\t+ sqrt(2/pi)*[4]*(\n{}\n\t)\n)".format(
+                    "\t\tTMath::Erf((x-[2])/(sqrt(2)*[4]))\n\t\t{} TMath::Erf( ([3] {} (x-[2]))/(sqrt(2)*[4]) )".format(
+                        *(('+','-') if right else ('-','+')) ),
+                    "\t\texp( -(x-[2])^2/(2*[4]^2) )\n\t\t+ exp( -([3] {} (x-[2]))^2/(2*[4]^2) )".format(
+                        '-' if right else '+' ),
+                )
+
+        fit = TF1("edge_{}{}".format( 'B' if right else 'C', i), function, start, end)
+        fit.SetParameter( 0, 500 )
+        #fit.FixParameter( 0, 0 )
+        #fit.SetParLimits( 0, 500, 500 )
+        maximum = np.max(hist.Slice(start,end).GetBinContents())-500
+        a = start if right else end
+        d = (end-start)
+        fit.SetParameter( 1, maximum/(2*d) )  # [1] = c/2d
+        #fit.SetParLimits( 1, 0.8*maximum/(2*d), maximum/(2*d) )
+        fit.SetParameter( 2, a ) # [2] = a
+        #fit.SetParLimits( 2, start, end )
+        fit.SetParameter( 3, d ) # [3] = d
+        #fit.SetParLimits( 3, 0, 1000 )
+        fit.SetParameter( 4, 10 ) # [4] = sig
+        #fit.SetParLimits( 4, 0, 20 )
+
+        fit = Function( fit )
+        hist.Fit( fit, options="R+" )
+
+        fits.append( fit )
+    return fits

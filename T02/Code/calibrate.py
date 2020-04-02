@@ -3,7 +3,7 @@ import json
 from calibration import Calibration
 from histogram import Histogram
 import config as cfg
-from finder import find_edges, peak_fit
+from finder import find_edges, peak_fit, edge_fit
 
 def calibrate():
     opt_rausch, rausch = Histogram.Read( cfg.cali_dir+cfg.cali_rausch, "Rauschmessung", "Rauschmessung" )
@@ -36,7 +36,17 @@ if __name__ == "__main__":
         peaks = [ edges for t, *edges in candidates if t=="peak" ]
         peaks = [ tuple(p) for sublist in peaks for p in sublist ]
 
+        back_edges_fits = edge_fit( hist, back_edges, right=False )
+        comp_edges_fits = edge_fit( hist, comp_edges, right=True )
         peak_fits = peak_fit( hist, peaks )
 
         hist.Draw()
+        input()
+        hist.Draw()
+        for f in back_edges_fits:
+            f.function.Draw("Same")
+        for f in comp_edges_fits:
+            f.function.Draw("Same")
+        for f in peak_fits:
+            f.function.Draw("Same")
         input()
