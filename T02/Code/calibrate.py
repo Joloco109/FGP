@@ -3,7 +3,7 @@ import json
 from calibration import Calibration
 from histogram import Histogram
 import config as cfg
-from finder import find_edges
+from finder import find_edges, peak_fit
 
 def calibrate():
     opt_rausch, rausch = Histogram.Read( cfg.cali_dir+cfg.cali_rausch, "Rauschmessung", "Rauschmessung" )
@@ -19,6 +19,24 @@ def calibrate():
 
 if __name__ == "__main__":
     #calibrate()
+    opt_rausch, rausch = Histogram.Read( cfg.cali_dir+cfg.cali_rausch, "Rauschmessung", "Rauschmessung" )
 
     data = json.loads( open( cfg.cali_dir+"extrema_Co.json" ).read() )
-    print(data)
+    for [element_name, candidates] in data:
+        files = [ f for name, f in cfg.cali_files if name==element_name ]
+        if not len(files)==1:
+            raise ValueError("There should be exactly ONE file for every entry in the extrema JSON")
+        opt, hist = Histogram.Read( cfg.cali_dir+files[0], files[0][:-4], files[0][:-4] )
+        hist -= opt.time / opt_rausch.time * rausch
+
+        back_edges = [ edges for t, *edges in candidates if t=="B_edge" ]
+        back_edges = [ tuple(p) for sublist in back_edges for p in sublist ]
+        comp_edges = [ edges for t, *edges in candidates if t=="C_edge" ]
+        comp_edges = [ tuple(p) for sublist in comp_edges for p in sublist ]
+        peaks = [ edges for t, *edges in candidates if t=="peak" ]
+        peaks = [ tuple(p) for sublist in peaks for p in sublist ]
+
+        peak_fits = peak_fit( hist, peaks )
+
+        hist.Draw()
+        input()
