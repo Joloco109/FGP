@@ -76,8 +76,14 @@ def edge_fit( hist, edges, right=False ):
     fits = []
     for (start, end), i in zip(edges, range(len(edges))):
 
-        # c/2d *( (x-a)(erf(x/(sqrt(3)sig)) + erf((d-x)/(sqrt(2)sig))) + sqrt(2/pi) sig*(e^-(x^2/2sig^2) - e^-((d-x)^2/2sig^2) ) )
-        # c/2d *( (x-a)(erf(x/(sqrt(3)sig)) - erf((d+x)/(sqrt(2)sig))) + sqrt(2/pi) sig*(e^-(x^2/2sig^2) - e^-((d+x)^2/2sig^2) ) )
+        # convolution (Faltung) of a triangle function with a gaussian normal distribution:
+        # int from a to a+d:
+        #   c*(y-a)/d * 1/sqrt(2)*sig * exp((x-y)^2/2*sig^2 ) dy
+        # = c/2d *( (x-a)(erf(x/(sqrt(3)sig)) + erf((d-x)/(sqrt(2)sig))) + sqrt(2/pi) sig*(e^-(x^2/2sig^2) - e^-((d-x)^2/2sig^2) ) )
+        # int from a-d to a:
+        #   c*(a-y)/d * 1/sqrt(2)*sig * exp((x-y)^2/2*sig^2 ) dy
+        # = c/2d *( (x-a)(erf(x/(sqrt(3)sig)) - erf((d+x)/(sqrt(2)sig))) + sqrt(2/pi) sig*(e^-(x^2/2sig^2) - e^-((d+x)^2/2sig^2) ) )
+
         function = "[0]+[1]*(\n\t(x-[2])*(\n{}\n\t)\n\t+ sqrt(2/pi)*[4]*(\n{}\n\t)\n)".format(
                     "\t\tTMath::Erf((x-[2])/(sqrt(2)*[4]))\n\t\t{} TMath::Erf( ([3] {} (x-[2]))/(sqrt(2)*[4]) )".format(
                         *(('+','-') if right else ('-','+')) ),
