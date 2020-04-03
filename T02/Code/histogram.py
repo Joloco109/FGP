@@ -65,6 +65,8 @@ class Histogram:
 
         hist = self.Clone()
         hist.hist.SetBins( int(j-i), low, high )
+        for k in range(int(j-i)):
+            hist.hist.SetBinContent( k+1, content[k] )
         return hist
 
     def Fit( self, function, options=None ):
