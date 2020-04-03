@@ -12,7 +12,8 @@ def calibrate_known():
     for [element_name, candidates] in data:
         files = [ f for name, f in cfg.cali_files if name==element_name ]
         if not len(files)==1:
-            raise ValueError("There should be exactly ONE file for every entry in the extrema JSON")
+            raise ValueError(
+                    "There should be exactly ONE file for every entry in the extrema JSON (No Match for {})".format(element_name))
         opt, hist = Histogram.Read( cfg.cali_dir+files[0], files[0][:-4], files[0][:-4] )
         hist -= opt.time / opt_rausch.time * rausch
 
@@ -49,5 +50,4 @@ def calibrate():
         input()
 
 if __name__ == "__main__":
-    calibrate()
     calibrate_known()
