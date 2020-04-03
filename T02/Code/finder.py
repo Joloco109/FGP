@@ -83,17 +83,27 @@ def print_edge( rising, i, m_last, m ):
 def peak_fit( hist, peaks ):
     fits = []
     for (start, end), i in zip(peaks, range(len(peaks))):
-        fit = TF1("peak_{}".format(i), "pol1 + gaus(2)", start, end)
-        fit.SetParameter( 0, 0 )
+        fit = TF1("peak_{}".format(i), "[0] + [1]*(x-{}) + gaus(2)".format(start), start, end)
+        print(fit.GetName()+":")
+
+        maximum = np.max(hist.Slice(start,end).GetBinContents())
+        minimum = np.min(hist.Slice(start,end).GetBinContents())
+
+        fit.SetParameter( 0, minimum )
         fit.SetParameter( 1, 0 )
-        maximum = np.max(hist.GetBinContents())
-        fit.SetParameter( 2, maximum )
+        fit.SetParLimits( 1, 0, (start-end)*1e-2*maximum )
+        fit.SetParameter( 2, maximum-minimum )
+        fit.SetParLimits( 2, 0, 1e2*maximum )
         fit.SetParameter( 3, (start+end)/2 )
-        fit.SetParameter( 4, (end-start)/2 )
+        fit.SetParLimits( 3, 0, 1e3 )
+        fit.SetParameter( 4, (end-start)/4 )
+        fit.SetParLimits( 4, 0, 1e3 )
+
         fit = Function( fit )
         hist.Fit( fit, options="R+" )
 
         fits.append( fit )
+        print()
     return fits
 
 def edge_fit( hist, edges, right=False ):
@@ -116,23 +126,20 @@ def edge_fit( hist, edges, right=False ):
                 )
 
         fit = TF1("edge_{}{}".format( 'B' if right else 'C', i), function, start, end)
+        print(fit.GetName()+":")
+
         fit.SetParameter( 0, 500 )
-        #fit.FixParameter( 0, 0 )
-        #fit.SetParLimits( 0, 500, 500 )
         maximum = np.max(hist.Slice(start,end).GetBinContents())-500
         a = start if right else end
         d = (end-start)
         fit.SetParameter( 1, maximum/(2*d) )  # [1] = c/2d
-        #fit.SetParLimits( 1, 0.8*maximum/(2*d), maximum/(2*d) )
         fit.SetParameter( 2, a ) # [2] = a
-        #fit.SetParLimits( 2, start, end )
         fit.SetParameter( 3, d ) # [3] = d
-        #fit.SetParLimits( 3, 0, 1000 )
         fit.SetParameter( 4, 10 ) # [4] = sig
-        #fit.SetParLimits( 4, 0, 20 )
 
         fit = Function( fit )
         hist.Fit( fit, options="R+" )
 
         fits.append( fit )
+        print()
     return fits
