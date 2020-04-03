@@ -12,3 +12,4 @@ cali_files = [
 cali_rausch = "Rauschen.TKA"
 
 cali_energy_file = "energies.json"
+cali_extrema = "extrema.json"

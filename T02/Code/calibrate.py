@@ -8,7 +8,7 @@ from finder import find_edges, peak_fit, edge_fit
 def calibrate_known():
     opt_rausch, rausch = Histogram.Read( cfg.cali_dir+cfg.cali_rausch, "Rauschmessung", "Rauschmessung" )
 
-    data = json.loads( open( cfg.cali_dir+"extrema_Co.json" ).read() )
+    data = json.loads( open( cfg.cali_dir+cfg.cali_extrema ).read() )
     for [element_name, candidates] in data:
         files = [ f for name, f in cfg.cali_files if name==element_name ]
         if not len(files)==1:
@@ -45,10 +45,9 @@ def calibrate():
         opt, hist = Histogram.Read( cfg.cali_dir+f, f[:-4], f[:-4] )
         hist -= opt.time / opt_rausch.time * rausch
 
-        candidates = find_edges( hist, 10, 5, 60 )
-
         hist.Draw()
         input()
 
 if __name__ == "__main__":
+    calibrate()
     calibrate_known()
