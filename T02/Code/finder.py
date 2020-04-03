@@ -128,8 +128,11 @@ def edge_fit( hist, edges, right=False ):
         fit = TF1("edge_{}{}".format( 'B' if right else 'C', i), function, start, end)
         print(fit.GetName()+":")
 
-        fit.SetParameter( 0, 500 )
-        maximum = np.max(hist.Slice(start,end).GetBinContents())-500
+        maximum = np.max(hist.Slice(start,end).GetBinContents())
+        minimum = np.min(hist.Slice(start,end).GetBinContents())
+
+        fit.SetParameter( 0, minimum )
+        maximum -= minimum
         a = start if right else end
         d = (end-start)
         fit.SetParameter( 1, maximum/(2*d) )  # [1] = c/2d
