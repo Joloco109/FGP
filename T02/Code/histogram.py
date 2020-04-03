@@ -69,11 +69,12 @@ class Histogram:
             hist.hist.SetBinContent( k+1, content[k] )
         return hist
 
-    def Fit( self, function, options=None ):
-        if options==None:
-            return self.hist.Fit( function.function )
-        else:
-            return self.hist.Fit( function.function, options )
+    def Fit( self, function, options="", plot=True, out=True ):
+        if not plot:
+            options = "N" + options
+        if not out:
+            options = "Q" + options
+        return self.hist.Fit( function.function, options )
 
     def Draw( self, options="", marker=5, xName = "", yName = "" ):
         if not xName=="":

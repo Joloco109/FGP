@@ -5,7 +5,7 @@ from histogram import Histogram
 import config as cfg
 from finder import find_edges, peak_fit, edge_fit
 
-def calibrate_known():
+def calibrate_known( plot=False, out=False ):
     opt_rausch, rausch = Histogram.Read( cfg.cali_dir+cfg.cali_rausch, "Rauschmessung", "Rauschmessung" )
 
     data = json.loads( open( cfg.cali_dir+cfg.cali_extrema ).read() )
@@ -24,20 +24,19 @@ def calibrate_known():
         peaks = [ edges for t, *edges in candidates if t=="peak" ]
         peaks = [ tuple(p) for sublist in peaks for p in sublist ]
 
-        back_edges_fits = edge_fit( hist, back_edges, right=False )
-        comp_edges_fits = edge_fit( hist, comp_edges, right=True )
-        peak_fits = peak_fit( hist, peaks )
+        back_edges_fits = edge_fit( hist, back_edges, right=False, plot=False, out=out )
+        comp_edges_fits = edge_fit( hist, comp_edges, right=True, plot=False, out=out )
+        peak_fits = peak_fit( hist, peaks, plot=False, out=out )
 
-        hist.Draw()
-        input()
-        hist.Draw()
-        for f in back_edges_fits:
-            f.function.Draw("Same")
-        for f in comp_edges_fits:
-            f.function.Draw("Same")
-        for f in peak_fits:
-            f.function.Draw("Same")
-        input()
+        if plot:
+            hist.Draw()
+            for f in back_edges_fits:
+                f.function.Draw("Same")
+            for f in comp_edges_fits:
+                f.function.Draw("Same")
+            for f in peak_fits:
+                f.function.Draw("Same")
+            input()
 
 def calibrate():
     opt_rausch, rausch = Histogram.Read( cfg.cali_dir+cfg.cali_rausch, "Rauschmessung", "Rauschmessung" )
@@ -50,4 +49,4 @@ def calibrate():
         input()
 
 if __name__ == "__main__":
-    calibrate_known()
+    calibrate_known( True, True )

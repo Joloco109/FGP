@@ -80,11 +80,12 @@ def print_edge( rising, i, m_last, m ):
         i, m_last, 180/np.pi*np.sin(m_last),
         m, 180/np.pi*np.sin(m)  )  )
 
-def peak_fit( hist, peaks ):
+def peak_fit( hist, peaks, plot=False, out=False ):
     fits = []
     for (start, end), i in zip(peaks, range(len(peaks))):
         fit = TF1("peak_{}".format(i), "[0] + [1]*(x-{}) + gaus(2)".format(start), start, end)
-        print(fit.GetName()+":")
+        if out:
+            print(fit.GetName()+":")
 
         maximum = np.max(hist.Slice(start,end).GetBinContents())
         minimum = np.min(hist.Slice(start,end).GetBinContents())
@@ -100,13 +101,14 @@ def peak_fit( hist, peaks ):
         fit.SetParLimits( 4, 0, 1e3 )
 
         fit = Function( fit )
-        hist.Fit( fit, options="R+" )
+        hist.Fit( fit, options="R+", plot=plot, out=out )
 
         fits.append( fit )
-        print()
+        if out:
+            print()
     return fits
 
-def edge_fit( hist, edges, right=False ):
+def edge_fit( hist, edges, right=False, plot=False, out=False ):
     fits = []
     for (start, end), i in zip(edges, range(len(edges))):
 
@@ -126,7 +128,8 @@ def edge_fit( hist, edges, right=False ):
                 )
 
         fit = TF1("edge_{}{}".format( 'B' if right else 'C', i), function, start, end)
-        print(fit.GetName()+":")
+        if out:
+            print(fit.GetName()+":")
 
         maximum = np.max(hist.Slice(start,end).GetBinContents())
         minimum = np.min(hist.Slice(start,end).GetBinContents())
@@ -141,8 +144,9 @@ def edge_fit( hist, edges, right=False ):
         fit.SetParameter( 4, 10 ) # [4] = sig
 
         fit = Function( fit )
-        hist.Fit( fit, options="R+" )
+        hist.Fit( fit, options="R+", plot=plot, out=out )
 
         fits.append( fit )
-        print()
+        if out:
+            print()
     return fits
