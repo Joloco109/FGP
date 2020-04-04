@@ -1,15 +1,20 @@
 import json
 import numpy as np
+import os
 
-from ROOT import TLegend
+from ROOT import TCanvas,TLegend
 from calibration import Calibration
 from histogram import Histogram
 import config as cfg
 from finder import find_edges, peak_fit, edge_fit
 
-def calibrate_known( plot=False, out=False ):
+graph_dir = "Graphs/build/calibrate/"
+
+def calibrate_known( plot=False, out=False, save=False ):
     opt_rausch, rausch = Histogram.Read( cfg.cali_dir+cfg.cali_rausch, "Rauschmessung", "noise measurement" )
+    canvas = TCanvas("canvas","canvas")
     rausch.Draw(xName="channel number", yName="counts")
+    canvas.SaveAs( graph_dir + "noise.eps" )
     input()
 
     data = json.loads( open( cfg.cali_dir+cfg.cali_extrema ).read() )
@@ -61,6 +66,7 @@ def calibrate_known( plot=False, out=False ):
                 print("\t{:.2f} +- {:.2f}".format(*peak_pos[-1]))
 
         if plot:
+            canvas = TCanvas("canvas","canvas")
             hist.Draw(xName="channel number", yName="counts")
             if element_name == "60Co":
                 legend = TLegend(.14,.68,.35,.89)
@@ -94,6 +100,7 @@ def calibrate_known( plot=False, out=False ):
                     legend.AddEntry(f.function, "peak fit")
                     i = 1
             legend.Draw()
+            canvas.SaveAs( graph_dir + element_name + ".eps" )
             input()
             
 
@@ -108,4 +115,8 @@ def calibrate():
         input()
 
 if __name__ == "__main__":
-    calibrate_known( True, True )
+    
+    if not os.path.exists( graph_dir ):
+        os.makedirs( graph_dir )
+
+    calibrate_known( True, True, True )
