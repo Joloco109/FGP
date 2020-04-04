@@ -127,7 +127,7 @@ def edge_fit( hist, edges, right=False, plot=False, out=False ):
                         '-' if right else '+' ),
                 )
 
-        fit = TF1("edge_{}{}".format( 'B' if right else 'C', i), function, start, end)
+        fit = TF1("edge_{}{}".format( 'C' if right else 'B', i), function, start, end)
         if out:
             print(fit.GetName()+":")
 

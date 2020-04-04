@@ -67,6 +67,7 @@ class Histogram:
         hist.hist.SetBins( int(j-i), low, high )
         for k in range(int(j-i)):
             hist.hist.SetBinContent( k+1, content[k] )
+            hist.hist.SetBinError( k+1, ec[k] )
         return hist
 
     def Fit( self, function, options="", plot=True, out=True ):
