@@ -1,6 +1,7 @@
 import json
 import numpy as np
-from ROOT import TF1
+import os
+from ROOT import TCanvas,TLegend, TF1
 
 from calibration import Calibration
 from histogram import Histogram
@@ -11,16 +12,21 @@ from finder import find_edges, peak_fit, edge_fit
 m_e = 511 # electron mass [keV]
 sig_me = 1
 
+graph_dir = "Graphs/build/calibrate/"
+
 def back_edge( e, sig_e ):
     return ( e/(1 + e/m_e), np.abs(1/(1+e/m_e)**2)*sig_e, np.abs(1/(1+m_e/e)**2)*sig_me )
 
 def comp_edge( e, sig_e ):
     return ( e/(1 + m_e/e), np.abs(1-1/(1+e/m_e)**2)*sig_e, np.abs(1/(1+m_e/e)**2)*sig_me )
 
-def calibrate_known( plot=False, out=False ):
-    opt_rausch, rausch = Histogram.Read( cfg.cali_dir+cfg.cali_rausch, "Rauschmessung", "Rauschmessung" )
+def calibrate_known( plot=False, out=False, save=False ):
+    opt_rausch, rausch = Histogram.Read( cfg.cali_dir+cfg.cali_rausch, "Rauschmessung", "noise measurement" )
     if plot:
-        rausch.Draw()
+        canvas = TCanvas("canvas","canvas")
+        rausch.Draw(xName="channel number", yName="counts")
+        if save:
+            canvas.SaveAs( graph_dir + "noise.eps" )
         input()
 
     data = json.loads( open( cfg.cali_dir+cfg.cali_extrema ).read() )
@@ -82,13 +88,42 @@ def calibrate_known( plot=False, out=False ):
                     "There should be exactly ONE file for every entry in the extrema JSON (No Match for {})".format(element_name))
 
         if plot:
-            hist.Draw()
+            canvas = TCanvas("canvas","canvas")
+            hist.Draw(xName="channel number", yName="counts")
+            if element_name == "60Co":
+                legend = TLegend(.14,.68,.35,.89)
+            if element_name == "137Cs":
+                legend = TLegend(.70,.16,.89,.37)
+            if element_name == "152Eu":
+                legend = TLegend(.40,.75,.60,.89)
+            if element_name == "22Na":
+                legend = TLegend(.70,.30,.89,.51)
+                
+            legend.AddEntry(hist.hist, "Data")
+            i=0
             for f in back_edges_fits:
+                f.function.SetLineColor(3)
                 f.function.Draw("Same")
+                if i == 0:
+                    legend.AddEntry(f.function, "backscatter fit")
+                    i = 1
+            i=0
             for f in comp_edges_fits:
+                f.function.SetLineColor(6)
                 f.function.Draw("Same")
+                if i == 0:
+                    legend.AddEntry(f.function, "compton fit")
+                    i = 1
+            i=0
             for f in peak_fits:
+                f.function.SetLineColor(2)
                 f.function.Draw("Same")
+                if i == 0:
+                    legend.AddEntry(f.function, "peak fit")
+                    i = 1
+            legend.Draw()
+            if save:
+                canvas.SaveAs( graph_dir + element_name + ".eps" )
             input()
 
         es = [ e for name, e in energies if name==element_name ]
@@ -140,9 +175,13 @@ def calibrate():
     for name, f in cfg.cali_files:
         opt, hist = Histogram.Read( cfg.cali_dir+f, f[:-4], f[:-4] )
         hist -= opt.time / opt_rausch.time * rausch
-
+        
         hist.Draw()
         input()
 
 if __name__ == "__main__":
-    calibrate_known( True, True )
+    
+    if not os.path.exists( graph_dir ):
+        os.makedirs( graph_dir )
+
+    calibrate_known( True, True, True )
