@@ -87,6 +87,39 @@ def calibrate_known( plot=False, out=False, save=False ):
             raise ValueError(
                     "There should be exactly ONE file for every entry in the extrema JSON (No Match for {})".format(element_name))
 
+        es = [ e for name, e in energies if name==element_name ]
+        if len(es)>1:
+            raise ValueError(
+                    "There should be at maximum ONE entry for every entry in the extrema JSON (No Match for {})".format(element_name))
+        if len(es) > 0:
+            back_es = [ None if e==None else back_edge(*e)
+                    for t, *b_es in es[0] if t == "B_edge"  for e in b_es ]
+
+            comp_es = [ None if e==None else comp_edge(*e)
+                    for t, *c_es in es[0] if t == "C_edge"  for e in c_es ]
+
+            peak_es = [ None if e==None else tuple([*e,0])
+                    for t, *p_es in es[0] if t == "peak" for e in p_es ]
+
+            if back_es == []:
+                back_pos = []
+            if comp_es == []:
+                comp_pos = []
+            if peak_es == []:
+                peak_pos = []
+
+            if out:
+                print("Mapping: pos energy")
+
+            for pos, e in zip(back_pos+comp_pos+peak_pos, back_es+comp_es+peak_es):
+                if not e == None:
+                    if out:
+                        print( "\t",pos[0], e[0] )
+                    data_points[0].append([pos[0],pos[1]])
+                    data_points[1].append([e[0],e[1]])
+            if out:
+                print()
+
         if plot:
             canvas = TCanvas("canvas","canvas")
             hist.Draw(xName="channel number", yName="counts")
@@ -126,40 +159,11 @@ def calibrate_known( plot=False, out=False, save=False ):
                 canvas.SaveAs( graph_dir + element_name + ".eps" )
             input()
 
-        es = [ e for name, e in energies if name==element_name ]
-        if len(es)>1:
-            raise ValueError(
-                    "There should be at maximum ONE entry for every entry in the extrema JSON (No Match for {})".format(element_name))
-        if len(es) > 0:
-            back_es = [ None if e==None else back_edge(*e)
-                    for t, *b_es in es[0] if t == "B_edge"  for e in b_es ]
-
-            comp_es = [ None if e==None else comp_edge(*e)
-                    for t, *c_es in es[0] if t == "C_edge"  for e in c_es ]
-
-            peak_es = [ None if e==None else tuple([*e,0])
-                    for t, *p_es in es[0] if t == "peak" for e in p_es ]
-
-            if back_es == []:
-                back_pos = []
-            if comp_es == []:
-                comp_pos = []
-            if peak_es == []:
-                peak_pos = []
-            for pos, e in zip(back_pos+comp_pos+peak_pos, back_es+comp_es+peak_es):
-                if not e == None:
-                    data_points[0].append([pos[0],pos[1]])
-                    data_points[1].append([e[0],e[1]])
     positions = np.array(data_points[0])
     energies = np.array(data_points[1])
-    if out:
-        print("Mapping: pos energy")
-        for p, e in zip( positions[:,0], energies[:,0] ):
-            print( p, e )
-        print()
 
     cali_graph = Graph( "Calibration", positions[:,0], energies[:,0], positions[:,1], energies[:,1] )
-    cali = TF1( "Calibration", "pol1" )
+    cali = TF1( "Calibration", "[0]*x" )
     cali_graph.graph.Fit( cali )
     cali = Calibration( cali_graph, cali )
 
