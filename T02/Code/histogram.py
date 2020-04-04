@@ -81,7 +81,7 @@ class Histogram:
         if not xName=="":
             self.GetXaxis().SetTitle( xName )
         if not yName=="":
-            self.GetYaxis().SetTitle( yName ) 
+            self.GetYaxis().SetTitle( yName )
         self.hist.Draw(options)
         
     def GetBinLowEdges( self ):

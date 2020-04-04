@@ -106,7 +106,7 @@ class Graph:
         else:
             return self.graph.Fit( function.function, options )
 
-    def Draw( self, options="AP", marker=6, xName = "T [K]", yName = "R [\\Omega]" ):
+    def Draw( self, options="AP", marker=6, xName = "", yName = "" ):
         self.graph.SetLineWidth(1)
         self.graph.SetMarkerStyle(marker)
         self.GetXaxis().SetTitle( xName )
