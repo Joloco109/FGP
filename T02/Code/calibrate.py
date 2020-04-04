@@ -1,22 +1,39 @@
 import json
 import numpy as np
+from ROOT import TF1
 
 from calibration import Calibration
 from histogram import Histogram
+from graph import Graph
 import config as cfg
 from finder import find_edges, peak_fit, edge_fit
 
+m_e = 511 # electron mass [keV]
+sig_me = 1
+
+def back_edge( e, sig_e ):
+    return ( e/(1 + e/m_e), np.abs(1/(1+e/m_e)**2)*sig_e, np.abs(1/(1+m_e/e)**2)*sig_me )
+
+def comp_edge( e, sig_e ):
+    return ( e/(1 + m_e/e), np.abs(1-1/(1+e/m_e)**2)*sig_e, np.abs(1/(1+m_e/e)**2)*sig_me )
+
 def calibrate_known( plot=False, out=False ):
     opt_rausch, rausch = Histogram.Read( cfg.cali_dir+cfg.cali_rausch, "Rauschmessung", "Rauschmessung" )
-    rausch.Draw()
-    input()
+    if plot:
+        rausch.Draw()
+        input()
 
     data = json.loads( open( cfg.cali_dir+cfg.cali_extrema ).read() )
+    energies = json.loads( open( cfg.cali_dir+cfg.cali_energy_extrema ).read() )
+
+    data_points = [[], []]
+
     for [element_name, candidates] in data:
         files = [ f for name, f in cfg.cali_files if name==element_name ]
         if not len(files)==1:
             raise ValueError(
                     "There should be exactly ONE file for every entry in the extrema JSON (No Match for {})".format(element_name))
+
         opt, hist = Histogram.Read( cfg.cali_dir+files[0], files[0][:-4], files[0][:-4] )
         hist -= opt.time / opt_rausch.time * rausch
 
@@ -59,6 +76,11 @@ def calibrate_known( plot=False, out=False ):
             if out:
                 print("\t{:.2f} +- {:.2f}".format(*peak_pos[-1]))
 
+        files = [ f for name, f in cfg.cali_files if name==element_name ]
+        if not len(files)==1:
+            raise ValueError(
+                    "There should be exactly ONE file for every entry in the extrema JSON (No Match for {})".format(element_name))
+
         if plot:
             hist.Draw()
             for f in back_edges_fits:
@@ -68,6 +90,48 @@ def calibrate_known( plot=False, out=False ):
             for f in peak_fits:
                 f.function.Draw("Same")
             input()
+
+        es = [ e for name, e in energies if name==element_name ]
+        if len(es)>1:
+            raise ValueError(
+                    "There should be at maximum ONE entry for every entry in the extrema JSON (No Match for {})".format(element_name))
+        if len(es) > 0:
+            back_es = [ None if e==None else back_edge(*e)
+                    for t, *b_es in es[0] if t == "B_edge"  for e in b_es ]
+
+            comp_es = [ None if e==None else comp_edge(*e)
+                    for t, *c_es in es[0] if t == "C_edge"  for e in c_es ]
+
+            peak_es = [ None if e==None else tuple([*e,0])
+                    for t, *p_es in es[0] if t == "peak" for e in p_es ]
+
+            if back_es == []:
+                back_pos = []
+            if comp_es == []:
+                comp_pos = []
+            if peak_es == []:
+                peak_pos = []
+            for pos, e in zip(back_pos+comp_pos+peak_pos, back_es+comp_es+peak_es):
+                if not e == None:
+                    data_points[0].append([pos[0],pos[1]])
+                    data_points[1].append([e[0],e[1]])
+    positions = np.array(data_points[0])
+    energies = np.array(data_points[1])
+    if out:
+        print("Mapping: pos energy")
+        for p, e in zip( positions[:,0], energies[:,0] ):
+            print( p, e )
+        print()
+
+    cali_graph = Graph( "Calibration", positions[:,0], energies[:,0], positions[:,1], energies[:,1] )
+    cali = TF1( "Calibration", "pol1" )
+    cali_graph.graph.Fit( cali )
+    cali = Calibration( cali_graph, cali )
+
+    if plot:
+        cali_graph.Draw()
+        input()
+    return cali
 
 
 def calibrate():
