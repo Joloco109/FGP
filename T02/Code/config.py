@@ -3,10 +3,10 @@ data_dir = "Data/"
 cali_dir = data_dir+"Kalibrierung/"
 
 cali_files = [
-        [ "137Cs", "137 Cs Kalibrierung.TKA" ],
-        [ "60Co", "Co Kalibrierung.TKA" ],
-        [ "152Eu", "Eu Kalibrierung.TKA" ],
-        [ "22Na", "Na 22 Kalibrierung.TKA" ],
+        [ "137Cs", "137Cs calibration.TKA" ],
+        [ "60Co", "60Co calibration.TKA" ],
+        [ "152Eu", "152Eu calibration.TKA" ],
+        [ "22Na", "22Na calibration.TKA" ],
     ]
 
 cali_rausch = "Rauschen.TKA"
