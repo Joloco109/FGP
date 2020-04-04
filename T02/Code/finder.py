@@ -105,6 +105,7 @@ def peak_fit( hist, peaks, plot=False, out=False ):
 
         fits.append( fit )
         if out:
+            print("Chi^2/NdF = {:.2f}".format( fit.GetChisquare()/fit.GetNDF() ))
             print()
     return fits
 
@@ -148,5 +149,6 @@ def edge_fit( hist, edges, right=False, plot=False, out=False ):
 
         fits.append( fit )
         if out:
+            print("Chi^2/NdF = {:.2f}".format( fit.GetChisquare()/fit.GetNDF() ))
             print()
     return fits
