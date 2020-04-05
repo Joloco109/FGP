@@ -100,11 +100,12 @@ class Graph:
         self.syserrorsY2 *= s**2
         return self
 
-    def Fit( self, function, options=None ):
-        if options==None:
-            return self.graph.Fit( function.function )
-        else:
-            return self.graph.Fit( function.function, options )
+    def Fit( self, function, options="", plot=True, out=True ):
+        if not plot:
+            options = "N" + options
+        if not out:
+            options = "Q" + options
+        return self.graph.Fit( function.function, options )
 
     def Draw( self, options="AP", marker=6, xName = "", yName = "" ):
         self.graph.SetLineWidth(1)
