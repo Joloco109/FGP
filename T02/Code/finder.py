@@ -86,6 +86,7 @@ def peak_fit( hist, peaks, plot=False, out=False ):
         fit = TF1("peak_{}".format(i), "[0] + [1]*(x-{}) + gaus(2)".format(start), start, end)
         if out:
             print(fit.GetName()+":")
+            print("From {} to {}".format(start,end))
 
         maximum = np.max(hist.Slice(start,end).GetBinContents())
         minimum = np.min(hist.Slice(start,end).GetBinContents())
@@ -96,7 +97,7 @@ def peak_fit( hist, peaks, plot=False, out=False ):
         fit.SetParameter( 2, maximum-minimum )
         fit.SetParLimits( 2, 0, 1e2*maximum )
         fit.SetParameter( 3, (start+end)/2 )
-        fit.SetParLimits( 3, 0, 1e3 )
+        fit.SetParLimits( 3, start, end )
         fit.SetParameter( 4, (end-start)/4 )
         fit.SetParLimits( 4, 0, 1e3 )
 

@@ -32,11 +32,19 @@ def analyse_element( element_name, candidates, rausch, cali=None, plot=False, ou
         hist -= opt.time / opt_rausch.time * rausch
 
         back_edges = [ edges for t, *edges in candidates if t=="B_edge" ]
-        back_edges = [ tuple(p) for sublist in back_edges for p in sublist ]
         comp_edges = [ edges for t, *edges in candidates if t=="C_edge" ]
-        comp_edges = [ tuple(p) for sublist in comp_edges for p in sublist ]
         peaks = [ edges for t, *edges in candidates if t=="peak" ]
-        peaks = [ tuple(p) for sublist in peaks for p in sublist ]
+        if cali==None:
+            back_edges = [ tuple(p) for sublist in back_edges for p in sublist ]
+            comp_edges = [ tuple(p) for sublist in comp_edges for p in sublist ]
+            peaks = [ tuple(p) for sublist in peaks for p in sublist ]
+        else:
+            back_edges = [ tuple( [cali.Get((x,0))[0] for x in p ] )
+                    for sublist in back_edges for p in sublist ]
+            comp_edges = [ tuple( [cali.Get((x,0))[0] for x in p ] )
+                    for sublist in comp_edges for p in sublist ]
+            peaks = [ tuple( [cali.Get((x,0))[0] for x in p ] )
+                    for sublist in peaks for p in sublist ]
 
         back_edges_fits = edge_fit( hist, back_edges, right=False, plot=False, out=out )
         comp_edges_fits = edge_fit( hist, comp_edges, right=True, plot=False, out=out )
