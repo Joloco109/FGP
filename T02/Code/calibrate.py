@@ -3,9 +3,10 @@ import numpy as np
 import os
 from ROOT import TCanvas,TLegend, TF1, TMarker
 
-from calibration import Calibration
 from histogram import Histogram
 from graph import Graph
+from function import Function
+from calibration import Calibration
 import config as cfg
 from finder import find_edges, peak_fit, edge_fit
 
@@ -63,7 +64,7 @@ def calibrate_known( plot=False, out=False, save=False ):
             sig_paras = f.GetParErrors()
             back_pos.append( ( paras[2] - paras[3], np.sqrt(sig_paras[2]**2+sig_paras[3]**2) ) ) # e = a - d
             if out:
-                print("\t{:.2f} +- {:.2f}".format(*back_pos[-1]))
+                print("\t{:.2f} \\pm {:.2f}".format(*back_pos[-1]))
         comp_pos = []
         if out:
             print("Compton scatter:")
@@ -72,7 +73,7 @@ def calibrate_known( plot=False, out=False, save=False ):
             sig_paras = f.GetParErrors()
             comp_pos.append(( paras[2] + paras[3], np.sqrt(sig_paras[2]**2+sig_paras[3]**2) )) # e = a + d
             if out:
-                print("\t{:.2f} +- {:.2f}".format(*comp_pos[-1]))
+                print("\t{:.2f} \\pm {:.2f}".format(*comp_pos[-1]))
         peak_pos = []
         if out:
             print("Photopeaks:")
@@ -81,7 +82,7 @@ def calibrate_known( plot=False, out=False, save=False ):
             sig_paras = f.GetParErrors()
             peak_pos.append(( paras[3], sig_paras[3] )) # e = [3]
             if out:
-                print("\t{:.2f} +- {:.2f}".format(*peak_pos[-1]))
+                print("\t{:.2f} \\pm {:.2f}".format(*peak_pos[-1]))
 
         files = [ f for name, f in cfg.cali_files if name==element_name ]
         if not len(files)==1:
@@ -169,17 +170,23 @@ def calibrate_known( plot=False, out=False, save=False ):
     energies = np.array(data_points[1])
 
     cali_graph = Graph( "Calibration", positions[:,0], energies[:,0], positions[:,1], energies[:,1] )
-    cali = TF1( "Calibration", "[0]*x" )
-    cali_graph.graph.Fit( cali )
+    cali = Function( TF1( "Calibration", "pol1" ) )
+    cali_graph.Fit( cali, plot=plot, out=out )
     cali = Calibration( cali_graph, cali )
-    
+
+    if out:
+        print("Calibration:")
+        print("\tE_lost = {:.5f} \\pm {:.5f}".format(-cali.GetParameters()[0], cali.GetParErrors()[0]))
+        print("\tk      = {:.5f} \\pm {:.5f}".format(cali.GetParameters()[1], cali.GetParErrors()[1]))
+        print("\tChi^2/NdF = {:.3f}".format(cali.GetChisquare()/cali.GetNDF()))
+
     if plot:
         canvas = TCanvas("canvas","canvas")
         legend = TLegend(.14,.60,.35,.89)
         cali_graph.Draw(xName = "channel number", yName = "Energy [keV]")
-        legend.AddEntry(cali.function, "E = K\\cdot x + E_{lost}")
+        legend.AddEntry(cali.function, "E = K\\cdot x - E_{lost}")
         markers = []
-        
+
         for p,e,(n,t) in zip(positions[:,0],energies[:,0], data_type):
                 m = TMarker(p, e, cfg.cali_marker[t])
                 m.SetMarkerSize(2)
@@ -204,9 +211,10 @@ def calibrate_known( plot=False, out=False, save=False ):
                 leg_markers.append(m)
         legend.Draw()
         print(len(known_energies))
-    if save:
-        canvas.SaveAs( graph_dir + "calibration_lin_reg.eps" )
-    input()
+        if save:
+            canvas.SaveAs( graph_dir + "calibration_lin_reg.eps" )
+        input()
+
     return cali
 
 
