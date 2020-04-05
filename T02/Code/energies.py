@@ -19,7 +19,7 @@ class Element:
                 for energy, sig_energy, intensity in p[2]:
                     productlist[0].append( energy )
                     productlist[1].append( sig_energy )
-                    productlist[2].append( p[1]*intensity/self.halftimes[i] )
+                    productlist[2].append( p[1]*intensity/100/self.halftimes[i] )
 
         for key in self.products:
             self.products[key] = np.array( self.products[key] )
