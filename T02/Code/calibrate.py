@@ -21,14 +21,17 @@ def back_edge( e, sig_e ):
 def comp_edge( e, sig_e ):
     return ( e/(1 + m_e/e), np.abs(1-1/(1+e/m_e)**2)*sig_e, np.abs(1/(1+m_e/e)**2)*sig_me )
 
-def analyse_element( element_name, candidates, rausch, plot=False, out=False, save=False ):
+def analyse_element( element_name, candidates, rausch, cali=None, plot=False, out=False, save=False ):
         (opt_rausch, rausch) = rausch
         files = [ f for name, f in cfg.cali_files if name==element_name ]
         if not len(files)==1:
             raise ValueError(
                     "There should be exactly ONE file for every entry in the extrema JSON (No Match for {})".format(element_name))
 
-        opt, hist = Histogram.Read( cfg.cali_dir+files[0], files[0][:-4], files[0][:-4] )
+        opt, hist = Histogram.Read( cfg.cali_dir+files[0], files[0][:-4], files[0][:-4], calibration=cali )
+        print(rausch)
+        print(opt.time / opt_rausch.time * rausch)
+        print(type(opt.time / opt_rausch.time * rausch))
         hist -= opt.time / opt_rausch.time * rausch
 
         back_edges = [ edges for t, *edges in candidates if t=="B_edge" ]

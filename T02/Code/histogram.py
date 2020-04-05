@@ -32,14 +32,14 @@ class Histogram:
             self.hist = None
             
 
-    def Read( file_name, name, title ):
+    def Read( file_name, name, title, calibration=None ):
         with codecs.open(file_name, 'r', 'iso-8859-1') as f:
             content = f.readlines()
         content = [ x.strip() for x in content]
         time = float(content[0])
         data = [ int(x) for x in content[1:] if not x=='' ]
 
-        return DataOptions( time ), Histogram( name, title, data )
+        return DataOptions( time ), Histogram( name, title, data, calibration=calibration )
 
     def Clone( self ):
         h = Histogram( self.name, self.title, None, self.cali )
@@ -109,12 +109,14 @@ class Histogram:
         return self.hist.GetYaxis()
 
     def Add( self, rhs ):
+        print(rhs)
         if isinstance( rhs, Histogram ):
             self.hist.Add( rhs.hist )
         elif isinstance( rhs, Function ):
             self.hist.Add( rhs.function )
         else:
-            raise TypeError
+            print(isinstance( rhs, Histogram ))
+            raise TypeError("RHS {}({}) should be an instance of Histogram or Function".format(rhs, type(rhs)))
         return self
 
     def Multiply( self, rhs ):
