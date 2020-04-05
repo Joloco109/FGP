@@ -21,22 +21,8 @@ def back_edge( e, sig_e ):
 def comp_edge( e, sig_e ):
     return ( e/(1 + m_e/e), np.abs(1-1/(1+e/m_e)**2)*sig_e, np.abs(1/(1+m_e/e)**2)*sig_me )
 
-def calibrate_known( plot=False, out=False, save=False ):
-    opt_rausch, rausch = Histogram.Read( cfg.cali_dir+cfg.cali_rausch, "Rauschmessung", "noise measurement" )
-    if plot:
-        canvas = TCanvas("canvas","canvas")
-        rausch.Draw(xName="channel number", yName="counts")
-        if save:
-            canvas.SaveAs( graph_dir + "noise.eps" )
-        input()
-
-    data = json.loads( open( cfg.cali_dir+cfg.cali_extrema ).read() )
-    known_energies = json.loads( open( cfg.cali_dir+cfg.cali_energy_extrema ).read() )
-
-    data_points = [[], []]
-    data_type = []
-
-    for [element_name, candidates] in data:
+def analyse_element( element_name, candidates, rausch, plot=False, out=False, save=False ):
+        (opt_rausch, rausch) = rausch
         files = [ f for name, f in cfg.cali_files if name==element_name ]
         if not len(files)==1:
             raise ValueError(
@@ -83,11 +69,30 @@ def calibrate_known( plot=False, out=False, save=False ):
             peak_pos.append(( paras[3], sig_paras[3] )) # e = [3]
             if out:
                 print("\t{:.2f} \\pm {:.2f}".format(*peak_pos[-1]))
+        return hist, (back_edges_fits, back_pos), (comp_edges_fits, comp_pos), (peak_fits, peak_pos)
 
-        files = [ f for name, f in cfg.cali_files if name==element_name ]
-        if not len(files)==1:
-            raise ValueError(
-                    "There should be exactly ONE file for every entry in the extrema JSON (No Match for {})".format(element_name))
+def calibrate_known( plot=False, out=False, save=False ):
+    opt_rausch, rausch = Histogram.Read( cfg.cali_dir+cfg.cali_rausch, "Rauschmessung", "noise measurement" )
+    if plot:
+        canvas = TCanvas("canvas","canvas")
+        rausch.Draw(xName="channel number", yName="counts")
+        if save:
+            canvas.SaveAs( graph_dir + "noise.eps" )
+        input()
+
+    data = json.loads( open( cfg.cali_dir+cfg.cali_extrema ).read() )
+    known_energies = json.loads( open( cfg.cali_dir+cfg.cali_energy_extrema ).read() )
+
+    data_points = [[], []]
+    data_type = []
+
+    for [element_name, candidates] in data:
+        (
+            hist,
+            (back_edges_fits, back_pos),
+            (comp_edges_fits, comp_pos),
+            (peak_fits, peak_pos)
+        ) = analyse_element( element_name, candidates, (opt_rausch, rausch), plot=plot, out=out, save=save )
 
         es = [ e for name, e in known_energies if name==element_name ]
         if len(es)>1:
@@ -210,7 +215,6 @@ def calibrate_known( plot=False, out=False, save=False ):
                 legend.AddEntry(m, key)
                 leg_markers.append(m)
         legend.Draw()
-        print(len(known_energies))
         if save:
             canvas.SaveAs( graph_dir + "calibration_lin_reg.eps" )
         input()
