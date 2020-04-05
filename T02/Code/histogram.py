@@ -109,13 +109,11 @@ class Histogram:
         return self.hist.GetYaxis()
 
     def Add( self, rhs ):
-        print(rhs)
         if isinstance( rhs, Histogram ):
             self.hist.Add( rhs.hist )
         elif isinstance( rhs, Function ):
             self.hist.Add( rhs.function )
         else:
-            print(isinstance( rhs, Histogram ))
             raise TypeError("RHS {}({}) should be an instance of Histogram or Function".format(rhs, type(rhs)))
         return self
 

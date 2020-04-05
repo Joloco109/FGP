@@ -29,9 +29,6 @@ def analyse_element( element_name, candidates, rausch, cali=None, plot=False, ou
                     "There should be exactly ONE file for every entry in the extrema JSON (No Match for {})".format(element_name))
 
         opt, hist = Histogram.Read( cfg.cali_dir+files[0], files[0][:-4], files[0][:-4], calibration=cali )
-        print(rausch)
-        print(opt.time / opt_rausch.time * rausch)
-        print(type(opt.time / opt_rausch.time * rausch))
         hist -= opt.time / opt_rausch.time * rausch
 
         back_edges = [ edges for t, *edges in candidates if t=="B_edge" ]
