@@ -14,8 +14,8 @@ cali_energy_extrema = "extrema_energies.json"
 cali_marker = {"137Cs": 7, "60Co": 4, "152Eu": 6, "22Na": 3, "peak": 24, "comp": 25, "back": 26}
 
 
-eff_dir = data_dir+"Effizenz"
-eff_files = ["Effizenz.TKA", "Rauschen.TKA"]
+eff_dir = data_dir+"Effizienz/"
+eff_files = ["Rauschen.TKA", "Effizienz.TKA"]
 F_D = [4.91, 0.1 ] #cm²
 r = [17, 1] #cm
 A = [18.586, 0.005]
