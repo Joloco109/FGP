@@ -1,7 +1,7 @@
 import json
 import numpy as np
 import os
-from ROOT import TCanvas,TLegend, TF1
+from ROOT import TCanvas,TLegend, TF1, TMarker
 
 from calibration import Calibration
 from histogram import Histogram
@@ -30,9 +30,10 @@ def calibrate_known( plot=False, out=False, save=False ):
         input()
 
     data = json.loads( open( cfg.cali_dir+cfg.cali_extrema ).read() )
-    energies = json.loads( open( cfg.cali_dir+cfg.cali_energy_extrema ).read() )
+    known_energies = json.loads( open( cfg.cali_dir+cfg.cali_energy_extrema ).read() )
 
     data_points = [[], []]
+    data_type = []
 
     for [element_name, candidates] in data:
         files = [ f for name, f in cfg.cali_files if name==element_name ]
@@ -87,7 +88,7 @@ def calibrate_known( plot=False, out=False, save=False ):
             raise ValueError(
                     "There should be exactly ONE file for every entry in the extrema JSON (No Match for {})".format(element_name))
 
-        es = [ e for name, e in energies if name==element_name ]
+        es = [ e for name, e in known_energies if name==element_name ]
         if len(es)>1:
             raise ValueError(
                     "There should be at maximum ONE entry for every entry in the extrema JSON (No Match for {})".format(element_name))
@@ -110,13 +111,18 @@ def calibrate_known( plot=False, out=False, save=False ):
 
             if out:
                 print("Mapping: pos energy")
-
+                
+            data_type.extend([(element_name,"back") for i in back_es if not i == None])
+            data_type.extend([(element_name,"comp") for i in comp_es if not i == None])
+            data_type.extend([(element_name,"peak") for i in peak_es if not i == None])
+            
             for pos, e in zip(back_pos+comp_pos+peak_pos, back_es+comp_es+peak_es):
                 if not e == None:
                     if out:
                         print( "\t",pos[0], e[0] )
                     data_points[0].append([pos[0],pos[1]])
                     data_points[1].append([e[0],e[1]])
+
             if out:
                 print()
 
@@ -166,10 +172,38 @@ def calibrate_known( plot=False, out=False, save=False ):
     cali = TF1( "Calibration", "[0]*x" )
     cali_graph.graph.Fit( cali )
     cali = Calibration( cali_graph, cali )
-
+    
     if plot:
         canvas = TCanvas("canvas","canvas")
+        legend = TLegend(.14,.60,.35,.89)
         cali_graph.Draw(xName = "channel number", yName = "Energy [keV]")
+        legend.AddEntry(cali.function, "E = K\\cdot x + E_{lost}")
+        markers = []
+        
+        for p,e,(n,t) in zip(positions[:,0],energies[:,0], data_type):
+                m = TMarker(p, e, cfg.cali_marker[t])
+                m.SetMarkerSize(2)
+                m.SetMarkerColor(cfg.cali_marker[n])
+                m.Draw()
+                markers.append(m)
+        leg_markers = []
+
+        for name, _ in known_energies:
+                m = TMarker(-100, -100, 21)
+                m.SetMarkerColor(cfg.cali_marker[name])
+                legend.AddEntry(m, name)
+                leg_markers.append(m)
+        i = 0
+        for key in cfg.cali_marker:
+            if i < len(cfg.cali_files):
+                i+=1
+            else:
+                m = TMarker(-100, -100, cfg.cali_marker[key])
+                m.SetMarkerColor(1)
+                legend.AddEntry(m, key)
+                leg_markers.append(m)
+        legend.Draw()
+        print(len(known_energies))
     if save:
         canvas.SaveAs( graph_dir + "calibration_lin_reg.eps" )
     input()

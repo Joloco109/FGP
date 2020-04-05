@@ -14,3 +14,5 @@ cali_rausch = "Rauschen.TKA"
 cali_energy_file = "energies.json"
 cali_extrema = "extrema.json"
 cali_energy_extrema = "extrema_energies.json"
+
+cali_marker = {"137Cs": 7, "60Co": 4, "152Eu": 6, "22Na": 3, "peak": 24, "comp": 25, "back": 26}
