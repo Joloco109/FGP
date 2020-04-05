@@ -9,7 +9,7 @@ class Function:
         return (
                 self.function.Eval( x[0] ),
                 np.abs(self.function.Derivative( x[0] )) * x[1],
-                sum([ (print(ep, x[0]) ,self.function.GradientPar( i, pointer(c_float(x[0])) ) * ep )**2
+                sum([ ( self.function.GradientPar( i, pointer(c_float(x[0])) ) * ep )**2
                     for i, ep in zip(range(self.function.GetNpar()), self.GetParErrors()) ])
                 )
 
