@@ -169,7 +169,7 @@ def calibrate_known( plot=False, out=False, save=False ):
 
     if plot:
         canvas = TCanvas("canvas","canvas")
-        cali_graph.Draw()
+        cali_graph.Draw(xName = "channel number", yName = "Energy [keV]")
     if save:
         canvas.SaveAs( graph_dir + "calibration_lin_reg.eps" )
     input()
