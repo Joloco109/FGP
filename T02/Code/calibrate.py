@@ -1,7 +1,7 @@
 import json
 import numpy as np
 import os
-from ROOT import TCanvas,TLegend, TF1, TMarker
+from ROOT import TCanvas,TLegend, TF1, TMarker, TLine
 
 from histogram import Histogram
 from graph import Graph
@@ -16,12 +16,12 @@ sig_me = 1
 graph_dir = "Graphs/build/calibrate/"
 
 def back_edge( e, sig_e ):
-    return ( e/(1 + e/m_e), np.abs(1/(1+e/m_e)**2)*sig_e, np.abs(1/(1+m_e/e)**2)*sig_me )
+    return ( e/(1 + 2*e/m_e), np.abs(1/(1+2*e/m_e)**2)*sig_e, np.abs(1/(1+m_e/(2*e))**2)*sig_me )
 
 def comp_edge( e, sig_e ):
-    return ( e/(1 + m_e/e), np.abs(1-1/(1+e/m_e)**2)*sig_e, np.abs(1/(1+m_e/e)**2)*sig_me )
+    return ( e/(1 + m_e/(2*e)), np.abs(1-1/(1+2*e/m_e)**2)*sig_e, np.abs(1/(1+m_e/(2*e))**2)*sig_me )
 
-def analyse_element( element_name, candidates, rausch, cali=None, plot=False, out=False, save=False ):
+def analyse_element( element_name, candidates, rausch, cali=None, out=False, save=False ):
         (opt_rausch, rausch) = rausch
         files = [ f for name, f in cfg.cali_files if name==element_name ]
         if not len(files)==1:
@@ -56,6 +56,7 @@ def analyse_element( element_name, candidates, rausch, cali=None, plot=False, ou
         for f in back_edges_fits:
             paras = f.GetParameters()
             sig_paras = f.GetParErrors()
+            #back_pos.append( ( paras[2] - paras[3], np.sqrt(sig_paras[2]**2+sig_paras[3]**2+paras[4]**2) ) ) # e = a - d
             back_pos.append( ( paras[2] - paras[3], np.sqrt(sig_paras[2]**2+sig_paras[3]**2) ) ) # e = a - d
             if out:
                 print("\t{:.2f} \\pm {:.2f}".format(*back_pos[-1]))
@@ -65,6 +66,7 @@ def analyse_element( element_name, candidates, rausch, cali=None, plot=False, ou
         for f in comp_edges_fits:
             paras = f.GetParameters()
             sig_paras = f.GetParErrors()
+            #comp_pos.append(( paras[2] + paras[3], np.sqrt(sig_paras[2]**2+sig_paras[3]**2+paras[4]**2) )) # e = a + d
             comp_pos.append(( paras[2] + paras[3], np.sqrt(sig_paras[2]**2+sig_paras[3]**2) )) # e = a + d
             if out:
                 print("\t{:.2f} \\pm {:.2f}".format(*comp_pos[-1]))
@@ -75,6 +77,7 @@ def analyse_element( element_name, candidates, rausch, cali=None, plot=False, ou
             paras = f.GetParameters()
             sig_paras = f.GetParErrors()
             peak_pos.append(( paras[3], sig_paras[3] )) # e = [3]
+            #peak_pos.append(( paras[3], np.sqrt(sig_paras[3]**2+paras[4]**2) )) # e = [3]
             if out:
                 print("\t{:.2f} \\pm {:.2f}".format(*peak_pos[-1]))
         return hist, (back_edges_fits, back_pos), (comp_edges_fits, comp_pos), (peak_fits, peak_pos)
@@ -100,7 +103,7 @@ def calibrate_known( plot=False, out=False, save=False ):
             (back_edges_fits, back_pos),
             (comp_edges_fits, comp_pos),
             (peak_fits, peak_pos)
-        ) = analyse_element( element_name, candidates, (opt_rausch, rausch), plot=plot, out=out, save=save )
+        ) = analyse_element( element_name, candidates, (opt_rausch, rausch), out=out, save=save )
 
         es = [ e for name, e in known_energies if name==element_name ]
         if len(es)>1:
@@ -153,27 +156,40 @@ def calibrate_known( plot=False, out=False, save=False ):
                 legend = TLegend(.70,.30,.89,.51)
                 
             legend.AddEntry(hist.hist, "Data")
-            i=0
+            edges = []
+            to_legend=True
             for f in back_edges_fits:
                 f.function.SetLineColor(3)
                 f.function.Draw("Same")
-                if i == 0:
+                if to_legend:
                     legend.AddEntry(f.function, "backscatter fit")
-                    i = 1
-            i=0
+                    to_legend=False
+                p = f.GetParameters()
+                e = TLine( p[2]-p[3], p[0], p[2]-p[3], p[0]+p[1]*2*p[3] )
+                e.SetLineColor(3)
+                e.SetLineWidth(2)
+                e.Draw()
+                edges.append(e)
+            to_legend=True
             for f in comp_edges_fits:
                 f.function.SetLineColor(6)
                 f.function.Draw("Same")
-                if i == 0:
+                if to_legend:
                     legend.AddEntry(f.function, "compton fit")
-                    i = 1
-            i=0
+                    to_legend=False
+                p = f.GetParameters()
+                e = TLine( p[2]+p[3], p[0], p[2]+p[3], p[0]+p[1]*2*p[3] )
+                e.SetLineColor(6)
+                e.SetLineWidth(2)
+                e.Draw()
+                edges.append(e)
+            to_legend=True
             for f in peak_fits:
                 f.function.SetLineColor(2)
                 f.function.Draw("Same")
-                if i == 0:
+                if to_legend:
                     legend.AddEntry(f.function, "peak fit")
-                    i = 1
+                    to_legend=False
             legend.Draw()
             if save:
                 canvas.SaveAs( graph_dir + element_name + ".eps" )
