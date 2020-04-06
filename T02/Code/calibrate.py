@@ -56,8 +56,7 @@ def analyse_element( element_name, candidates, rausch, cali=None, out=False, sav
         for f in back_edges_fits:
             paras = f.GetParameters()
             sig_paras = f.GetParErrors()
-            #back_pos.append( ( paras[2] - paras[3], np.sqrt(sig_paras[2]**2+sig_paras[3]**2+paras[4]**2) ) ) # e = a - d
-            back_pos.append( ( paras[2] - paras[3], np.sqrt(sig_paras[2]**2+sig_paras[3]**2) ) ) # e = a - d
+            back_pos.append( ( paras[2] - paras[3], np.sqrt(sig_paras[2]**2+sig_paras[3]**2+paras[4]**2) ) ) # e = a - d
             if out:
                 print("\t{:.2f} \\pm {:.2f}".format(*back_pos[-1]))
         comp_pos = []
@@ -66,8 +65,7 @@ def analyse_element( element_name, candidates, rausch, cali=None, out=False, sav
         for f in comp_edges_fits:
             paras = f.GetParameters()
             sig_paras = f.GetParErrors()
-            #comp_pos.append(( paras[2] + paras[3], np.sqrt(sig_paras[2]**2+sig_paras[3]**2+paras[4]**2) )) # e = a + d
-            comp_pos.append(( paras[2] + paras[3], np.sqrt(sig_paras[2]**2+sig_paras[3]**2) )) # e = a + d
+            comp_pos.append(( paras[2] + paras[3], np.sqrt(sig_paras[2]**2+sig_paras[3]**2+paras[4]**2) )) # e = a + d
             if out:
                 print("\t{:.2f} \\pm {:.2f}".format(*comp_pos[-1]))
         peak_pos = []
@@ -76,8 +74,7 @@ def analyse_element( element_name, candidates, rausch, cali=None, out=False, sav
         for f in peak_fits:
             paras = f.GetParameters()
             sig_paras = f.GetParErrors()
-            peak_pos.append(( paras[3], sig_paras[3] )) # e = [3]
-            #peak_pos.append(( paras[3], np.sqrt(sig_paras[3]**2+paras[4]**2) )) # e = [3]
+            peak_pos.append(( paras[3], np.sqrt(sig_paras[3]**2+paras[4]**2) )) # e = [3]
             if out:
                 print("\t{:.2f} \\pm {:.2f}".format(*peak_pos[-1]))
         return hist, (back_edges_fits, back_pos), (comp_edges_fits, comp_pos), (peak_fits, peak_pos)
