@@ -75,7 +75,7 @@ class Graph:
             self.graph.SetPointError( i, ex[i], new_y[1] )
 
             new_y = func.Get(( y[i], np.sqrt(self.syserrorsY2[i]) ))
-            self.syserrorsY2[i] = new_y[2]**2 + self.syserrorsY2[i]
+            self.syserrorsY2[i] = new_y[2]**2 + new_y[3]**2
         return self
 
     def ApplyX( self, func ):
@@ -89,14 +89,13 @@ class Graph:
             self.graph.SetPointError( i, new_x[1], ey[i] )
 
             new_x = func.Get(( x[i], np.sqrt(self.syserrorsX2[i]) ))
-            self.syserrorsX2[i] = new_x[2]**2 + self.syserrorsX2[i]
+            self.syserrorsX2[i] = new_x[2]**2 + new_x[3]**2
         return self
 
     def Scale( self, s ):
         scaler = Function( TF1("scale_{}".format(s), "[0]*x" ) )
         scaler.function.SetParameter( 0, s )
         self.Apply( scaler )
-        self.syserrorsX2 *= s**2
         self.syserrorsY2 *= s**2
         return self
 
@@ -105,7 +104,33 @@ class Graph:
             options = "N" + options
         if not out:
             options = "Q" + options
-        return self.graph.Fit( function.function, options )
+
+        highX = ( 0,
+                Graph( self.name, self.GetX()+self.GetEXSys(), self.GetY(),
+                    self.GetEX(), self.GetEY()),
+                function.Clone() )
+        highY = ( 0,
+                Graph( self.name, self.GetX(), self.GetY()+self.GetEYSys(),
+                    self.GetEX(), self.GetEY()),
+                function.Clone() )
+        lowX = ( 1,
+                Graph( self.name, self.GetX()-self.GetEXSys(), self.GetY(),
+                    self.GetEX(), self.GetEY()),
+                function.Clone() )
+        lowY = ( 1,
+                Graph( self.name, self.GetX(), self.GetY()-self.GetEYSys(),
+                    self.GetEX(), self.GetEY()),
+                function.Clone() )
+
+        res = self.graph.Fit( function.function, options )
+
+        dp = np.zeros( (4, len(function.GetParameters())) )
+        for i, g, f in [highX, highY, lowX, lowY]:
+            g.graph.Fit( f.function, "NQ"+options )
+            dp[i] = np.abs(f.GetParameters()-function.GetParameters())
+        function.syserrorsP2 = function.syserrorsP2 + np.sum(dp,0)
+
+        return res
 
     def Draw( self, options="AP", marker=6, xName = "", yName = "" ):
         self.graph.SetLineWidth(1)
