@@ -194,7 +194,7 @@ def calibrate_known( plot=False, out=False, save=False ):
 
         if plot:
             plot_element( element_name, hist, back_edges_fits, comp_edges_fits, peak_fits,
-                    xName="channel number", yName="counts", save=save )
+                    xName="channel number", yName="counts", save=save, graph_dir=graph_dir )
 
     positions = np.array(data_points[0])
     energies = np.array(data_points[1])
