@@ -18,5 +18,5 @@ eff_dir = data_dir+"Effizienz/"
 eff_files = ["Rauschen.TKA", "Effizienz.TKA"]
 F_D = [4.91, 0.1 ] #cm²
 r = [17, 1] #cm
-A = [18.586, 0.005]
+A = [18.586*10**6, 0.005*10**6]
 I_gamma = [0.805, 0]
