@@ -7,12 +7,8 @@ class Calibration(Function):
     def __init__( self, graph, function, parSysError=None ):
         self.graph = graph
         if type( function ) == Function:
-            self.function = function.function
-        else :
-            self.function = function
-        if type(None) == type(parSysError):
-            parSysError = np.zeros(self.function.GetNpar())
-        self.syserrorsP2 = parSysError**2
+            function = function.function
+        super( Calibration, self).__init__( function, parSysError )
 
     def Draw( self ):
         self.graph.Draw()

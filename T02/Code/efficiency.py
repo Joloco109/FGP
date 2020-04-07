@@ -112,9 +112,9 @@ def efficiency( plot=False, out=False, save=False ):
         eff_graph.Draw(xName = "Energy [keV]", yName = "Efficiency")
         legend.AddEntry(cali.function, "\\epsilon = a E_\\gamma - b")
         legend.Draw()
+        if save:
+            canvas.SaveAs( graph_dir + "efficency.eps" )
         input()
-    if save:
-        canvas.SaveAs( graph_dir + "efficency.eps" )
     
 if __name__ == "__main__":
     
