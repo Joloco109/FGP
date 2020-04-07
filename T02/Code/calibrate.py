@@ -79,7 +79,7 @@ def analyse_element( element_name, candidates, rausch, cali=None, out=False ):
                 print("\t{:.2f} \\pm {:.2f}".format(*peak_pos[-1]))
         return hist, (back_edges_fits, back_pos), (comp_edges_fits, comp_pos), (peak_fits, peak_pos)
 
-def plot_element( element_name, hist, back_edges_fits, comp_edges_fits, peak_fits, xName="", yName="", save=False ):
+def plot_element( element_name, hist, back_edges_fits, comp_edges_fits, peak_fits, xName="", yName="", save=False, graph_dir="" ):
     canvas = TCanvas("canvas","canvas")
     hist.Draw(xName=xName, yName=yName)
     if element_name == "60Co":

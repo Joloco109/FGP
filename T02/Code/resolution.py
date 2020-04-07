@@ -44,7 +44,7 @@ def resolution( plot=False, out=False, save=False ):
         
         if plot:
             plot_element( element_name, hist, back_edges_fits, comp_edges_fits, peak_fits,
-                    xName="Energy[keV]", yName="Count", save=save )
+                    xName="Energy[keV]", yName="Count", save=save, graph_dir=graph_dir )
 
     for i, d in zip(range(len(data_points)), data_points ):
         if d[2] > 35:
@@ -77,7 +77,7 @@ def resolution( plot=False, out=False, save=False ):
         legend.AddEntry(res_fun.function, r"\sigma_E/E = \sqrt{a^2+b^2/E}")
         legend.Draw()
         if save:
-            res_graph.graph.SaveAs(graph_dir+"resolution.eps")
+            canvas.SaveAs(graph_dir+"resolution.eps")
         input()
 
     return res_fun
