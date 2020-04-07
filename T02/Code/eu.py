@@ -16,7 +16,7 @@ data = json.loads( open( cfg.cali_dir+cfg.cali_extrema ).read() )
         (back_edges_fits, back_pos),
         (comp_edges_fits, comp_pos),
         (peak_fits, peak_pos)
-    ) = analyse_element(  data[2][0], data[2][1], rausch, cali, True, True )
+    ) = analyse_element(  data[2][0], data[2][1], rausch, cali, True )
 
 canvas = TCanvas("canvas","canvas")
 hist.Draw(xName="Energy [keV]", yName="counts")

@@ -21,7 +21,7 @@ def back_edge( e, sig_e ):
 def comp_edge( e, sig_e ):
     return ( e/(1 + m_e/(2*e)), np.abs(1-1/(1+2*e/m_e)**2)*sig_e, np.abs(1/(1+m_e/(2*e))**2)*sig_me )
 
-def analyse_element( element_name, candidates, rausch, cali=None, out=False, save=False ):
+def analyse_element( element_name, candidates, rausch, cali=None, out=False ):
         (opt_rausch, rausch) = rausch
         files = [ f for name, f in cfg.cali_files if name==element_name ]
         if not len(files)==1:
@@ -79,6 +79,58 @@ def analyse_element( element_name, candidates, rausch, cali=None, out=False, sav
                 print("\t{:.2f} \\pm {:.2f}".format(*peak_pos[-1]))
         return hist, (back_edges_fits, back_pos), (comp_edges_fits, comp_pos), (peak_fits, peak_pos)
 
+def plot_element( element_name, hist, back_edges_fits, comp_edges_fits, peak_fits, xName="", yName="", save=False ):
+    canvas = TCanvas("canvas","canvas")
+    hist.Draw(xName=xName, yName=yName)
+    if element_name == "60Co":
+        legend = TLegend(.14,.68,.35,.89)
+    if element_name == "137Cs":
+        legend = TLegend(.70,.16,.89,.37)
+    if element_name == "152Eu":
+        legend = TLegend(.40,.75,.60,.89)
+    if element_name == "22Na":
+        legend = TLegend(.70,.30,.89,.51)
+
+    legend.AddEntry(hist.hist, "Data")
+    edges = []
+    to_legend=True
+    for f in back_edges_fits:
+        f.function.SetLineColor(3)
+        f.function.Draw("Same")
+        if to_legend:
+            legend.AddEntry(f.function, "backscatter fit")
+            to_legend=False
+        p = f.GetParameters()
+        e = TLine( p[2]-p[3], p[0], p[2]-p[3], p[0]+p[1]*2*p[3] )
+        e.SetLineColor(3)
+        e.SetLineWidth(2)
+        e.Draw()
+        edges.append(e)
+    to_legend=True
+    for f in comp_edges_fits:
+        f.function.SetLineColor(6)
+        f.function.Draw("Same")
+        if to_legend:
+            legend.AddEntry(f.function, "compton fit")
+            to_legend=False
+        p = f.GetParameters()
+        e = TLine( p[2]+p[3], p[0], p[2]+p[3], p[0]+p[1]*2*p[3] )
+        e.SetLineColor(6)
+        e.SetLineWidth(2)
+        e.Draw()
+        edges.append(e)
+    to_legend=True
+    for f in peak_fits:
+        f.function.SetLineColor(2)
+        f.function.Draw("Same")
+        if to_legend:
+            legend.AddEntry(f.function, "peak fit")
+            to_legend=False
+    legend.Draw()
+    if save:
+        canvas.SaveAs( graph_dir + element_name + ".eps" )
+    input()
+
 def calibrate_known( plot=False, out=False, save=False ):
     opt_rausch, rausch = Histogram.Read( cfg.cali_dir+cfg.cali_rausch, "Rauschmessung", "noise measurement" )
     if plot:
@@ -100,7 +152,7 @@ def calibrate_known( plot=False, out=False, save=False ):
             (back_edges_fits, back_pos),
             (comp_edges_fits, comp_pos),
             (peak_fits, peak_pos)
-        ) = analyse_element( element_name, candidates, (opt_rausch, rausch), out=out, save=save )
+        ) = analyse_element( element_name, candidates, (opt_rausch, rausch), out=out )
 
         es = [ e for name, e in known_energies if name==element_name ]
         if len(es)>1:
@@ -141,56 +193,8 @@ def calibrate_known( plot=False, out=False, save=False ):
                 print()
 
         if plot:
-            canvas = TCanvas("canvas","canvas")
-            hist.Draw(xName="channel number", yName="counts")
-            if element_name == "60Co":
-                legend = TLegend(.14,.68,.35,.89)
-            if element_name == "137Cs":
-                legend = TLegend(.70,.16,.89,.37)
-            if element_name == "152Eu":
-                legend = TLegend(.40,.75,.60,.89)
-            if element_name == "22Na":
-                legend = TLegend(.70,.30,.89,.51)
-                
-            legend.AddEntry(hist.hist, "Data")
-            edges = []
-            to_legend=True
-            for f in back_edges_fits:
-                f.function.SetLineColor(3)
-                f.function.Draw("Same")
-                if to_legend:
-                    legend.AddEntry(f.function, "backscatter fit")
-                    to_legend=False
-                p = f.GetParameters()
-                e = TLine( p[2]-p[3], p[0], p[2]-p[3], p[0]+p[1]*2*p[3] )
-                e.SetLineColor(3)
-                e.SetLineWidth(2)
-                e.Draw()
-                edges.append(e)
-            to_legend=True
-            for f in comp_edges_fits:
-                f.function.SetLineColor(6)
-                f.function.Draw("Same")
-                if to_legend:
-                    legend.AddEntry(f.function, "compton fit")
-                    to_legend=False
-                p = f.GetParameters()
-                e = TLine( p[2]+p[3], p[0], p[2]+p[3], p[0]+p[1]*2*p[3] )
-                e.SetLineColor(6)
-                e.SetLineWidth(2)
-                e.Draw()
-                edges.append(e)
-            to_legend=True
-            for f in peak_fits:
-                f.function.SetLineColor(2)
-                f.function.Draw("Same")
-                if to_legend:
-                    legend.AddEntry(f.function, "peak fit")
-                    to_legend=False
-            legend.Draw()
-            if save:
-                canvas.SaveAs( graph_dir + element_name + ".eps" )
-            input()
+            plot_element( element_name, hist, back_edges_fits, comp_edges_fits, peak_fits,
+                    xName="channel number", yName="counts", save=save )
 
     positions = np.array(data_points[0])
     energies = np.array(data_points[1])

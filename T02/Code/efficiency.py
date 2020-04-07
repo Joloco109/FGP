@@ -60,7 +60,7 @@ def efficiency( plot=False, out=False, save=False ):
             (back_edges_fits, back_pos),
             (comp_edges_fits, comp_pos),
             (peak_fits, peak_pos)
-        ) = calibrate.analyse_element( element_name, candidates, (opt_rausch, rausch), cali=cali, out=False, save=False )
+        ) = calibrate.analyse_element( element_name, candidates, (opt_rausch, rausch), cali=cali, out=False )
         
         peaks.append((peak_fits,peak_pos))
 
