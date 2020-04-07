@@ -37,10 +37,23 @@ conv_files_Steel = [
         [105, "105Stahl.TKA"]
     ]
 conv_noise = [
-        [50, "50Untergrund.TKA"]
-        [60, "60Untergrund.TKA"]
-        [80, "80Untergrund.TKA"]
-        [90, "90Untergrund.TKA"]
+        [50, "50Untergrund.TKA"],
+        [60, "60Untergrund.TKA"],
+        [80, "80Untergrund.TKA"],
+        [90, "90Untergrund.TKA"],
         [105, "105Untergrund.TKA"]
-        
+        ]
+
+comp_r_dir = data_dir + "Compton Ring"
+
+ring_files = [
+        [(49.78, 0.03), (11.6, 0.1), (25, 1) , "50grad.TKA"],#theta  r s(halber weg quelle-detector) filename
+        [(36.32, 0.02),(8.2, 0.1), (25, 1) ,  "36grad.TKA"],
+        [(29.79, 0.02),(6.65, 0.01), (25, 1) ,  "30grad.TKA"],
+        [(18.81, 0.01),(11.6, 0.1), (70, 1) ,  "18,82grad.TKA"],
+        [(10.85, 0.01),(6.65, 0.01), (70, 1) ,  "11grad.TKA"]
+        ]
+ring_noise = [
+        [25, "25cm_untergrund.TKA"],
+        [70, "70cm_untergrund.TKA"]
         ]
