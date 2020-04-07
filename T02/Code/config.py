@@ -20,3 +20,27 @@ F_D = [4.91, 0.1 ] #cm²
 r = [17, 1] #cm
 A = [18.586*10**6, 0.005*10**6]
 I_gamma = [0.805, 0]
+
+comp_c_dir = data_dir + "Compton Conventional"
+conv_files_Alu = [
+        [50, "50Alu.TKA"],
+        [60, "60Alu.TKA"],
+        [80, "80Alu.TKA"],
+        [90, "90Alu.TKA"],
+        [105, "105Alu.TKA"]
+    ]
+conv_files_Steel = [
+        [50, "50Stahl.TKA"],
+        [60, "60Stahl.TKA"],
+        [80, "80Stahl.TKA"],
+        [90, "90Stahl.TKA"],
+        [105, "105Stahl.TKA"]
+    ]
+conv_noise = [
+        [50, "50Untergrund.TKA"]
+        [60, "60Untergrund.TKA"]
+        [80, "80Untergrund.TKA"]
+        [90, "90Untergrund.TKA"]
+        [105, "105Untergrund.TKA"]
+        
+        ]
