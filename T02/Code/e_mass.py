@@ -48,7 +48,7 @@ def mass_improved(plot=True, out=True, save=True):
     hist -= opt.time / opt_noise.time * noise
     
     candidates = [["B_edge", [110, 170] ], ["C_edge", [200, 260]], ["peak", [300,380]] ]
-    hist,(back_edges_fits, back_pos),(comp_edges_fits, comp_pos),(peak_fits, peak_pos) = calibrate.analyse_element("22Na", candidates, (opt_noise, noise), cali=cali, out=True, save=False)
+    hist,(back_edges_fits, back_pos),(comp_edges_fits, comp_pos),(peak_fits, peak_pos) = calibrate.analyse_element("22Na", candidates, (opt_noise, noise), cali=cali, out=True)
     
     if plot:
         canvas = TCanvas("canvas","canvas")
