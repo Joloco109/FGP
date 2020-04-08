@@ -27,7 +27,7 @@ data = json.loads( open( cfg.cali_dir+cfg.cali_extrema ).read() )
 canvas = TCanvas("canvas","canvas")
 gStyle.SetOptStat(0)
 hist.Draw(xName="Energy [keV]", yName="counts")
-legend = TLegend(.40,.75,.60,.89)
+legend = TLegend(.35,.75,.65,.89)
     
 legend.AddEntry(hist.hist, "Data")
 i=0
