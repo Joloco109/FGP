@@ -23,7 +23,7 @@ A = [18.586*10**6, 0.005*10**6]
 I_gamma = [0.805, 0]
 
 
-comp_c_dir = data_dir + "Compton Conventional"
+comp_c_dir = data_dir + "Compton Conventional/"
 conv_files_Alu = {
         50: "50Alu.TKA",
         60: "60Alu.TKA",
@@ -53,7 +53,7 @@ eff_conv = (0.4107, 0.02557)
 Ne_conv_Alu = (1.86*10**24, 3.23*10**23)
 Ne_conv_Steel = (5.4416*10**24, 9.44*10**23)
 
-comp_r_dir = data_dir + "Compton Ring"
+comp_r_dir = data_dir + "Compton Ring/"
 
 ring_files = {
         (49.78, 0.03) : ((11.6, 0.1), (25, 1) , (1.28*10**26, 1.72*10**25), "50grad.TKA"),#theta  r s(halber weg quelle-detector) N_e filename
