@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from ROOT import TCanvas,TLegend, TF1, TMarker
+from ROOT import TCanvas,TLegend, TF1, TMarker, gStyle
 import json
 
 from calibration import Calibration
@@ -31,6 +31,7 @@ def efficiency_one( plot=False, out=False, save=False ):
                     print(i,"\pm",j)
     if plot:
         canvas = TCanvas("canvas","canvas")
+        gStyle.SetOptStat(0)
         hist.Draw(xName="Energie/keV", yName="counts")
         for f in peak_fits:
             f.function.SetLineColor(2)
@@ -108,6 +109,7 @@ def efficiency( plot=False, out=False, save=False ):
 
     if plot:
         canvas = TCanvas("canvas","canvas")
+        gStyle.SetOptStat(0)
         legend = TLegend(.63,.79,.89,.89)
         eff_graph.Draw(xName = "Energy [keV]", yName = "Efficiency")
         legend.AddEntry(cali.function, "\\epsilon = a E_\\gamma - b")

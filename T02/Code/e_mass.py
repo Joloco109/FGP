@@ -1,7 +1,7 @@
 import json
 import numpy as np
 import os
-from ROOT import TCanvas,TLegend, TF1, TMarker, TLine
+from ROOT import TCanvas,TLegend, TF1, TMarker, TLine, gStyle
 
 from histogram import Histogram
 from graph import Graph
@@ -32,6 +32,7 @@ def mass(plot=True, out=True, save=True):
                     print(i,"\pm",j)
     if plot:
         canvas = TCanvas("canvas","canvas")
+        gStyle.SetOptStat(0)
         hist.Draw(xName="Energie/keV", yName="counts")
         for f in peak_fits:
             f.function.SetLineColor(2)
@@ -52,6 +53,7 @@ def mass_improved(plot=True, out=True, save=True):
     
     if plot:
         canvas = TCanvas("canvas","canvas")
+        gStyle.SetOptStat(0)
         hist.Draw(xName="channel number", yName="counts")
         legend = TLegend(.70,.30,.89,.51)
         legend.AddEntry(hist.hist, "Data")

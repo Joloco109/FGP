@@ -1,7 +1,7 @@
 import numpy as np
 import json
 import os
-from ROOT import TCanvas, TLine, TLegend, TF1
+from ROOT import TCanvas, TLine, TLegend, TF1, gStyle
 
 from histogram import Histogram
 from graph import Graph
@@ -72,6 +72,7 @@ def resolution( plot=False, out=False, save=False ):
 
     if plot:
         canvas = TCanvas("canvas","canvas")
+        gStyle.SetOptStat(0)
         legend = TLegend(.14,.84,.55,.89)
         res_graph.Draw(xName = "E[keV]", yName = r"\sigma_E[keV]")
         legend.AddEntry(res_fun.function, r"\sigma_E/E = \sqrt{a^2+b^2/E}")

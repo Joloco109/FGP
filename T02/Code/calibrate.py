@@ -1,7 +1,7 @@
 import json
 import numpy as np
 import os
-from ROOT import TCanvas,TLegend, TF1, TMarker, TLine
+from ROOT import TCanvas,TLegend, TF1, TMarker, TLine, gStyle
 
 from histogram import Histogram
 from graph import Graph
@@ -81,6 +81,7 @@ def analyse_element( element_name, candidates, rausch, cali=None, out=False ):
 
 def plot_element( element_name, hist, back_edges_fits, comp_edges_fits, peak_fits, xName="", yName="", save=False, graph_dir="" ):
     canvas = TCanvas("canvas","canvas")
+    gStyle.SetOptStat(0)
     hist.Draw(xName=xName, yName=yName)
     if element_name == "60Co":
         legend = TLegend(.14,.68,.35,.89)
@@ -135,6 +136,7 @@ def calibrate_known( plot=False, out=False, save=False ):
     opt_rausch, rausch = Histogram.Read( cfg.cali_dir+cfg.cali_rausch, "Rauschmessung", "noise measurement" )
     if plot:
         canvas = TCanvas("canvas","canvas")
+        gStyle.SetOptStat(0)
         rausch.Draw(xName="channel number", yName="counts")
         if save:
             canvas.SaveAs( graph_dir + "noise.eps" )
@@ -212,6 +214,7 @@ def calibrate_known( plot=False, out=False, save=False ):
 
     if plot:
         canvas = TCanvas("canvas","canvas")
+        gStyle.SetOptStat(0)
         legend = TLegend(.14,.60,.35,.89)
         cali_graph.Draw(xName = "channel number", yName = "Energy [keV]")
         legend.AddEntry(cali.function, "E = K\\cdot x - E_{lost}")
