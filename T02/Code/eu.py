@@ -1,4 +1,5 @@
 import json
+import os
 import numpy as np
 from ROOT import TCanvas, TLegend, TLine
 
@@ -6,6 +7,11 @@ import config as cfg
 from histogram import Histogram
 from calibrate import calibrate_known, analyse_element
 from energies import Element
+
+graph_dir = "Graphs/build/eu/"
+
+if not os.path.exists( graph_dir ):
+    os.makedirs( graph_dir )
 
 cali = calibrate_known()
 rausch = Histogram.Read( cfg.cali_dir+cfg.cali_rausch, "Rauschmessung", "noise measurement", cali )
@@ -75,6 +81,7 @@ for p in gamma_peaks+peaks:
     p.Draw()
 legend.AddEntry(gamma_peaks[0], "Literature Gamma decays")
 canvas.Update()
+canvas.SaveAs(graph_dir+"eu.eps")
 
 for e, a in amplitudes:
     i_min = np.argmin( np.abs(products['gamma'][0] - e[0]) )
