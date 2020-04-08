@@ -6,8 +6,9 @@ from ROOT import TH1F, TF1
 from function import Function
 
 class DataOptions:
-    def __init__( self, time ):
+    def __init__( self, time, realtime ):
         self.time = time
+        self.realtime = realtime
 
 class Histogram:
     def __init__( self, name, title=None, bins=None, calibration=None ):
@@ -37,9 +38,10 @@ class Histogram:
             content = f.readlines()
         content = [ x.strip() for x in content]
         time = float(content[0])
+        realtime = float(content[1])
         data = [ int(x) for x in content[1:] if not x=='' ]
 
-        return DataOptions( time ), Histogram( name, title, data, calibration=calibration )
+        return DataOptions( time, realtime ), Histogram( name, title, data, calibration=calibration )
 
     def Clone( self ):
         h = Histogram( self.name, self.title, None, self.cali )
