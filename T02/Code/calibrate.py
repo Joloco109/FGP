@@ -178,9 +178,9 @@ def calibrate_known( plot=False, out=False, save=False ):
             if out:
                 print("Mapping: pos energy")
                 
-            data_type.extend([(element_name,"back") for i in back_es if not i == None])
-            data_type.extend([(element_name,"comp") for i in comp_es if not i == None])
-            data_type.extend([(element_name,"peak") for i in peak_es if not i == None])
+            data_type.extend([(element_name,"Backscatter") for i in back_es if not i == None])
+            data_type.extend([(element_name,"Compton") for i in comp_es if not i == None])
+            data_type.extend([(element_name,"Peak") for i in peak_es if not i == None])
             
             for pos, e in zip(back_pos+comp_pos+peak_pos, back_es+comp_es+peak_es):
                 if not e == None:
