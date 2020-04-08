@@ -11,7 +11,7 @@ cali_rausch = "Rauschen.TKA"
 cali_energy_file = "energies.json"
 cali_extrema = "extrema.json"
 cali_energy_extrema = "extrema_energies.json"
-cali_marker = {"137Cs": 7, "60Co": 4, "152Eu": 6, "22Na": 3, "Peak": 24, "Compton": 25, "Backscatter": 26}
+cali_marker = {"137Cs": 7, "60Co": 4, "152Eu": 6, "22Na": 3, "peak": 24, "comp": 25, "back": 26}
 
 
 eff_dir = data_dir+"Effizienz/"
@@ -48,9 +48,9 @@ conv_noise = [
 F_D_conv = [4.91, 0.1 ]
 r_0_conv = [5, 1]
 r_conv = [12, 1]
-eff_conv = []
-Ne_conv_Alu = [1.86*10**24, 0.323*10**23]
-Ne_conv_Steel = []
+eff_conv = [0.4107, 0.02557]
+Ne_conv_Alu = [1.86*10**24, 3.23*10**23]
+Ne_conv_Steel = [5.4416*10**24, 9.44*10**23]
 
 comp_r_dir = data_dir + "Compton Ring"
 
