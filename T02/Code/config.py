@@ -22,6 +22,7 @@ r = [17, 1] #cm
 A = [18.586*10**6, 0.005*10**6]
 I_gamma = [0.805, 0]
 
+comp_peaks = "compton_peaks.json"
 
 comp_c_dir = data_dir + "Compton Conventional/"
 conv_files_Alu = {
