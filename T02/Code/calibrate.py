@@ -215,9 +215,9 @@ def calibrate_known( plot=False, out=False, save=False ):
     if plot:
         canvas = TCanvas("canvas","canvas")
         gStyle.SetOptStat(0)
-        legend = TLegend(.14,.60,.35,.89)
+        legend = TLegend(.14,.55,.40,.89)
         cali_graph.Draw(xName = "channel number", yName = "Energy [keV]")
-        legend.AddEntry(cali.function, "E = K\\cdot x - E_{lost}")
+        legend.AddEntry(cali.function, "E = k x - E_{lost}")
         markers = []
 
         for p,e,(n,t) in zip(positions[:,0],energies[:,0], data_type):
