@@ -1,7 +1,7 @@
 import json
 import os
 import numpy as np
-from ROOT import TCanvas, TLegend, TLine
+from ROOT import TCanvas, TLegend, TLine, TGaxis, gPad, gStyle
 
 import config as cfg
 from histogram import Histogram
@@ -25,6 +25,7 @@ data = json.loads( open( cfg.cali_dir+cfg.cali_extrema ).read() )
     ) = analyse_element(  data[2][0], data[2][1], rausch, cali, True )
 
 canvas = TCanvas("canvas","canvas")
+gStyle.SetOptStat(0)
 hist.Draw(xName="Energy [keV]", yName="counts")
 legend = TLegend(.40,.75,.60,.89)
     
@@ -80,6 +81,21 @@ null.Draw()
 for p in gamma_peaks+peaks:
     p.Draw()
 legend.AddEntry(gamma_peaks[0], "Literature Gamma decays")
+
+print(gPad.GetUxmax(), gPad.GetUymax())
+print(canvas.GetUxmax(), canvas.GetUymax())
+axis = TGaxis( gPad.GetUxmax(), gPad.GetUymin(),
+            gPad.GetUxmax(), gPad.GetUymax(),
+            0, gPad.GetUymax()/scale, 510, "+L")
+axis.SetTitle("rel. intesity")
+axis.SetLabelSize(0.035)
+axis.SetLabelOffset(0.005)
+axis.SetLabelFont(42)
+axis.SetTitleSize(0.035)
+axis.SetTitleOffset(1.2)
+axis.SetTitleFont(42)
+axis.Draw()
+
 canvas.Update()
 canvas.SaveAs(graph_dir+"eu.eps")
 
