@@ -1,13 +1,15 @@
+import json
 import numpy as np
 from ROOT import TCanvas
 
 import config as cfg
 from histogram import Histogram
+from finder import peak_fit
 from calibrate import calibrate_known
 
 cali = calibrate_known()
 
-def analyse_spectrum( name, file_name, noise_file ):
+def analyse_spectrum( name, file_name, noise_file, peaks, plot=False, out=False ):
     canvas = TCanvas(name.format(""))
     canvas.Divide(1,3)
 
@@ -26,20 +28,29 @@ def analyse_spectrum( name, file_name, noise_file ):
     canvas.Update()
     input()
 
-def diff_cross_section( name, angles, noise, ring ):
+    peak_fit( hist, peaks, plot=plot, out=out )
+    hist.Draw()
+    input()
+
+def diff_cross_section( name, angles, noise, peaks, ring ):
     if ring:
         for angle in angles:
             r, l, n, file_name = angles[angle]
+            angle_peaks = [ tuple(peak) for ang, *ps in peaks if round(ang)==round(angle[0]) for peak in ps  ]
             analyse_spectrum( "\\mbox{{{}"+name+" }}" + "{:.0f}^\\circ".format(angle[0]),
-                    cfg.comp_r_dir+file_name, cfg.comp_r_dir+noise[l[0]] )
+                    cfg.comp_r_dir+file_name, cfg.comp_r_dir+noise[l[0]],
+                    angle_peaks, plot=True, out=True )
 
     else:
         for angle in angles:
             file_name = angles[angle]
+            angle_peaks = [ tuple(peak) for ang, *ps in peaks if round(ang)==round(angle) for peak in ps ]
             analyse_spectrum( "\\mbox{{{}"+name+" }}" + "{:.0f}^\\circ".format(angle),
-                    cfg.comp_c_dir+file_name, cfg.comp_c_dir+noise[angle] )
+                    cfg.comp_c_dir+file_name, cfg.comp_c_dir+noise[angle],
+                    angle_peaks, plot=True, out=True )
 
 if __name__=="__main__":
-    diff_cross_section( "Ring", cfg.ring_files, cfg.ring_noise, True )
-    diff_cross_section( "Conventional Alu", cfg.conv_files_Alu, cfg.conv_noise, False  )
-    diff_cross_section( "Conventional Steel", cfg.conv_files_Steel, cfg.conv_noise, False  )
+    peaks = json.loads( open(cfg.data_dir+cfg.comp_peaks).read() )
+    diff_cross_section( "Ring", cfg.ring_files, cfg.ring_noise, peaks["Ring"], True )
+    diff_cross_section( "Conventional Alu", cfg.conv_files_Alu, cfg.conv_noise, peaks["Alu"], False  )
+    diff_cross_section( "Conventional Steel", cfg.conv_files_Steel, cfg.conv_noise, peaks["Steel"], False  )
