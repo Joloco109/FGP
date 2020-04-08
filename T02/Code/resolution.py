@@ -66,8 +66,8 @@ def resolution( plot=False, out=False, save=False ):
 
     if out:
         print("Resolution:")
-        print("\ta = {:.5f} \\pm {:.5f}".format(pars[0], sig_pars[0]))
-        print("\tb = {:.5f} \\pm {:.5f}".format(pars[1], sig_pars[1]))
+        print("\ta = ({:.1f} \\pm {:.1f})*10^-3".format(pars[0]*1e3, sig_pars[0]*1e3))
+        print("\tb = ({:.1f} \\pm {:.1f})*10^-3".format(pars[1]*1e3, sig_pars[1]*1e3))
         print("\tChi^2/NdF = {:.3f}".format(res_fun.GetChisquare()/res_fun.GetNDF()))
 
     if plot:
