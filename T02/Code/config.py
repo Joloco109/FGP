@@ -18,8 +18,10 @@ eff_dir = data_dir+"Effizienz/"
 eff_files = ["Rauschen.TKA", "Effizienz.TKA"]
 F_D = [4.91, 0.1 ] #cm²
 r = [17, 1] #cm
+
 A = [18.586*10**6, 0.005*10**6]
 I_gamma = [0.805, 0]
+
 
 comp_c_dir = data_dir + "Compton Conventional"
 conv_files_Alu = [
@@ -43,6 +45,12 @@ conv_noise = [
         [90, "90Untergrund.TKA"],
         [105, "105Untergrund.TKA"]
         ]
+F_D_conv = [4.91, 0.1 ]
+r_0_conv = [5, 1]
+r_conv = [12, 1]
+eff_conv = []
+Ne_conv_Alu = [1.86*10**24, 0.323*10**23]
+Ne_conv_Steel = []
 
 comp_r_dir = data_dir + "Compton Ring"
 
