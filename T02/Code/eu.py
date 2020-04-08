@@ -84,7 +84,7 @@ legend.AddEntry(gamma_peaks[0], "Literature Gamma decays")
 
 print(gPad.GetUxmax(), gPad.GetUymax())
 print(canvas.GetUxmax(), canvas.GetUymax())
-axis = TGaxis( gPad.GetUxmax(), gPad.GetUymin(),
+axis = TGaxis( gPad.GetUxmax(), 0,
             gPad.GetUxmax(), gPad.GetUymax(),
             0, gPad.GetUymax()/scale, 510, "+L")
 axis.SetTitle("rel. intesity")
