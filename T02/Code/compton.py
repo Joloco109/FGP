@@ -1,6 +1,7 @@
 import json
+import os
 import numpy as np
-from ROOT import TCanvas, TF1
+from ROOT import TCanvas, TF1, gStyle, TLegend
 
 import config as cfg
 from histogram import Histogram
@@ -9,7 +10,9 @@ from graph import Graph
 from finder import peak_fit
 from calibrate import calibrate_known
 
+graph_dir = "Graphs/build/compton/spectra/" 
 cali = calibrate_known()
+
 
 att_coeff = json.loads( open(cfg.data_dir+cfg.att_coeff).read() )
 for key in att_coeff:
@@ -48,29 +51,14 @@ def diff_cross_section_conv( ampl, sigma, E, E_prime, t, material ):
     cross = 4*np.pi*cfg.r_0_conv[0]**2*cfg.r_conv[0]**2/( cfg.A[0]*cfg.I_gamma[0]*cfg.eff_conv[0]*cfg.Ne_conv[material][0] * cfg.F_D_conv[0] ) * m / eta # cm^2
     return ( cross, 0, 0 )
 
-def analyse_spectrum( name, file_name, noise_file, peaks, plot=False, out=False ):
+
+def analyse_spectrum( name, file_name, noise_file, peaks, plot=False, out=False, save=False ):
     opt_noise, noise = Histogram.Read( noise_file, name.format("Noise "), name.format("Noise "), calibration=cali )
     opt_hist, hist_raw = Histogram.Read( file_name, name.format("Spectrum "), name.format("Spectrum "), calibration=cali )
     #hist = hist_raw - opt_hist.realtime/opt_noise.realtime * noise
     hist = hist_raw - np.max(hist_raw.GetBinContents())/np.max(noise.GetBinContents()) * noise
 
-    if plot:
-        canvas = TCanvas(name.format(""))
-        canvas.Divide(1,3)
-        canvas.cd(1)
-        noise.Draw()
-        canvas.cd(2)
-        hist_raw.Draw()
-        canvas.cd(3)
-        hist.Draw()
-        canvas.Update()
-        input()
-
     peaks = peak_fit( hist, peaks, plot=plot, out=out )
-    if plot:
-        hist.Draw()
-        input()
-
     paras = [ p.GetParameters() for p in peaks ]
     parErrs = [ p.GetParErrors() for p in peaks ]
     amplitudes = [ (p[2], pe[2]) for p, pe in zip(paras, parErrs) ]
@@ -82,7 +70,44 @@ def analyse_spectrum( name, file_name, noise_file, peaks, plot=False, out=False 
             print("E_{} = {} \\pm {}".format( i, *e ))
             print("s_{} = {} \\pm {}".format( i, *s ))
             print()
+
     return opt_hist.time, amplitudes, energies, std_deviations
+            
+    
+    if plot:
+        canvas = TCanvas(name.format(""))
+        canvas.Divide(1,2)
+        canvas.cd(1)
+        gStyle.SetOptStat(0)
+        hist_raw.hist.SetNameTitle(name.format("Spectrum with noise, "),name.format("Spectrum with noise, "))
+        hist_raw.hist.SetAxisRange(0, 800)
+        hist_raw.hist.SetTitleSize(0.05, "X")
+        hist_raw.hist.SetLabelSize(0.05, "X")
+        hist_raw.hist.SetTitleSize(0.06, "Y")
+        hist_raw.hist.SetLabelSize(0.06, "Y")
+        hist_raw.hist.SetTitleOffset(0.8, "Y")
+        hist_raw.Draw()
+        canvas.cd(2)
+        gStyle.SetOptStat(0)
+        legend = TLegend(.63,.14,.89,.26)
+        legend.AddEntry(peaks[0].function, "scattered photo peak fit")
+        legend.AddEntry(peaks[0].function, "\tChi^2/NdF = {:.3f}".format(peaks[0].GetChisquare()/peaks[0].GetNDF()))
+        hist.hist.SetNameTitle(name.format("Spectrum "), name.format("Spectrum "))
+        hist.hist.SetAxisRange(0, 800)
+        hist.hist.SetTitleSize(0.05, "X")
+        hist.hist.SetLabelSize(0.05, "X")
+        hist.hist.SetTitleSize(0.06, "Y")
+        hist.hist.SetLabelSize(0.06, "Y")
+        hist.hist.SetTitleOffset(0.8, "Y")
+        hist.Draw()
+        legend.Draw()
+        canvas.Update()
+        if save:
+            canvas.SaveAs( graph_dir + file_name.split("/")[-1][:-4] + ".eps" )
+        input()
+
+    return amplitudes, energies, std_deviations
+
 
 def analyse_setup( name, angles, noise, peaks, key ):
     angles_array = np.zeros(( len(angles), 2 ))
@@ -97,7 +122,7 @@ def analyse_setup( name, angles, noise, peaks, key ):
             t, a, e, s = analyse_spectrum(
                     "\\mbox{{{}"+name+" }}" + "{:.0f}^\\circ".format(angle[0]),
                     cfg.comp_r_dir+file_name, cfg.comp_r_dir+noise[l[0]],
-                    angle_peaks, plot=False, out=True )
+                    angle_peaks, plot=False, out=True, save=True )
             if not len(e)==1:
                 raise ValueError("You should have decided on exactly one peak for file by now!")
             angles_array[i] = angle
@@ -113,7 +138,7 @@ def analyse_setup( name, angles, noise, peaks, key ):
             t, a, e, s = analyse_spectrum(
                     "\\mbox{{{}"+name+" }}" + "{:.0f}^\\circ".format(angle),
                     cfg.comp_c_dir+file_name, cfg.comp_c_dir+noise[angle],
-                    angle_peaks, plot=False, out=True )
+                    angle_peaks, plot=True, out=True, save=True )
             if not len(e)==1:
                 raise ValueError("You should have decided on exactly one peak for file by now!")
             angles_array[i] = (angle, 1)
@@ -128,6 +153,7 @@ def analyse_setup( name, angles, noise, peaks, key ):
 
 def analyse_energy( keys, angles, energies ):
     canvas = TCanvas()
+    legend = TLegend(.47,.65,.89,.89)
     graphs = []
     all_angles = np.zeros(( sum([ len(a) for a in angles ]),2 ))
     all_energies = np.zeros(( sum([ len(a) for a in energies ]),2 ))
@@ -138,25 +164,29 @@ def analyse_energy( keys, angles, energies ):
         all_energies[i:i+len(a)] = e
         i += len(a)
 
-    all_graph = Graph( "Total", all_angles[:,0], all_energies[:,0], all_angles[:,1], all_energies[:,1] )
+    all_graph = Graph( "Scattered photon energy", all_angles[:,0], all_energies[:,0], all_angles[:,1], all_energies[:,1] )
     func = Function( TF1("energy", "[0]/(1+[0]/[1]*(1-cos(pi*x/180)))") )
     func.function.SetParameter( 0, 661 )
     func.function.SetParLimits( 0, 0, 10e3 )
     func.function.SetParameter( 1, 512 )
     func.function.SetParLimits( 1, 0, 10e3 )
-
+    legend.AddEntry(func.function, "E\mbox{ '}_\\gamma = E_\\gamma\mbox{ / }(1+\\frac{E_\\gamma}{m_e}(1-cos\\theta))")
     all_graph.Fit( func )
     paras = func.GetParameters()
     parErrs = func.GetParErrors()
     print("E_gamma   = {:.2f} \\pm {:.2f}".format(paras[0], parErrs[0]))
     print("m_e       = {:.2f} \\pm {:.2f}".format(paras[1], parErrs[1]))
     print("Chi^2/NdF = {:.2f}".format( func.GetChisquare()/func.GetNDF() ) )
+    
+    all_graph.Draw(xName="\\theta [^\\circ]", yName="E\mbox{ '}_\\gamma [keV]")
+    colors = { "Ring":6, "Alu":3, "Steel":4 }
 
-    all_graph.Draw()
-    colors = { "Ring":2, "Alu":3, "Steel":4 }
     for g, k in zip(graphs, keys):
         g.graph.SetMarkerColor(colors[k])
         g.Draw("P", marker =3)
+        legend.AddEntry(g.graph, k)
+    legend.Draw()
+    canvas.SaveAs( graph_dir + "compton.eps" )
     input()
 
 def analyse_crosssection( keys, angles, crosssections ):
@@ -182,6 +212,8 @@ def analyse_crosssection( keys, angles, crosssections ):
 
 
 if __name__=="__main__":
+    if not os.path.exists( graph_dir ):
+        os.makedirs( graph_dir )
     peaks = json.loads( open(cfg.data_dir+cfg.comp_peaks).read() )
     angles = []
     energies = []

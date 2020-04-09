@@ -79,7 +79,7 @@ class Histogram:
             options = "Q" + options
         return self.hist.Fit( function.function, options )
 
-    def Draw( self, options="", marker=5, xName = "", yName = "" ):
+    def Draw( self, options="", marker=5, xName= "Energy [keV]", yName ="counts"):
         if not xName=="":
             self.GetXaxis().SetTitle( xName )
         if not yName=="":
