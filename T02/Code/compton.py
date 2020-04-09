@@ -1,9 +1,10 @@
 import json
 import numpy as np
-from ROOT import TCanvas
+from ROOT import TCanvas, TF1
 
 import config as cfg
 from histogram import Histogram
+from function import Function
 from graph import Graph
 from finder import peak_fit
 from calibrate import calibrate_known
@@ -90,13 +91,30 @@ def plot_energy( keys, angles, energies ):
     all_energies = np.zeros(( sum([ len(a) for a in energies ]),2 ))
     i = 0
     for k, a, e in zip( keys, angles, energies):
-        graphs.append( Graph( k, a[:,0], e[:,0], a[:,1], e[:,1] ) )
+        graphs.append( Graph( k, a[:,0], e[:,0] ) )
         all_angles[i:i+len(a)] = a
         all_energies[i:i+len(a)] = e
         i += len(a)
 
     all_graph = Graph( "Total", all_angles[:,0], all_energies[:,0], all_angles[:,1], all_energies[:,1] )
+    func = Function( TF1("energy", "[0]/(1+[0]/[1]*(1-cos(pi*x/180)))") )
+    func.function.SetParameter( 0, 661 )
+    func.function.SetParLimits( 0, 0, 10e3 )
+    func.function.SetParameter( 1, 512 )
+    func.function.SetParLimits( 1, 0, 10e3 )
+
+    all_graph.Fit( func )
+    paras = func.GetParameters()
+    parErrs = func.GetParErrors()
+    print("E_gamma   = {:.2f} \\pm {:.2f}".format(paras[0], parErrs[0]))
+    print("m_e       = {:.2f} \\pm {:.2f}".format(paras[1], parErrs[1]))
+    print("Chi^2/NdF = {:.2f}".format( func.GetChisquare()/func.GetNDF() ) )
+
     all_graph.Draw()
+    colors = { "Ring":2, "Alu":3, "Steel":4 }
+    for g, k in zip(graphs, keys):
+        g.graph.SetMarkerColor(colors[k])
+        g.Draw("P", marker =3)
     input()
 
 
