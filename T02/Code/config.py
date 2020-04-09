@@ -23,6 +23,12 @@ A = [18.586*10**6, 0.005*10**6]
 I_gamma = [0.805, 0]
 
 comp_peaks = "compton_peaks.json"
+att_coeff = "attenuation_coefficient.json"
+densities = {
+        "Air" : ( 1.20e-3, 0.04e-3),
+        "Steel":( 7.87,0.5),
+        "Alu" : ( 2.70,0.1)
+    }
 
 comp_c_dir = data_dir + "Compton Conventional/"
 conv_files_Alu = {
@@ -50,12 +56,17 @@ conv_noise = {
 F_D_conv = (4.91, 0.1 )
 r_0_conv = (5, 1)
 r_conv = (12, 1)
+d_conv = (1.2,0.1)
 eff_conv = (0.4107, 0.02557)
-Ne_conv_Alu = (1.86*10**24, 3.23*10**23)
-Ne_conv_Steel = (5.4416*10**24, 9.44*10**23)
+Ne_conv = { "Alu" : (1.86*10**24, 3.23*10**23),
+        "Steel" : (5.4416*10**24, 9.44*10**23)
+        }
+
+ring_thickness = (1.5,0.1)
 
 comp_r_dir = data_dir + "Compton Ring/"
 
+F_D_ring = (51.3, 0.1)
 ring_files = {
         #theta :  r s(halber weg quelle-detector) N_e filename
         (10.85, 0.19) : (( 6.65, 0.05), (70, 1), (7.36*10**25, 9.81*10**24), "11grad.TKA"),
