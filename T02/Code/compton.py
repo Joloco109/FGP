@@ -22,7 +22,10 @@ for key in att_coeff:
 
 def diff_cross_section_ring( N_e, s, R, ampl, sigma, E, E_prime, t ):
     r = np.sqrt(s[0]**2+R[0]**2)
+    sig_r = 2/np.sqrt(s[0]**2+R[0]**2)*np.sqrt((s[0]*s[1])**2+(R[0]*R[1])**2)
+    
     m = np.sqrt(2*np.pi)*sigma[0] * ampl[0]/t
+    sig_m = m*np.sqrt((sigma[1]/sigma[0])**2+(ampl[1]/ampl[0])**2)
 
     coeff = att_coeff["Alu"]
     mu_alu = coeff[ np.argmin(np.abs(coeff[:,0]-E*1e3)), 1 ]*cfg.densities["Alu"][0]
@@ -30,14 +33,18 @@ def diff_cross_section_ring( N_e, s, R, ampl, sigma, E, E_prime, t ):
     coeff = att_coeff["Air"]
     mu_air = coeff[ np.argmin(np.abs(coeff[:,0]-E*1e3)), 1 ]*cfg.densities["Air"][0]
     mu_air_p = coeff[ np.argmin(np.abs(coeff[:,0]-E_prime*1e3)), 1 ]*cfg.densities["Air"][0]
-
+    
     eta = np.exp( -(mu_air+mu_air_p)*r -(mu_alu+mu_alu_p-mu_air-mu_air_p)*cfg.ring_thickness[0]/2 )
-
+    sig_eta = eta * np.sqrt((-(mu_air+mu_air_p)*sig_r)**2+(-(mu_alu+mu_alu_p-mu_air-mu_air_p)*cfg.ring_thickness[1]/2)**2)
+    
     cross = 4*np.pi*r**4/( cfg.A[0]*cfg.I_gamma[0]*cfg.eff_conv[0]*N_e[0] * cfg.F_D_ring[0] ) * m / eta # cm^2
-    return ( cross, 0, 0 )
+    sig_cross = cross*np.sqrt((4*sig_r/r)**2+(N_e[1]/N_e[0])**2+(sig_m/m)**2+(sig_eta/eta)**2)
+    sys_cross = cross*np.sqrt((cfg.A[1]/cfg.A[0])**2+(cfg.eff_conv[1]/cfg.eff_conv[0])**2+(cfg.F_D_ring[1]/cfg.F_D_ring[0])**2)
+    return ( cross, sig_cross, sys_cross )
 
 def diff_cross_section_conv( ampl, sigma, E, E_prime, t, material ):
     m = np.sqrt(2*np.pi)*sigma[0] * ampl[0]/t
+    sig_m = m*np.sqrt((sigma[1]/sigma[0])**2+(ampl[1]/ampl[0])**2)
 
     coeff = att_coeff[material]
     mu_mat = coeff[ np.argmin(np.abs(coeff[:,0]-E*1e3)), 1 ]*cfg.densities[material][0]
@@ -47,9 +54,12 @@ def diff_cross_section_conv( ampl, sigma, E, E_prime, t, material ):
     mu_air_p = coeff[ np.argmin(np.abs(coeff[:,0]-E_prime*1e3)), 1 ]*cfg.densities["Air"][0]
 
     eta = np.exp( -mu_air*cfg.r_0_conv[0]-mu_air_p*cfg.r_conv[0] -(mu_mat+mu_mat_p-mu_air-mu_air_p)*cfg.d_conv[0]/2 )
+    sys_eta = eta* np.sqrt((-mu_air*cfg.r_0_conv[1])**2+(-mu_air_p*cfg.r_conv[1])**2+(-(mu_mat+mu_mat_p-mu_air-mu_air_p)*cfg.d_conv[1]/2)**2)
 
     cross = 4*np.pi*cfg.r_0_conv[0]**2*cfg.r_conv[0]**2/( cfg.A[0]*cfg.I_gamma[0]*cfg.eff_conv[0]*cfg.Ne_conv[material][0] * cfg.F_D_conv[0] ) * m / eta # cm^2
-    return ( cross, 0, 0 )
+    sig_cross = cross*np.sqrt((cfg.Ne_conv[material][1]/cfg.Ne_conv[material][0])**2+(sig_m/m)**2)
+    sys_cross = cross*np.sqrt((cfg.eff_conv[1]/cfg.eff_conv[0])**2+(cfg.A[1]/cfg.A[0])**2+(2*cfg.r_0_conv[1]/cfg.r_0_conv[0])**2+(2*cfg.r_conv[1]/cfg.r_conv[0])**2+(sys_eta/eta)**2+(cfg.F_D_conv[1]/cfg.F_D_conv[0])**2)
+    return ( cross, sig_cross, sys_cross )
 
 
 def analyse_spectrum( name, file_name, noise_file, peaks, plot=False, out=False, save=False ):
@@ -138,7 +148,7 @@ def analyse_setup( name, angles, noise, peaks, key ):
             t, a, e, s = analyse_spectrum(
                     "\\mbox{{{}"+name+" }}" + "{:.0f}^\\circ".format(angle),
                     cfg.comp_c_dir+file_name, cfg.comp_c_dir+noise[angle],
-                    angle_peaks, plot=True, out=True, save=True )
+                    angle_peaks, plot=False, out=True, save=True )
             if not len(e)==1:
                 raise ValueError("You should have decided on exactly one peak for file by now!")
             angles_array[i] = (angle, 1)
