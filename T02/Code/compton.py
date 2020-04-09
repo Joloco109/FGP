@@ -84,7 +84,7 @@ def diff_cross_section( name, angles, noise, peaks, ring ):
 
     return angles_array, energies
 
-def plot_energy( keys, angles, energies ):
+def energy( keys, angles, energies ):
     canvas = TCanvas()
     graphs = []
     all_angles = np.zeros(( sum([ len(a) for a in angles ]),2 ))
@@ -132,4 +132,4 @@ if __name__=="__main__":
         angles.append(a)
         energies.append(e)
 
-    plot_energy( peaks, angles, energies )
+    energy( peaks, angles, energies )
