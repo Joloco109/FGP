@@ -49,9 +49,14 @@ def diff_cross_section_ring( N_e, s, R, ampl, sigma, E, E_prime, t ):
     N_e = (2*np.pi * R[0] * cfg.ring_thickness[0]**2 * cfg.densities["Alu"][0]*cfg.Z["Alu"]/(cfg.N["Alu"][0]*cfg.u),
             N_e[1] )
     
+    print("Relative erorrs:")
+    print("\tm  : {:.2f}".format(sig_m/m))
+    print("\tr  : {:.2f}".format(sig_r/r))
+    print("\tN  : {:.2f}".format(N_e[1]/N_e[0]))
+    print("\teta: {:.2f}".format(sig_eta/eta))
     cross = 4*np.pi*r**4/( cfg.A[0]*cfg.I_gamma[0]*cfg.eff_conv[0]*N_e[0] * cfg.F_D_ring[0] ) * m / eta # cm^2
-    sig_cross = cross*np.sqrt((4*sig_r/r)**2+(N_e[1]/N_e[0])**2+(sig_m/m)**2+(sig_eta/eta)**2)
-    sys_cross = cross*np.sqrt((cfg.A[1]/cfg.A[0])**2+(cfg.eff_conv[1]/cfg.eff_conv[0])**2+(cfg.F_D_ring[1]/cfg.F_D_ring[0])**2)
+    sig_cross = cross*np.sqrt((sig_m/m)**2+(sig_eta/eta)**2+(N_e[1]/N_e[0])**2)
+    sys_cross = cross*np.sqrt((cfg.A[1]/cfg.A[0])**2+(cfg.eff_conv[1]/cfg.eff_conv[0])**2+(cfg.F_D_ring[1]/cfg.F_D_ring[0])**2+(4*sig_r/r)**2)
     return ( cross, sig_cross, sys_cross )
 
 def diff_cross_section_conv( ampl, sigma, E, E_prime, t, material ):
@@ -193,7 +198,9 @@ def analyse_energy( keys, angles, energies ):
         all_energies[i:i+len(a)] = e
         i += len(a)
 
-    all_graph = Graph( "Scattered photon energy", all_angles[:,0], all_energies[:,0], all_angles[:,1], all_energies[:,1] )
+    all_graph = Graph( "Scattered photon energy",
+            all_angles[:,0], all_energies[:,0],
+            all_angles[:,1], all_energies[:,1] )
     func = Function( TF1("energy", "[0]/(1+[0]/[1]*(1-cos(pi*x/180)))") )
     func.function.SetParameter( 0, 661 )
     func.function.SetParLimits( 0, 0, 10e3 )
@@ -203,8 +210,9 @@ def analyse_energy( keys, angles, energies ):
     all_graph.Fit( func )
     paras = func.GetParameters()
     parErrs = func.GetParErrors()
-    print("E_gamma   = {:.2f} \\pm {:.2f}".format(paras[0], parErrs[0]))
-    print("m_e       = {:.2f} \\pm {:.2f}".format(paras[1], parErrs[1]))
+    parErrSys = func.GetParErrorsSys()
+    print("E_gamma   = {:6.2f} \\pm {:5.2f} \\pm {:5.2f}".format(paras[0], parErrs[0], parErrSys[0]))
+    print("m_e       = {:6.2f} \\pm {:5.2f} \\pm {:5.2f}".format(paras[1], parErrs[1], parErrSys[1]))
     print("Chi^2/NdF = {:.2f}".format( func.GetChisquare()/func.GetNDF() ) )
     
     all_graph.Draw(xName="\\theta [^\\circ]", yName="E\mbox{ '}_\\gamma [keV]")
@@ -227,21 +235,36 @@ def analyse_crosssection( keys, angles, crosssections ):
     all_crosssections = np.zeros(( sum([ len(a) for a in crosssections ]),3 ))
     i = 0
     for k, a, c in zip( keys, angles, crosssections):
+        index = np.logical_not(np.logical_or(a[:,0]==80, a[:,0]==90))
+        a = a[index]
+        c = c[index]
         if k=="Alu":
             a = a[:-1]
             c = c[:-1]
         graphs.append( Graph( k, a[:,0], c[:,0] ) )
         graphs_sys.append([ Graph( k, a[:,0], c[:,0]+c[:,2] ),
                             Graph( k, a[:,0], c[:,0]-c[:,2] ) ])
+        #if k=="Ring":
+            #continue
         all_angles[i:i+len(a)] = a
         all_crosssections[i:i+len(a)] = c
         i += len(a)
+    index = all_angles[:,0]!=0
+    all_angles = all_angles[index]
+    all_crosssections = all_crosssections[index]
 
-    all_graph = Graph( "Diff. Cross-section", all_angles[:,0], all_crosssections[:,0], all_angles[:,1], all_crosssections[:,1] )
-    # rho = (1+a[1]*(1-cos(pi*x/180)))
-    func = Function( TF1("cross-section", "[0]*1/(1+[1]*(1-cos(pi*x/180)))^2 * ( (1+[1]*(1-cos(pi*x/180))) +1/(1+[1]*(1-cos(pi*x/180))) -sin(pi*x/180)^2 )", 0, 180 ) )
-    func.function.SetParameter( 0, 3.97248068393825954558e1 )
-    func.function.FixParameter( 0, 3.97248068393825954558e1 )
+    all_graph = Graph( "Diff. Cross-section",
+            all_angles[:,0], all_crosssections[:,0],
+            all_angles[:,1], all_crosssections[:,1],
+            np.zeros(len(all_angles)), all_crosssections[:,2] )
+
+    # rho = (1+[1]*(1-cos(pi*x/180)))
+    func = Function( TF1("cross-section",
+        "[0]*1/(1+[1]*(1-cos(pi*x/180)))^2 \
+        * ( (1+[1]*(1-cos(pi*x/180))) +1/(1+[1]*(1-cos(pi*x/180))) -sin(pi*x/180)^2 )",
+        0, 180 ) )
+    func.function.SetParameter( 0, 3.88679483310156084179e1 )
+    #func.function.FixParameter( 0, 3.88679483310156084179e1 )
     func.function.SetParameter( 1, 661/512 )
     #func.function.FixParameter( 1, 661/512 )
     legend.AddEntry(func.function, "\\frac{d\\sigma}{d\\Omega}")
@@ -250,6 +273,13 @@ def analyse_crosssection( keys, angles, crosssections ):
     colors = { "Ring":2, "Alu":3, "Steel":4 }
 
     all_graph.Fit( func, plot=False, out=True )
+    paras = func.GetParameters()
+    parErrs = func.GetParErrors()
+    parErrSys = func.GetParErrorsSys()
+    print("Ampl. = {:5.2f} \\pm {:5.2f} \\pm {:5.2f}".format(paras[0], parErrs[0], parErrSys[0]))
+    print("E/m_e = {:5.2f} \\pm {:5.2f} \\pm {:5.2f}".format(paras[1], parErrs[1], parErrSys[1]))
+    print("Chi^2/NdF = {:.2f}".format( func.GetChisquare()/func.GetNDF() ) )
+
     func.function.Draw("LSame")
 
     for g, k in zip(graphs, keys):
