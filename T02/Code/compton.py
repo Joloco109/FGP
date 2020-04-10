@@ -226,7 +226,7 @@ def analyse_energy( keys, angles, energies ):
     canvas.SaveAs( graph_dir + "compton.eps" )
     input()
 
-def analyse_crosssection( keys, angles, crosssections ):
+def analyse_crosssection( keys, angles, crosssections, fix_ampl=False ):
     canvas = TCanvas()
     legend = TLegend(.47,.65,.89,.89)
     graphs = []
@@ -244,8 +244,6 @@ def analyse_crosssection( keys, angles, crosssections ):
         graphs.append( Graph( k, a[:,0], c[:,0] ) )
         graphs_sys.append([ Graph( k, a[:,0], c[:,0]+c[:,2] ),
                             Graph( k, a[:,0], c[:,0]-c[:,2] ) ])
-        #if k=="Ring":
-            #continue
         all_angles[i:i+len(a)] = a
         all_crosssections[i:i+len(a)] = c
         i += len(a)
@@ -264,7 +262,8 @@ def analyse_crosssection( keys, angles, crosssections ):
         * ( (1+[1]*(1-cos(pi*x/180))) +1/(1+[1]*(1-cos(pi*x/180))) -sin(pi*x/180)^2 )",
         0, 180 ) )
     func.function.SetParameter( 0, 3.88679483310156084179e1 )
-    #func.function.FixParameter( 0, 3.88679483310156084179e1 )
+    if fix_ampl:
+        func.function.FixParameter( 0, 3.88679483310156084179e1 )
     func.function.SetParameter( 1, 661/512 )
     #func.function.FixParameter( 1, 661/512 )
     legend.AddEntry(func.function, "\\frac{d\\sigma}{d\\Omega}")
@@ -276,10 +275,19 @@ def analyse_crosssection( keys, angles, crosssections ):
     paras = func.GetParameters()
     parErrs = func.GetParErrors()
     parErrSys = func.GetParErrorsSys()
+    A = ( paras[0], parErrs[0], parErrSys[0] )
+    a = ( paras[1], parErrs[1], parErrSys[1] )
     print("Ampl. = {:5.2f} \\pm {:5.2f} \\pm {:5.2f}".format(paras[0], parErrs[0], parErrSys[0]))
     print("E/m_e = {:5.2f} \\pm {:5.2f} \\pm {:5.2f}".format(paras[1], parErrs[1], parErrSys[1]))
-    print("Chi^2/NdF = {:.2f}".format( func.GetChisquare()/func.GetNDF() ) )
+    if func.GetNDF() == 0:
+        print("Chi = {:4.2f}".format(func.GetChisquare()))
+        print("You overfitted with laughable few data points!\nWhat did you expect?")
+    else:
+        print("Chi/Ndf = {:5.3f}".format(func.GetChisquare()/func.GetNDF()))
 
+    all_graph.GetXaxis().SetLimits(0,120)
+    all_graph.GetYaxis().SetLimits( 0, 2*A[0]+10 )
+    all_graph.GetYaxis().UnZoom()
     func.function.Draw("LSame")
 
     for g, k in zip(graphs, keys):
@@ -296,6 +304,22 @@ def analyse_crosssection( keys, angles, crosssections ):
     canvas.Update()
     input()
 
+    return A, a
+
+def total_crosssection( keys, angles, crosssections ):
+    for k, a, c in zip( keys, angles, crosssections ):
+        (A, sig_A, sys_A), (a, sig_a, sys_a) = analyse_crosssection( [k], [a], [c], fix_ampl=True )
+        sigma_total = 4*np.pi*A/a**2 * ( (2+a*(1+a)*(8+a))/(1+2*a)**2+((a-1)**2-3)/(2*a)*np.log(1+2*a) )
+        sig_sigma = np.sqrt(
+                ( sigma_total * sig_A/A )**2
+              + ( 4*np.pi*A *((8*a**5-20*a**4-90*a**3-95*a**2-40*a-6)*np.log(2*a+1)-4*a**5+78*a**4+126*a**3+68*a**2+12*a )/(2*a**4*(2*a+1)**3)* sig_a )**2
+            )
+        sys_sigma = np.sqrt(
+                ( sigma_total * sys_A/A )**2
+              + ( 4*np.pi*A *((8*a**5-20*a**4-90*a**3-95*a**2-40*a-6)*np.log(2*a+1)-4*a**5+78*a**4+126*a**3+68*a**2+12*a )/(2*a**4*(2*a+1)**3)* sys_a )**2
+            )
+        print(k+":")
+        print("\t\\sigma = {:6.2f} \\pm {:6.2f} \\pm {:6.2f}".format(sigma_total, sig_sigma, sys_sigma) )
 
 if __name__=="__main__":
     if not os.path.exists( graph_dir ):
@@ -315,4 +339,7 @@ if __name__=="__main__":
         cross_sections.append(c)
 
     analyse_energy( peaks, angles, energies )
-    analyse_crosssection( peaks, angles, cross_sections )
+    (A,_,_),(a,_,_) = analyse_crosssection( peaks, angles, cross_sections )
+    sigma_total = 4*np.pi*A/a**2 * ( (2+a*(1+a)*(8+a))/(1+2*a)**2+((a-1)**2-3)/(2*a)*np.log(1+2*a) )
+    print(sigma_total)
+    total_crosssection( ["Alu","Steel"], angles[1:], cross_sections[1:] )
