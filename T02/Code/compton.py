@@ -271,13 +271,13 @@ def analyse_crosssection( keys, angles, crosssections, fix_ampl=False ):
     all_graph.Draw(xName="\\theta [^\\circ]", yName="\\frac{d\\sigma}{d\\Omega} [mb]")
     colors = { "Ring":2, "Alu":3, "Steel":4 }
 
-    all_graph.Fit( func, plot=False, out=True )
+    all_graph.Fit( func, plot=False, out=False )
     paras = func.GetParameters()
     parErrs = func.GetParErrors()
     parErrSys = func.GetParErrorsSys()
     A = ( paras[0], parErrs[0], parErrSys[0] )
     a = ( paras[1], parErrs[1], parErrSys[1] )
-    print("Ampl. = {:5.2f} \\pm {:5.2f} \\pm {:5.2f}".format(paras[0], parErrs[0], parErrSys[0]))
+    print("Ampl. =({:5.2f} \\pm {:5.2f} \\pm {:5.2f})mb".format(paras[0], parErrs[0], parErrSys[0]))
     print("E/m_e = {:5.2f} \\pm {:5.2f} \\pm {:5.2f}".format(paras[1], parErrs[1], parErrSys[1]))
     if func.GetNDF() == 0:
         print("Chi = {:4.2f}".format(func.GetChisquare()))
@@ -319,7 +319,7 @@ def total_crosssection( keys, angles, crosssections ):
               + ( 4*np.pi*A *((8*a**5-20*a**4-90*a**3-95*a**2-40*a-6)*np.log(2*a+1)-4*a**5+78*a**4+126*a**3+68*a**2+12*a )/(2*a**4*(2*a+1)**3)* sys_a )**2
             )
         print(k+":")
-        print("\t\\sigma = {:6.2f} \\pm {:6.2f} \\pm {:6.2f}".format(sigma_total, sig_sigma, sys_sigma) )
+        print("\t\\sigma = ({:6.2f} \\pm {:6.2f} \\pm {:6.2f})mb".format(sigma_total, sig_sigma, sys_sigma) )
 
 if __name__=="__main__":
     if not os.path.exists( graph_dir ):
