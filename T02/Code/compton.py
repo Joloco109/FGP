@@ -228,7 +228,7 @@ def analyse_energy( keys, angles, energies ):
 
 def analyse_crosssection( keys, angles, crosssections, fix_ampl=False ):
     canvas = TCanvas()
-    legend = TLegend(.47,.65,.89,.89)
+    legend = TLegend(.52,.55,.89,.89)
     graphs = []
     graphs_sys = []
     all_angles = np.zeros(( sum([ len(a) for a in angles ]),2 ))
