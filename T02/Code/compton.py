@@ -266,7 +266,7 @@ def analyse_crosssection( keys, angles, crosssections, fix_ampl=False ):
         func.function.FixParameter( 0, 3.88679483310156084179e1 )
     func.function.SetParameter( 1, 661/512 )
     #func.function.FixParameter( 1, 661/512 )
-    legend.AddEntry(func.function, "\\frac{d\\sigma}{d\\Omega}")
+    legend.AddEntry(func.function, "\\frac{d\\sigma}{d\\Omega}= \\frac{\\alpha^2\\lambda_e^2}{8\\pi\\rho^2}(\\rho+\\rho^{-1}-\\sin^2\\theta)")
 
     all_graph.Draw(xName="\\theta [^\\circ]", yName="\\frac{d\\sigma}{d\\Omega} [mb]")
     colors = { "Ring":2, "Alu":3, "Steel":4 }
@@ -302,6 +302,7 @@ def analyse_crosssection( keys, angles, crosssections, fix_ampl=False ):
         gm.Draw("P")
     legend.Draw()
     canvas.Update()
+    canvas.SaveAs( graph_dir + "diff_cross.eps")
     input()
 
     return A, a
