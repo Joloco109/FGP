@@ -18,19 +18,21 @@ E_gamma = (661.657, 0.003)
 def e_mass(energies, angles, energies_err, angles_err):
     e_graph = Graph( "Measurement of m_e", angles, energies, angles_err, energies_err)
     fit = Function( TF1( "electron mass", "pol1" ) )
-    
     e_graph.Fit( fit, plot=True, out=True )
-    canvas = TCanvas()
-    legend = TLegend(.14,.82,.50,.89)
-    legend.AddEntry(fit.function, "1/E^\mbox{'}_\\gamma-1/E_\\gamma = \\frac{1}{m_e}(1-\\cos\\theta)")
+    canvas = TCanvas("e_mass", "measurement of m_e", 650, 400)
+    legend = TLegend(.13,.83,.52,.89)
+    legend.AddEntry(fit.function, "1/E^\mbox{'}_\\gamma-1/E_\\gamma = \\frac{1}{m_e}(1-\\cos\\theta)+b")
     e_graph.Draw(xName= "(1-\\cos\\theta)", yName="(1/E^\mbox{'}_\\gamma-1/E_\\gamma)[1/keV]")
     legend.Draw()
     input()
     paras = fit.GetParameters()
     parErrs = fit.GetParErrors()
+    Chi = fit.GetChisquare()/fit.GetNDF()
     m_e = 1/paras[1]
     m_e_err = parErrs[1]/paras[1]**2
     print("m_e = ", m_e, " \pm ", m_e_err)
+    print("\chi^2/N_{dF} = ", Chi)
+    canvas.SaveAs(graph_dir + "e_mass.eps")
 if __name__=="__main__":
     if not os.path.exists( graph_dir ):
         os.makedirs( graph_dir )

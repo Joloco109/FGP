@@ -54,7 +54,8 @@ def mass_improved(plot=True, out=True, save=True):
     if plot:
         canvas = TCanvas("canvas","canvas")
         gStyle.SetOptStat(0)
-        hist.Draw(xName="channel number", yName="counts")
+        hist.Draw(xName="Energy [keV]", yName="counts")
+        hist.hist.SetTitle("22Na Spectrum")
         legend = TLegend(.70,.30,.89,.51)
         legend.AddEntry(hist.hist, "Data")
         edges = []
