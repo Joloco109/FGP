@@ -80,7 +80,7 @@ def print_edge( rising, i, m_last, m ):
         i, m_last, 180/np.pi*np.sin(m_last),
         m, 180/np.pi*np.sin(m)  )  )
 
-def peak_fit( hist, peaks, plot=False, out=False ):
+def peak_fit( hist, peaks, brackground=True, plot=False, out=False ):
     fits = []
     for (start, end), i in zip(peaks, range(len(peaks))):
         fit = TF1("peak_{}".format(i), "[0] + [1]*(x-{}) + gaus(2)".format(start), start, end)
@@ -91,10 +91,18 @@ def peak_fit( hist, peaks, plot=False, out=False ):
         maximum = np.max(hist.Slice(start,end).GetBinContents())
         minimum = np.min(hist.Slice(start,end).GetBinContents())
 
-        fit.SetParameter( 0, minimum )
-        fit.SetParameter( 1, 0 )
-        fit.SetParLimits( 1, 0, (start-end)*1e-2*maximum )
-        fit.SetParameter( 2, maximum-minimum )
+        if brackground:
+            fit.SetParameter( 0, minimum )
+            fit.SetParameter( 1, 0 )
+            fit.SetParLimits( 1, 0, (start-end)*1e-2*maximum )
+            fit.SetParameter( 2, maximum-minimum )
+        else:
+            fit.SetParameter( 0, 0 )
+            fit.FixParameter( 0, 0 )
+            fit.SetParameter( 1, 0 )
+            fit.FixParameter( 1, 0 )
+            fit.SetParameter( 2, maximum )
+
         fit.SetParLimits( 2, 0, 1e2*maximum )
         fit.SetParameter( 3, (start+end)/2 )
         fit.SetParLimits( 3, start, end )
