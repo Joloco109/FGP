@@ -235,13 +235,13 @@ def analyse_crosssection( keys, angles, crosssections, fix_ampl=False ):
     all_crosssections = np.zeros(( sum([ len(a) for a in crosssections ]),3 ))
     i = 0
     for k, a, c in zip( keys, angles, crosssections):
+        graphs.append( Graph( k, a[:,0], c[:,0] ) )
         index = np.logical_not(np.logical_or(a[:,0]==80, a[:,0]==90))
         a = a[index]
         c = c[index]
         if k=="Alu":
             a = a[:-1]
             c = c[:-1]
-        graphs.append( Graph( k, a[:,0], c[:,0] ) )
         graphs_sys.append([ Graph( k, a[:,0], c[:,0]+c[:,2] ),
                             Graph( k, a[:,0], c[:,0]-c[:,2] ) ])
         all_angles[i:i+len(a)] = a
