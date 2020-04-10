@@ -265,8 +265,19 @@ def analyse_crosssection( keys, angles, crosssections, fix_ampl=False ):
     if fix_ampl:
         func.function.FixParameter( 0, 3.88679483310156084179e1 )
     func.function.SetParameter( 1, 661/512 )
-    #func.function.FixParameter( 1, 661/512 )
     legend.AddEntry(func.function, "\\frac{d\\sigma}{d\\Omega}= \\frac{\\alpha^2\\lambda_e^2}{8\\pi\\rho^2}(\\rho+\\rho^{-1}-\\sin^2\\theta)")
+
+    theo = Function( TF1("cross-section",
+        "[0]*1/(1+[1]*(1-cos(pi*x/180)))^2 \
+        * ( (1+[1]*(1-cos(pi*x/180))) +1/(1+[1]*(1-cos(pi*x/180))) -sin(pi*x/180)^2 )",
+        0, 180 ) )
+    theo.function.SetParameter( 0, 3.88679483310156084179e1 )
+    theo.function.FixParameter( 0, 3.88679483310156084179e1 )
+    theo.function.SetParameter( 1, 661/512 )
+    theo.function.FixParameter( 1, 661/512 )
+    theo.function.SetLineColor(1)
+    theo.function.SetLineStyle(3)
+    legend.AddEntry(theo.function, "\\frac{d\\sigma}{d\\Omega}_{theo}(\\theta)")
 
     all_graph.Draw(xName="\\theta [^\\circ]", yName="\\frac{d\\sigma}{d\\Omega} [mb]")
     colors = { "Ring":2, "Alu":3, "Steel":4 }
@@ -289,6 +300,7 @@ def analyse_crosssection( keys, angles, crosssections, fix_ampl=False ):
     all_graph.GetYaxis().SetLimits( 0, 2*A[0]+10 )
     all_graph.GetYaxis().UnZoom()
     func.function.Draw("LSame")
+    theo.function.Draw("LSame")
 
     for g, k in zip(graphs, keys):
         g.graph.SetMarkerColor(colors[k])
@@ -302,7 +314,10 @@ def analyse_crosssection( keys, angles, crosssections, fix_ampl=False ):
         gm.Draw("P")
     legend.Draw()
     canvas.Update()
-    canvas.SaveAs( graph_dir + "diff_cross.eps")
+    name = "diff_cross_"
+    for k in keys:
+        name += k + "_"
+    canvas.SaveAs( graph_dir + name + ".eps")
     input()
 
     return A, a
