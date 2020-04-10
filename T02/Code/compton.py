@@ -226,12 +226,17 @@ def analyse_crosssection( keys, angles, crosssections ):
     all_crosssections = np.zeros(( sum([ len(a) for a in crosssections ]),3 ))
     i = 0
     for k, a, c in zip( keys, angles, crosssections):
+        if k=="Alu":
+            a = a[:-1]
+            c = c[:-1]
         graphs.append( Graph( k, a[:,0], c[:,0] ) )
         all_angles[i:i+len(a)] = a
         all_crosssections[i:i+len(a)] = c
         i += len(a)
 
     all_graph = Graph( "Diff. Cross-section", all_angles[:,0], all_crosssections[:,0], all_angles[:,1], all_crosssections[:,1] )
+    all_graph_max = Graph( "Diff. Cross-section", all_angles[:,0], all_crosssections[:,0]+all_crosssections[:,2] )
+    all_graph_min = Graph( "Diff. Cross-section", all_angles[:,0], all_crosssections[:,0]-all_crosssections[:,2] )
     # rho = (1+a[1]*(1-cos(pi*x/180)))
     func = Function( TF1("cross-section", "[0]*1/(1+[1]*(1-cos(pi*x/180)))^2 * ( (1+[1]*(1-cos(pi*x/180))) +1/(1+[1]*(1-cos(pi*x/180))) -sin(pi*x/180)^2 )", 0, 180 ) )
     func.function.SetParameter( 0, 3.97248068393825954558e1 )
@@ -241,6 +246,8 @@ def analyse_crosssection( keys, angles, crosssections ):
     legend.AddEntry(func.function, "\\frac{d\\sigma}{d\\Omega}")
 
     all_graph.Draw(xName="\\theta [^\\circ]", yName="\\frac{d\\sigma}{d\\Omega} [mb]")
+    all_graph_max.Draw(options="P")
+    all_graph_min.Draw(options="P")
     colors = { "Ring":2, "Alu":3, "Steel":4 }
 
     func.function.Draw("LSame")
@@ -266,7 +273,7 @@ if __name__=="__main__":
                 [ cfg.ring_files, cfg.conv_files_Alu, cfg.conv_files_Steel ],
                 [ cfg.ring_noise, cfg.conv_noise, cfg.conv_noise ],
                 [ "Ring", "Alu", "Steel" ] ):
-        a, e, c = analyse_setup( name, file_name, noise_name, peaks[key], key, plot=False, out=True, save=True )
+        a, e, c = analyse_setup( name, file_name, noise_name, peaks[key], key, plot=True, out=True, save=True )
         angles.append(a)
         energies.append(e)
         cross_sections.append(c)
