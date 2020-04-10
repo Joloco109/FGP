@@ -227,8 +227,14 @@ def analyse_energy( keys, angles, energies ):
     input()
 
 def analyse_crosssection( keys, angles, crosssections, fix_ampl=False ):
+    name = "diff_cross_"
+    for k in keys:
+        name += k + "_"
     canvas = TCanvas()
-    legend = TLegend(.52,.55,.89,.89)
+    if name == "diff_cross_Ring_Alu_Steel_":
+        legend = TLegend(.65,.60,.97,.97)
+    else:
+        legend = TLegend(.52,.55,.89,.89)
     graphs = []
     graphs_sys = []
     all_angles = np.zeros(( sum([ len(a) for a in angles ]),2 ))
@@ -319,9 +325,7 @@ def analyse_crosssection( keys, angles, crosssections, fix_ampl=False ):
         gm.Draw("P", marker=2)
     legend.Draw()
     canvas.Update()
-    name = "diff_cross_"
-    for k in keys:
-        name += k + "_"
+
     canvas.SaveAs( graph_dir + name + ".eps")
     input()
 
