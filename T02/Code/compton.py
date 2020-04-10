@@ -311,10 +311,12 @@ def analyse_crosssection( keys, angles, crosssections, fix_ampl=False ):
         legend.AddEntry(g.graph, k)
 
     for (gp, gm), k in zip(graphs_sys, keys):
+        gp.graph.SetMarkerSize(0.5)
         gp.graph.SetMarkerColor(colors[k])
-        gp.Draw("P")
+        gp.Draw("P", marker=2)
+        gm.graph.SetMarkerSize(0.5)
         gm.graph.SetMarkerColor(colors[k])
-        gm.Draw("P")
+        gm.Draw("P", marker=2)
     legend.Draw()
     canvas.Update()
     name = "diff_cross_"
