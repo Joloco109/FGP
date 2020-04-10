@@ -19,6 +19,17 @@ for key in att_coeff:
     att_coeff[key] = np.array(att_coeff[key])
 # # [ *[E[MeV], mu[cm^2/g] ]
 
+def mu( E, material, debug=False ):
+    coeff = att_coeff[material]
+    i = np.where(coeff[:,0]>E*1e-3)[0][0]
+    mu = (coeff[i][1]-coeff[i-1][1])/(coeff[i][0]-coeff[i-1][0])*(E*1e-3-coeff[i][0]) + coeff[i][1]
+
+    if debug:
+        print("{:.2f}keV".format(E))
+        print("\tmu_{: <5} = ({: >4.2e})cm^2/g".format( material, mu ))
+        print("\tmu_{: <5} = ({: >4.2e})1/cm".format( material, mu*cfg.densities[material][0] ))
+    return mu*cfg.densities[material][0]
+
 
 def diff_cross_section_ring( N_e, s, R, ampl, sigma, E, E_prime, t ):
     r = np.sqrt(s[0]**2+R[0]**2)
@@ -27,15 +38,16 @@ def diff_cross_section_ring( N_e, s, R, ampl, sigma, E, E_prime, t ):
     m = np.sqrt(2*np.pi)*sigma[0] * ampl[0]/t
     sig_m = m*np.sqrt((sigma[1]/sigma[0])**2+(ampl[1]/ampl[0])**2)
 
-    coeff = att_coeff["Alu"]
-    mu_alu = coeff[ np.argmin(np.abs(coeff[:,0]-E*1e-3)), 1 ]*cfg.densities["Alu"][0]
-    mu_alu_p = coeff[ np.argmin(np.abs(coeff[:,0]-E_prime*1e-3)), 1 ]*cfg.densities["Alu"][0]
-    coeff = att_coeff["Air"]
-    mu_air = coeff[ np.argmin(np.abs(coeff[:,0]-E*1e-3)), 1 ]*cfg.densities["Air"][0]
-    mu_air_p = coeff[ np.argmin(np.abs(coeff[:,0]-E_prime*1e-3)), 1 ]*cfg.densities["Air"][0]
+    mu_alu = mu( E, "Alu" )
+    mu_alu_p = mu( E_prime, "Alu" )
+    mu_air = mu( E, "Air" )
+    mu_air_p = mu( E_prime, "Air" )
 
     eta = np.exp( -(mu_air+mu_air_p)*r -(mu_alu+mu_alu_p-mu_air-mu_air_p)*cfg.ring_thickness[0]/2 )
     sig_eta = eta * np.sqrt((-(mu_air+mu_air_p)*sig_r)**2+(-(mu_alu+mu_alu_p-mu_air-mu_air_p)*cfg.ring_thickness[1]/2)**2)
+
+    N_e = (2*np.pi * R[0] * cfg.ring_thickness[0]**2 * cfg.densities["Alu"][0]*cfg.Z["Alu"]/(cfg.N["Alu"][0]*cfg.u),
+            N_e[1] )
     
     cross = 4*np.pi*r**4/( cfg.A[0]*cfg.I_gamma[0]*cfg.eff_conv[0]*N_e[0] * cfg.F_D_ring[0] ) * m / eta # cm^2
     sig_cross = cross*np.sqrt((4*sig_r/r)**2+(N_e[1]/N_e[0])**2+(sig_m/m)**2+(sig_eta/eta)**2)
@@ -46,18 +58,19 @@ def diff_cross_section_conv( ampl, sigma, E, E_prime, t, material ):
     m = np.sqrt(2*np.pi)*sigma[0] * ampl[0]/t
     sig_m = m*np.sqrt((sigma[1]/sigma[0])**2+(ampl[1]/ampl[0])**2)
 
-    coeff = att_coeff[material]
-    mu_mat = coeff[ np.argmin(np.abs(coeff[:,0]-E*1e-3)), 1 ]*cfg.densities[material][0]
-    mu_mat_p = coeff[ np.argmin(np.abs(coeff[:,0]-E_prime*1e-3)), 1 ]*cfg.densities[material][0]
-    coeff = att_coeff["Air"]
-    mu_air = coeff[ np.argmin(np.abs(coeff[:,0]-E*1e-3)), 1 ]*cfg.densities["Air"][0]
-    mu_air_p = coeff[ np.argmin(np.abs(coeff[:,0]-E_prime*1e-3)), 1 ]*cfg.densities["Air"][0]
+    mu_mat = mu( E, material )
+    mu_mat_p = mu( E_prime, material )
+    mu_air = mu( E, "Air" )
+    mu_air_p = mu( E_prime, "Air" )
 
     eta = np.exp( -mu_air*cfg.r_0_conv[0]-mu_air_p*cfg.r_conv[0] -(mu_mat+mu_mat_p-mu_air-mu_air_p)*cfg.d_conv[0]/2 )
     sys_eta = eta* np.sqrt((-mu_air*cfg.r_0_conv[1])**2+(-mu_air_p*cfg.r_conv[1])**2+(-(mu_mat+mu_mat_p-mu_air-mu_air_p)*cfg.d_conv[1]/2)**2)
 
-    cross = 4*np.pi*cfg.r_0_conv[0]**2*cfg.r_conv[0]**2/( cfg.A[0]*cfg.I_gamma[0]*cfg.eff_conv[0]*cfg.Ne_conv[material][0] * cfg.F_D_conv[0] ) * m / eta # cm^2
-    sig_cross = cross*np.sqrt((cfg.Ne_conv[material][1]/cfg.Ne_conv[material][0])**2+(sig_m/m)**2)
+    N_e = ( np.pi* cfg.d_conv[0]**2/4 * cfg.h_conv[0] * cfg.densities[material][0]*cfg.Z[material]/(cfg.N[material][0]*cfg.u),
+            cfg.Ne_conv[material][1] )
+
+    cross = 4*np.pi*cfg.r_0_conv[0]**2*cfg.r_conv[0]**2/( cfg.A[0]*cfg.I_gamma[0]*cfg.eff_conv[0]*N_e[0] * cfg.F_D_conv[0] ) * m / eta # cm^2
+    sig_cross = cross*np.sqrt((N_e[1]/N_e[0])**2+(sig_m/m)**2)
     sys_cross = cross*np.sqrt((cfg.eff_conv[1]/cfg.eff_conv[0])**2+(cfg.A[1]/cfg.A[0])**2+(2*cfg.r_0_conv[1]/cfg.r_0_conv[0])**2+(2*cfg.r_conv[1]/cfg.r_conv[0])**2+(sys_eta/eta)**2+(cfg.F_D_conv[1]/cfg.F_D_conv[0])**2)
     return ( cross, sig_cross, sys_cross )
 
@@ -68,7 +81,7 @@ def analyse_spectrum( name, file_name, noise_file, peaks, plot=False, out=False,
     #hist = hist_raw - opt_hist.realtime/opt_noise.realtime * noise
     hist = hist_raw - np.max(hist_raw.GetBinContents())/np.max(noise.GetBinContents()) * noise
 
-    peaks = peak_fit( hist, peaks, brackground=False, plot=False, out=out )
+    peaks = peak_fit( hist, peaks, brackground=False, plot=False, out=False )
     paras = [ p.GetParameters() for p in peaks ]
     parErrs = [ p.GetParErrors() for p in peaks ]
     amplitudes = [ (p[2], pe[2]) for p, pe in zip(paras, parErrs) ]
@@ -119,7 +132,7 @@ def analyse_spectrum( name, file_name, noise_file, peaks, plot=False, out=False,
     return opt_hist.time, amplitudes, energies, std_deviations
 
 
-def analyse_setup( name, angles, noise, peaks, key ):
+def analyse_setup( name, angles, noise, peaks, key, plot=False, out=False, save=False ):
     angles_array = np.zeros(( len(angles), 2 ))
     amplitudes = np.zeros(( len(angles), 2 ))
     energies = np.zeros(( len(angles), 2 ))
@@ -127,12 +140,15 @@ def analyse_setup( name, angles, noise, peaks, key ):
     cross_section = np.zeros(( len(angles), 3 ))
     if key == "Ring":
         for i, angle in zip( range(len(angles)), angles):
+            if out:
+                print()
+                print( name + " {:.0f}°".format(angle[0]) )
             r, l, n, file_name = angles[angle]
             angle_peaks = [ tuple(peak) for ang, *ps in peaks if round(ang)==round(angle[0]) for peak in ps  ]
             t, a, e, s = analyse_spectrum(
                     "\\mbox{{{}"+name+" }}" + "{:.0f}^\\circ".format(angle[0]),
                     cfg.comp_r_dir+file_name, cfg.comp_r_dir+noise[l[0]],
-                    angle_peaks, plot=False, out=True, save=True )
+                    angle_peaks, plot=plot, out=out, save=save )
             if not len(e)==1:
                 raise ValueError("You should have decided on exactly one peak for file by now!")
             angles_array[i] = angle
@@ -143,12 +159,15 @@ def analyse_setup( name, angles, noise, peaks, key ):
 
     else:
         for i, angle in zip( range(len(angles)), angles):
+            if out:
+                print()
+                print( name + " {:.0f}°".format(angle) )
             file_name = angles[angle]
             angle_peaks = [ tuple(peak) for ang, *ps in peaks if round(ang)==round(angle) for peak in ps ]
             t, a, e, s = analyse_spectrum(
                     "\\mbox{{{}"+name+" }}" + "{:.0f}^\\circ".format(angle),
                     cfg.comp_c_dir+file_name, cfg.comp_c_dir+noise[angle],
-                    angle_peaks, plot=False, out=True, save=True )
+                    angle_peaks, plot=plot, out=out, save=save)
             if not len(e)==1:
                 raise ValueError("You should have decided on exactly one peak for file by now!")
             angles_array[i] = (angle, 1)
@@ -247,7 +266,7 @@ if __name__=="__main__":
                 [ cfg.ring_files, cfg.conv_files_Alu, cfg.conv_files_Steel ],
                 [ cfg.ring_noise, cfg.conv_noise, cfg.conv_noise ],
                 [ "Ring", "Alu", "Steel" ] ):
-        a, e, c = analyse_setup( name, file_name, noise_name, peaks[key], key )
+        a, e, c = analyse_setup( name, file_name, noise_name, peaks[key], key, plot=False, out=True, save=True )
         angles.append(a)
         energies.append(e)
         cross_sections.append(c)

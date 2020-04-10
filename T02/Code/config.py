@@ -24,6 +24,14 @@ I_gamma = [0.805, 0]
 
 comp_peaks = "compton_peaks.json"
 att_coeff = "attenuation_coefficient.json"
+
+u = 1.660539e-27*1e3
+N = { "Alu" : (26.982, 0.001),
+        "Steel" : (55.8, 0.5)
+}
+Z = { "Alu" : 13,
+        "Steel" : 26
+}
 densities = {
         "Air" : ( 1.20e-3, 0.04e-3),
         "Steel":( 7.87,0.5),
@@ -56,7 +64,8 @@ conv_noise = {
 F_D_conv = (4.91, 0.1 )
 r_0_conv = (5, 1)
 r_conv = (12, 1)
-d_conv = (1.2,0.1)
+d_conv = (1.2, 0.1)
+h_conv = (2.1, 0.1)
 eff_conv = (0.4107, 0.02557)
 Ne_conv = { "Alu" : (1.86*10**24, 3.23*10**23),
         "Steel" : (5.4416*10**24, 9.44*10**23)
