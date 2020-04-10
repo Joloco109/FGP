@@ -28,12 +28,12 @@ def diff_cross_section_ring( N_e, s, R, ampl, sigma, E, E_prime, t ):
     sig_m = m*np.sqrt((sigma[1]/sigma[0])**2+(ampl[1]/ampl[0])**2)
 
     coeff = att_coeff["Alu"]
-    mu_alu = coeff[ np.argmin(np.abs(coeff[:,0]-E*1e3)), 1 ]*cfg.densities["Alu"][0]
-    mu_alu_p = coeff[ np.argmin(np.abs(coeff[:,0]-E_prime*1e3)), 1 ]*cfg.densities["Alu"][0]
+    mu_alu = coeff[ np.argmin(np.abs(coeff[:,0]-E*1e-3)), 1 ]*cfg.densities["Alu"][0]
+    mu_alu_p = coeff[ np.argmin(np.abs(coeff[:,0]-E_prime*1e-3)), 1 ]*cfg.densities["Alu"][0]
     coeff = att_coeff["Air"]
-    mu_air = coeff[ np.argmin(np.abs(coeff[:,0]-E*1e3)), 1 ]*cfg.densities["Air"][0]
-    mu_air_p = coeff[ np.argmin(np.abs(coeff[:,0]-E_prime*1e3)), 1 ]*cfg.densities["Air"][0]
-    
+    mu_air = coeff[ np.argmin(np.abs(coeff[:,0]-E*1e-3)), 1 ]*cfg.densities["Air"][0]
+    mu_air_p = coeff[ np.argmin(np.abs(coeff[:,0]-E_prime*1e-3)), 1 ]*cfg.densities["Air"][0]
+
     eta = np.exp( -(mu_air+mu_air_p)*r -(mu_alu+mu_alu_p-mu_air-mu_air_p)*cfg.ring_thickness[0]/2 )
     sig_eta = eta * np.sqrt((-(mu_air+mu_air_p)*sig_r)**2+(-(mu_alu+mu_alu_p-mu_air-mu_air_p)*cfg.ring_thickness[1]/2)**2)
     
@@ -47,11 +47,11 @@ def diff_cross_section_conv( ampl, sigma, E, E_prime, t, material ):
     sig_m = m*np.sqrt((sigma[1]/sigma[0])**2+(ampl[1]/ampl[0])**2)
 
     coeff = att_coeff[material]
-    mu_mat = coeff[ np.argmin(np.abs(coeff[:,0]-E*1e3)), 1 ]*cfg.densities[material][0]
-    mu_mat_p = coeff[ np.argmin(np.abs(coeff[:,0]-E_prime*1e3)), 1 ]*cfg.densities[material][0]
+    mu_mat = coeff[ np.argmin(np.abs(coeff[:,0]-E*1e-3)), 1 ]*cfg.densities[material][0]
+    mu_mat_p = coeff[ np.argmin(np.abs(coeff[:,0]-E_prime*1e-3)), 1 ]*cfg.densities[material][0]
     coeff = att_coeff["Air"]
-    mu_air = coeff[ np.argmin(np.abs(coeff[:,0]-E*1e3)), 1 ]*cfg.densities["Air"][0]
-    mu_air_p = coeff[ np.argmin(np.abs(coeff[:,0]-E_prime*1e3)), 1 ]*cfg.densities["Air"][0]
+    mu_air = coeff[ np.argmin(np.abs(coeff[:,0]-E*1e-3)), 1 ]*cfg.densities["Air"][0]
+    mu_air_p = coeff[ np.argmin(np.abs(coeff[:,0]-E_prime*1e-3)), 1 ]*cfg.densities["Air"][0]
 
     eta = np.exp( -mu_air*cfg.r_0_conv[0]-mu_air_p*cfg.r_conv[0] -(mu_mat+mu_mat_p-mu_air-mu_air_p)*cfg.d_conv[0]/2 )
     sys_eta = eta* np.sqrt((-mu_air*cfg.r_0_conv[1])**2+(-mu_air_p*cfg.r_conv[1])**2+(-(mu_mat+mu_mat_p-mu_air-mu_air_p)*cfg.d_conv[1]/2)**2)
@@ -68,7 +68,7 @@ def analyse_spectrum( name, file_name, noise_file, peaks, plot=False, out=False,
     #hist = hist_raw - opt_hist.realtime/opt_noise.realtime * noise
     hist = hist_raw - np.max(hist_raw.GetBinContents())/np.max(noise.GetBinContents()) * noise
 
-    peaks = peak_fit( hist, peaks, plot=plot, out=out )
+    peaks = peak_fit( hist, peaks, brackground=False, plot=False, out=out )
     paras = [ p.GetParameters() for p in peaks ]
     parErrs = [ p.GetParErrors() for p in peaks ]
     amplitudes = [ (p[2], pe[2]) for p, pe in zip(paras, parErrs) ]
@@ -76,14 +76,12 @@ def analyse_spectrum( name, file_name, noise_file, peaks, plot=False, out=False,
     std_deviations = [ (p[4], pe[4]) for p, pe in zip(paras, parErrs) ]
     if out:
         for i, a,e,s in zip( range(len(paras)), amplitudes, energies, std_deviations ):
-            print("A_{} = {} \\pm {}".format( i, *a ))
-            print("E_{} = {} \\pm {}".format( i, *e ))
-            print("s_{} = {} \\pm {}".format( i, *s ))
+            print("A_{} = {: >4.2e} \\pm {: >4.2e}".format( i, *a ))
+            print("E_{} = {: >8.3f} \\pm {: >8.3f}".format( i, *e ))
+            print("s_{} = {: >8.3f} \\pm {: >8.3f}".format( i, *s ))
+            print("m_{} = {: >4.2e} \\pm {: >4.2e}".format( i, np.sqrt(2*np.pi)*a[0]*s[0], np.sqrt(2*np.pi*( (a[0]*s[1])**2+(a[1]*s[0])**2 )) ))
             print()
 
-    return opt_hist.time, amplitudes, energies, std_deviations
-            
-    
     if plot:
         canvas = TCanvas(name.format(""))
         canvas.Divide(1,2)
@@ -110,13 +108,15 @@ def analyse_spectrum( name, file_name, noise_file, peaks, plot=False, out=False,
         hist.hist.SetLabelSize(0.06, "Y")
         hist.hist.SetTitleOffset(0.8, "Y")
         hist.Draw()
+        for p in peaks:
+            p.function.Draw("Same")
         legend.Draw()
         canvas.Update()
         if save:
             canvas.SaveAs( graph_dir + file_name.split("/")[-1][:-4] + ".eps" )
         input()
 
-    return amplitudes, energies, std_deviations
+    return opt_hist.time, amplitudes, energies, std_deviations
 
 
 def analyse_setup( name, angles, noise, peaks, key ):
@@ -158,7 +158,7 @@ def analyse_setup( name, angles, noise, peaks, key ):
             cross_section[i] = diff_cross_section_conv( a[0], s[0], 661, e[0][0], t, key )
 
     cross_section *= 1e24 # barn
-    cross_section *= 1e6  # mubarn
+    cross_section *= 1e3  # mbarn
     return angles_array, energies, cross_section
 
 def analyse_energy( keys, angles, energies ):
@@ -193,7 +193,7 @@ def analyse_energy( keys, angles, energies ):
 
     for g, k in zip(graphs, keys):
         g.graph.SetMarkerColor(colors[k])
-        g.Draw("P", marker =3)
+        g.Draw("P", marker=3)
         legend.AddEntry(g.graph, k)
     legend.Draw()
     canvas.SaveAs( graph_dir + "compton.eps" )
@@ -201,23 +201,37 @@ def analyse_energy( keys, angles, energies ):
 
 def analyse_crosssection( keys, angles, crosssections ):
     canvas = TCanvas()
+    legend = TLegend(.47,.65,.89,.89)
     graphs = []
     all_angles = np.zeros(( sum([ len(a) for a in angles ]),2 ))
     all_crosssections = np.zeros(( sum([ len(a) for a in crosssections ]),3 ))
     i = 0
-    for k, a, e in zip( keys, angles, crosssections):
-        graphs.append( Graph( k, a[:,0], e[:,0] ) )
+    for k, a, c in zip( keys, angles, crosssections):
+        graphs.append( Graph( k, a[:,0], c[:,0] ) )
         all_angles[i:i+len(a)] = a
-        all_crosssections[i:i+len(a)] = e
+        all_crosssections[i:i+len(a)] = c
         i += len(a)
 
-    all_graph = Graph( "Total", all_angles[:,0], all_crosssections[:,0], all_angles[:,1], all_crosssections[:,1] )
+    all_graph = Graph( "Diff. Cross-section", all_angles[:,0], all_crosssections[:,0], all_angles[:,1], all_crosssections[:,1] )
+    # rho = (1+a[1]*(1-cos(pi*x/180)))
+    func = Function( TF1("cross-section", "[0]*1/(1+[1]*(1-cos(pi*x/180)))^2 * ( (1+[1]*(1-cos(pi*x/180))) +1/(1+[1]*(1-cos(pi*x/180))) -sin(pi*x/180)^2 )", 0, 180 ) )
+    func.function.SetParameter( 0, 3.97248068393825954558e1 )
+    func.function.FixParameter( 0, 3.97248068393825954558e1 )
+    func.function.SetParameter( 1, 661/512 )
+    func.function.FixParameter( 1, 661/512 )
+    legend.AddEntry(func.function, "\\frac{d\\sigma}{d\\Omega}")
 
-    all_graph.Draw()
+    all_graph.Draw(xName="\\theta [^\\circ]", yName="\\frac{d\\sigma}{d\\Omega} [mb]")
     colors = { "Ring":2, "Alu":3, "Steel":4 }
+
+    func.function.Draw("LSame")
+
     for g, k in zip(graphs, keys):
         g.graph.SetMarkerColor(colors[k])
-        g.Draw("P", marker =3)
+        g.Draw("P", marker=3)
+        legend.AddEntry(g.graph, k)
+    legend.Draw()
+    canvas.Update()
     input()
 
 
